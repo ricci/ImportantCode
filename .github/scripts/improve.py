@@ -29,16 +29,17 @@ SRC_DIR = (REPO_ROOT / "src").resolve()
 MODEL = os.environ.get("IMPROVE_MODEL", "qwen2.5-coder:1.5b")
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434")
 
-# Trimming budgets. Generous now that we give the model a big context window;
-# still bounded so we never blow past it entirely.
-MAX_FILE_BYTES = int(os.environ.get("IMPROVE_MAX_FILE_BYTES", "12000"))
-MAX_TOTAL_SRC_BYTES = int(os.environ.get("IMPROVE_MAX_TOTAL_SRC_BYTES", "48000"))
-MAX_ISSUES = int(os.environ.get("IMPROVE_MAX_ISSUES", "8"))
-MAX_ISSUE_BODY_CHARS = int(os.environ.get("IMPROVE_MAX_ISSUE_BODY_CHARS", "1200"))
-# Output size: num_predict caps generated tokens; num_ctx is total room.
-NUM_PREDICT = int(os.environ.get("IMPROVE_NUM_PREDICT", "8192"))
-NUM_CTX = int(os.environ.get("IMPROVE_NUM_CTX", "16384"))
-REQUEST_TIMEOUT = int(os.environ.get("IMPROVE_TIMEOUT", "3000"))
+# Trimming budgets — a happy medium: enough context to be interesting without
+# making CPU prompt-processing crawl.
+MAX_FILE_BYTES = int(os.environ.get("IMPROVE_MAX_FILE_BYTES", "10000"))
+MAX_TOTAL_SRC_BYTES = int(os.environ.get("IMPROVE_MAX_TOTAL_SRC_BYTES", "32000"))
+MAX_ISSUES = int(os.environ.get("IMPROVE_MAX_ISSUES", "6"))
+MAX_ISSUE_BODY_CHARS = int(os.environ.get("IMPROVE_MAX_ISSUE_BODY_CHARS", "1000"))
+# Output size: num_predict caps generated tokens (the main driver of runtime on
+# CPU); num_ctx is total room. ~3k tokens ≈ a hearty file or two, not a novella.
+NUM_PREDICT = int(os.environ.get("IMPROVE_NUM_PREDICT", "3072"))
+NUM_CTX = int(os.environ.get("IMPROVE_NUM_CTX", "8192"))
+REQUEST_TIMEOUT = int(os.environ.get("IMPROVE_TIMEOUT", "1500"))
 
 TEXT_EXTENSIONS = {
     ".py", ".md", ".txt", ".rst", ".toml", ".cfg", ".ini", ".json", ".yaml",
@@ -172,11 +173,11 @@ def call_model(prompt: str, *, num_predict=None, temperature=None) -> str:
         "options": {
             # Crank the heat: we WANT chaotic, surprising, ambitious, VERBOSE
             # output. Inspector Zestworth is the cool breeze that tames it.
-            "temperature": float(os.environ.get("IMPROVE_TEMPERATURE", "1.5"))
+            "temperature": float(os.environ.get("IMPROVE_TEMPERATURE", "1.1"))
             if temperature is None else temperature,
-            "top_p": float(os.environ.get("IMPROVE_TOP_P", "0.99")),
-            "top_k": int(os.environ.get("IMPROVE_TOP_K", "0")),  # 0 = no cap, full vocab
-            "min_p": float(os.environ.get("IMPROVE_MIN_P", "0.02")),  # floor to avoid pure noise
+            "top_p": float(os.environ.get("IMPROVE_TOP_P", "0.95")),
+            "top_k": int(os.environ.get("IMPROVE_TOP_K", "80")),  # tame the long tail
+            "min_p": float(os.environ.get("IMPROVE_MIN_P", "0.03")),  # floor to avoid pure noise
             # Discourage stopping early / repeating, so it keeps building.
             "repeat_penalty": float(os.environ.get("IMPROVE_REPEAT_PENALTY", "1.1")),
             "num_predict": NUM_PREDICT if num_predict is None else num_predict,
