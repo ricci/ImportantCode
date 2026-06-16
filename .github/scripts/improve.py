@@ -26,7 +26,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_DIR = (REPO_ROOT / "src").resolve()
 
-MODEL = os.environ.get("IMPROVE_MODEL", "qwen2.5-coder:1.5b")
+MODEL = os.environ.get("IMPROVE_MODEL", "qwen2.5-coder:0.5b")
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434")
 
 # Trimming budgets — a happy medium: enough context to be interesting without
