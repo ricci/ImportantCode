@@ -29,8 +29,6 @@ jobs:
       # The improve workflow named its branch auto/improve-<run_id>, and that
       # run_id is exactly this event's workflow_run.id.
       PR_BRANCH: "auto/improve-${{ github.event.workflow_run.id }}"
-      REVIEW_VERDICT_FILE: ${{ runner.temp }}/review_verdict.txt
-      REVIEW_BODY_FILE: ${{ runner.temp }}/review_body.md
 
     steps:
       - name: Checkout
@@ -95,12 +93,16 @@ jobs:
         if: steps.scope.outputs.ok == '1'
         env:
           PR_NUMBER: ${{ steps.find.outputs.pr }}
+          REVIEW_VERDICT_FILE: ${{ runner.temp }}/review_verdict.txt
+          REVIEW_BODY_FILE: ${{ runner.temp }}/review_body.md
         run: python .github/scripts/review.py
 
       - name: Post review, then approve and merge if the verdict is APPROVE
         if: steps.scope.outputs.ok == '1'
         env:
           PR: ${{ steps.find.outputs.pr }}
+          REVIEW_VERDICT_FILE: ${{ runner.temp }}/review_verdict.txt
+          REVIEW_BODY_FILE: ${{ runner.temp }}/review_body.md
         run: |
           set -euo pipefail
           VERDICT="$(cat "$REVIEW_VERDICT_FILE" 2>/dev/null || echo reject)"

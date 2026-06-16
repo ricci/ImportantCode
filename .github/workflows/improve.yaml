@@ -32,7 +32,6 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       IMPROVE_MODEL: ${{ github.event.inputs.model || 'qwen2.5-coder:1.5b' }}
-      IMPROVE_PR_BODY: ${{ runner.temp }}/improve_pr_body.md
 
     steps:
       - name: Checkout
@@ -59,6 +58,8 @@ jobs:
         run: ollama pull "$IMPROVE_MODEL"
 
       - name: Generate improvement (src/ only)
+        env:
+          IMPROVE_PR_BODY: ${{ runner.temp }}/improve_pr_body.md
         run: python .github/scripts/improve.py
 
       - name: Safety net — undo any change outside src/
