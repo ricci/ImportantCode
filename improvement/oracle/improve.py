@@ -215,8 +215,6 @@ def choose_target(generate, tree, inspiration, produced_rels, language) -> Path:
     m = re.search(r"src/[\w./-]+", raw or "")
     target = coerce_to_src(m.group(0) if m else "", "def _(): pass") \
         or (SRC_DIR / _dump(".py")).resolve()
-    if target.suffix.lower() != ".py":
-        target = target.with_suffix(".py")
     return target
 
 def choose_language(generate, tree, inspiration, produced_rels) -> Path:
