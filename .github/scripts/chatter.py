@@ -40,7 +40,7 @@ _flt = lambda k, d: float(os.environ.get(k, d))
 NUM_CTX = _int("CHATTER_NUM_CTX", "8192")
 NUM_PREDICT = _int("CHATTER_NUM_PREDICT", "512")
 REQUEST_TIMEOUT = _int("CHATTER_TIMEOUT", "600")
-GEN_TEMPERATURE = _flt("CHATTER_TEMPERATURE", "1.5")
+GEN_TEMPERATURE = _flt("CHATTER_TEMPERATURE", "2.5")
 MAX_ROUNDS = _int("CHATTER_MAX_ROUNDS", "10")
 
 # The context budget, in characters (a rough ~4 chars/token proxy for NUM_CTX).
@@ -173,7 +173,11 @@ GENERATOR_SYSTEM = (
 )
 
 # The judge's ENTIRE system prompt — verbatim, as specified. Nothing else.
-JUDGE_SYSTEM = ('when the following text is worthy to be posted, output only the word '
+JUDGE_SYSTEM = ('assess whether the reply given in the user prompt fully responds to the following comment:\n\n'
+                '=== COMMENT BEGIN ===\n'
+                '{comment}\n\n'
+                '===COMMENT END ===\n\n'
+                'If it is ready to be posted, output only the word '
                 '"true", otherwise, output only the word "false"')
 
 
@@ -213,18 +217,20 @@ def generate(previous: str, issue: str, book: str) -> str:
     user = (
         f"{recursive_prompt(previous, RECURSIVE_BUDGET)}\n\n"
         f"## THE COMMENT TO REPLY TO\n{issue}\n\n"
+        "== ADDITIONAL LITERARY INSPIRATION ==\n\n"
         f"\n{_truncate(book, BOOK_BUDGET)}\n\n"
+        '------------------'
         "Now write the next prompt."
     )
     return (ollama_generate(GENERATOR_SYSTEM, user,
                             temperature=GEN_TEMPERATURE, num_predict=NUM_PREDICT) or "").strip()
 
 
-def judge(text: str) -> tuple[bool, str]:
+def judge(text: str, issue: str) -> tuple[bool, str]:
     """The judge sees only its one-line system prompt and the candidate text.
     Returns (worthy, raw_verdict). Worthy iff its output mentions 't'(rue)."""
     try:
-        verdict = ollama_generate(JUDGE_SYSTEM, text, temperature=0.0, num_predict=8)
+        verdict = ollama_generate(JUDGE_SYSTEM.format(comment=issue), text, temperature=0.0, num_predict=8)
     except Exception as exc:
         log(f"judge call failed ({exc}); treating as not-yet-worthy")
         return False, ""
@@ -248,7 +254,7 @@ def run_chain(issue: str, book: str) -> str:
             log(f"volley {rnd}: empty generation; retrying")
             continue
         log_block(f"volley {rnd} · generator ({len(candidate)} chars)", candidate)
-        worthy, verdict = judge(candidate)
+        worthy, verdict = judge(candidate, issue)
         log_block(f"volley {rnd} · judge → {'WORTHY' if worthy else 'not yet'}", verdict)
         if worthy:
             log(f"accepted at volley {rnd}/{MAX_ROUNDS}")
