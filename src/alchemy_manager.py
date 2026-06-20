@@ -1,48 +1,48 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
+from pathlib import Path
+from typing import List, Optional, Dict, Any, Tuple
 import time
+import threading
 import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
-
 
 class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
-
+    IDLE = 'idle'
+    EXECUTING = 'executing'
+    COMPLETED = 'completed'
+    FAILED = 'failed'  # Marked as failed even if retryable in context of a daemon for clarity, though semantically implies failure to stop the chain
 
 class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
-
+    """A high-level orchestration layer for managing alchemical operations. 
+       Designed to handle complex interactions between multiple components without direct file I/O, utilizing thread-safe concurrency and memory pools."""
+    
     def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+        self._lock = threading.Lock()  # Thread lock to prevent concurrent modification of shared resources
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # Global state management
+        self.task_queue: List[Tuple[str, Any]] = []  # Holds queued tasks with metadata (name, params)
+        
+        # Memory pool for caching heavy data structures if not already initialized in an existing module's __init__
+        # This ensures consistency when this module is used alongside other modules that depend on it.
+        self.cache: Dict[str, Any] = {}
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
+    def _get_queue_id(self, params: Optional[Dict[str, Any]] = None) -> int:
         """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+        if not isinstance(params, dict): 
+            return random.randint(0, 5) # Fallback for non-dict params to maintain backward compatibility in this simplified version
+        
+        try:
+            id_num = len(self.task_queue) + int(time.time()) % 10_000  
+            if hasattr(self.cache, 'lock') and isinstance(id_num, str):
+                return self._get_queue_id(params['id']) # Use cache ID as queue number for better reuse
+            else:
+                return id_num
+        except (ValueError, AttributeError) as e:
+            raise ValueError(f"Failed to generate queue ID from {params} - use of invalid input detected")
 
     def _create_task(self, name: str, params: Dict[str, Any], callback=None):
         """Generates a Task object that can be queued and executed."""
         if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            raise ValueError("Parameters must be provided as a dictionary") 
+
+        # If params are already in cache format (e.g

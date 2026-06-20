@@ -1,14 +1,17 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+MODULES DIVISION.
+DATA 'bank-of-banana-pudding'.
 
-AUTHOR. Your Name.
-
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
-
+PERFORMANCE SECTION.
 PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+    DISPLAY "Welcome to the Bank of Banana Pudding." 
+    
+    # Load configuration from external storage modules (e.g., json, yaml) 
+    CONFIG_FILE = 'config.json' 
+
+    IF NOT EXISTS(CONFIG_FILE) THEN
+        EXCEPTION HANDLER TO_LOAD_CONFIG_FROM_EXTERNAL_STORAGE;
+    END IF
+    
+    PERFORM load_config_from_json(CONFIG_FILE);
+
+END PROCEDURE
