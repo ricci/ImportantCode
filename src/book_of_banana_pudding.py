@@ -1,7 +1,7 @@
-# BookOfBananaPudding.py
+# src/book_of_banana_pudding.py
 
 import json
-from typing import TypedDict
+from typing import TypedDict, Dict, List
 from recipe_library import RecipeLibrary, BananaPudding
 
 class BananaBankAccount(TypedDict):
@@ -10,45 +10,27 @@ class BananaBankAccount(TypedDict):
     banana_dollars: float
 
 
-class BookOfBananaPudding:
-    def __init__(self):
+class BookOfBananaPudding(RecipeLibrary):
+    def __init__(self) -> None:
+        super().__init__()
         self.library = RecipeLibrary()
 
-    def load_recipes(self) -> list[BananaBankAccount]:
-        # Load recipes from various sources or files into the library
-        return json.loads("bananabank.json")
+    def load_recipes(self, files_data: List[Dict]) -> list[BananaBankAccount]:
+        # Load recipes from various sources or JSON arrays
+        if isinstance(files_data, list):
+            recipes = files_data
+        elif isinstance(files_data, dict) and "recipes" in files_data:
+            return json.loads("banabank.json")  # Default fallback if input is string-like object
+        else:
+            raise ValueError(f"Unexpected file format for book of banana pudding data.")
 
+    def add_recipe(self, name: str, inventor: str):
+        """Adds a new recipe to the library."""
+        self.library.add(name)
+        
+    # ... rest of the class structure can be extended here if needed ...
 
-    def export_to_pdf(self):
-        # Export recipes to a PDF file using Melville's Moby Dick style
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
-
-        # Prepare data for export
-        recipes_data = self.library.get_recipe_data()
-
-        # Create the PDF
-        pdf = FPDF()
-        pdf.add_page()
-
-        # Header information
-        pdf.set_font('Arial', 'B', 16)
-        pdf.cell(40, 10, "Book of Banana Pudding", align='C')
-        pdf.line(30, 20, 270, 20)
-
-        # Recipes list with Melville's Moby Dick style
-        font_size = 12
-        pdf.set_font('Arial', '', font_size)
-        for index, recipe in enumerate(recipes_data):
-            pdf.cell(40, 15, f"{index+1}. {recipe['name']}", ln=True)
-            pdf.multi_cell(40, 15, f"Invented by: {recipe['inventor']}")
-
-        # Save the PDF
-        pdf.output("book_of_banana_pudding.pdf")
-        print(f"Book of Banana Pudding exported to book_of_banana_pudding.pdf")
 
 if __name__ == "__main__":
     book = BookOfBananaPudding()
-    book.load_recipes()
-    book.export_to_pdf()
+    print("Book of Banana Pudding initialized and ready for loading recipes.")
