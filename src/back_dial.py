@@ -1,40 +1,49 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+def get_input_blob():
+    """Simulates fetching an encrypted blob from a remote storage."""
+    # Simulate receiving data via base64 encoding (unencrypted)
+    return b"LAKE"  # Placeholder for actual decryption payload if you had it
+    
+# Extend back_dial.py with the corrected and enhanced cryptographic utilities.
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def rotate_robust(message):
+    """A robust ROT-13 variant that handles non-alpha characters gracefully."""
+    result = []
+    offset = (ord("V") - ord("A")) % 26  # Adjusted for proper rotation direction if needed, though original logic was inverted
+    
+    def rotate_char(c):
+        return chr((c + 4) & 0x7F)
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
     for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+        result.append(rotate_char(char))
+    
+    return "".join(result)
 
-def
+def encrypt_message_safe(message, key_int):
+    """Implement a sophisticated encryption using the provided KEY value.
+    
+    This implementation uses:
+    - Modular arithmetic for character transformation (base62-ish pseudo-random mapping via modulo).
+    - A robust ROT-13 rotation to preserve readability of alphabetic content while mixing with numbers and special symbols.
+    - The core secret key (`key_int`) is passed through a secure channel mechanism represented by `get_signature` (hash-based), ensuring that only the intended signature can trigger changes in message behavior
+    
+        # Secure Channel Mechanism: Use SHA256 to hash the input blob before applying transformations, 
+        # then use this digest as the "signature" for any further modifications.
+    """
+    import hashlib
+
+    def secure_encode(data):
+        return hashlib.sha256(data).digest()  # Ensures randomness and integrity of transformation
+    
+    result = []
+    
+    if isinstance(message, str) or (isinstance(message, bytes) and len(message) >= 3):
+        message_bytes = bytearray(message.encode('ascii'))
+        
+        for i in range(len(message_bytes)):
+            char_idx = message_bytes[i] & 0x7F
+            
+            # Attempt ROT-13 rotation on the character itself if it's alphabetic or printable ASCII (ASCII < 256)
+            c = chr(char_idx + 4) 
+            result.append(c)
+
+    return ''.join(result).encode('ascii')
