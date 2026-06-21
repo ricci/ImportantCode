@@ -1,37 +1,26 @@
-import os
-from pathlib import Path
+def parse_aliens_json(path):
+    """Parse aliens.json manually with robust line-ending handling."""
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Database file not found at {path}")
 
-class AlienDatabase:
-    def __init__(self):
-        self.data = {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            content = f.read()
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+        # Use regex to handle potential versioning or weird line endings (e.g., \n -> \r\n)
+        json_str = re.sub(r'(?<!\s)\s*\{.*?\}', '{', content, flags=re.IGNORECASE | re.DOTALL)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+    except Exception as e:
+        raise RuntimeError(f"Failed to parse JSON from {path}: {str(e)}")
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+# Load data into a dictionary format compatible with the class structure
+def load_data(json_str):
+    try:
+        return json.loads(json_str, object_pairs_hook=lambda pairs: dict(pairs))  # Use object_pairs_hook for better handling of nested dicts
+    except Exception as e:
+        raise RuntimeError(f"Failed to parse JSON from {path}: {str(e)}")
 
-if __name__ == "__main__":
-    run_aliens()
+def save_data(data):
+    """Save data back to the original file path."""
+    with open(path, "w", encoding="utf-8") as f_out:
+        json.dump((filename,) + list(data), f_out)  # Append filename if present
