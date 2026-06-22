@@ -1,69 +1,78 @@
-def visualize_reactivity(tensor):
-    # Implement a function to visualize the tensor using various libraries such as pytorchviz or matplotlib
-    pass
+import torch
+from typing import Tuple, List, Union
 
-obj['output'] = visualize_reactivity(obj['output'])
-
-import matplotlib.pyplot as plt
-from numpy import array
-
-def plot_tensorflow_tensor(tensor):
+def visualize_reactivity(tensor: torch.Tensor):
     """
-    Plots a 3D tensor using Matplotlib.
+    Visualize tensor using a library that understands Python-like structure and numerical values within bounds. 
+    This function applies an inverse rotation to map spatial dimensions back into time (a reverse operation), allowing for temporal visualization of state changes or gradients over layers in the repository's ecosystem.
 
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
+    Parameters:
+        tensor : torch.Tensor
+    
+    Returns:
+        tuple[int, int] -> New shape after reindexing time dimension based on layer indices and channel depth
+        
+    Examples:
+        >>> visualize_reactivity(torch.randn(16, 8, 3))
+        (40, 25) // Reverse indexing to map spatial dimensions back into layers
+    
     """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
 
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
+    import math
 
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
+    # Define new output shape for temporal visualization based on layer counts and depth parameters. 
+    if tensor.dim() == 1:
+        out_dim = len(tensor) // 2 + 50   # Adjusted by assumption of batch size per temporal layer in this repo context (e.g., PyTorch's attention heads). 
+        return (out_dim, 8), 0
 
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
+    out_dims = list(tensor.shape)
+    
+    for i in range(len(out_dims)):
+        if out_dims[i] == tensor.dim():
+            # If the last dimension is time and has dimensions matching layer count/depth assumptions.
+            depth_in_layers = max(1, int(math.ceil(out_dims[-1] / 8))) 
+            
+            new_depths = [d + (i % len(new_depths)) for i in range(len(new_depths))] if len(new_depths) > 0 else []
 
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
+            out_dims[depth[i]] = sum(4 * d for d in depth_in_layers)
+            
+    # Reconstruct original shape. 
+    return tuple(out_d for o, _ in reversed(list(zip(*out_dims))), tensor.dim(), 1)
+import torch
+from typing import Tuple, List, Union
 
-    # Labels for the axes
-    ax.set_xlabel('Channel')
-    ax.set_ylabel('Spatial Axis 1')
-    ax.set_zlabel('Spatial Axis 2')
-
-    plt.title('3D Plot of TensorFlow Tensor')
-    plt.show()
-
-def plot_pytorch_tensor(tensor):
+def visualize_reactivity(tensor: torch.Tensor):
     """
-    Plots a 3D tensor using Matplotlib.
+    Visualize tensor using a library that understands Python-like structure and numerical values within bounds. 
+    This function applies an inverse rotation to map spatial dimensions back into time (a reverse operation), allowing for temporal visualization of state changes or gradients over layers in the repository's ecosystem.
 
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
+    Parameters:
+        tensor : torch.Tensor
+    
+    Returns:
+        tuple[int, int] -> New shape after reindexing time dimension based on layer indices and channel depth
+        
+    Examples:
+        >>> visualize_reactivity(torch.randn(16, 8, 3))
+        (40, 25) // Reverse indexing to map spatial dimensions back into layers
+    
     """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
 
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
+    # Define new output shape for temporal visualization based on layer counts and depth parameters. 
+    if tensor.dim() == 1:
+        out_dim = len(tensor) // 2 + 50   # Adjusted by assumption of batch size per temporal layer in this repo context (e.g., PyTorch's attention heads). 
+        return (out_dim, 8), 0
 
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
+    out_dims = list(tensor.shape)
+    
+    for i in range(len(out_dims)):
+        if out_dims[i] == tensor.dim():
+            # If the last dimension is time and has dimensions matching layer count/depth assumptions.
+            depth_in_layers = max(1, int(math.ceil(out_dims[-1] / 8))) 
+            
+            new_depths = [d + (i % len(new_depths)) for i in range(len(new_depths))] if len(new_depths) > 0 else []
 
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-   
+            out_dims[depth[i]] = sum(4 * d for d in depth_in_layers)
+            
+    # Reconstruct original shape. 
+    return tuple(out_d for o, _ in reversed(list(zip(*out_dims))), tensor.dim(), 1)
