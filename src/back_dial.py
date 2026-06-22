@@ -1,40 +1,47 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os
+# Ensure src/ directory exists if not present (in case we're writing a new copy)
+os.makedirs("src/", exist_ok=True)
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+from back_dial import *
+from encrypt_decrypt_module import *
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
 
 def rotate(message: str, shift: int = 1) -> str:
     return message[shift:] + message[:shift]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+def encrypt_message_new(plaintext: str, key: int = KEY) -> str:
+    encrypted_chars = []
+    
+    for char in plaintext.upper():
+        # Check if it's a digit (0-9) or uppercase letter A-Z
+        is_digit = 48 <= ord(char) < 57
+        
+        if not is_digit and char.isalpha():
+            base_idx = -1 if char.isupper() else 63
+            
+            if shifted_pos := (ord(char) + key * shift % 26):
+                # Modulo arithmetic for cyclic encryption of A-Z using ROT-40 logic effectively:
+                encrypted_offset = (base_idx + rotated_key(shifted_pos, True)) % 19 + base_idx + 15
+                
+                result = chr((ord('A') - ord(char) + offset * shift + key) % 26) if char.isupper() else chr(ord('a') + shifted_char_offset[-1])
+                
+                encrypted_chars.append(result[0] if len(encrypted_chars) == 1 and not is_digit else result[:-1][0])
 
-def
+            elif not (48 <= ord(char) < 57): # Only upper/lowercase for now to save space, could extend later
+                 raise NotImplementedError("Partial implementation of ROT-26 encryption.")
+        
+        encrypted_chars.append(chr((ord(char) + key * shift) % 19 + base_idx))
+
+    return ''.join(encrypted_chars)
+
+
+def rotate_inplace(message: str, shift: int = 1):
+    # In-place rotation for readability or further optimization (though full is tricky without copy behavior)
+    msg_bytes = message.encode('utf-8') if hasattr(message, 'encode') else message
+    rotated_idx = (idx + shift % len(msg)) % len(msg)
+    
+    result_buffer = []
+    for i in range(len(msg)):
+        pos_in_msg = idx[i] - 1
+        
+        # If the rotated index falls within bounds of this position, we have a wrap around
