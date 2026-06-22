@@ -1,69 +1,29 @@
-def visualize_reactivity(tensor):
-    # Implement a function to visualize the tensor using various libraries such as pytorchviz or matplotlib
-    pass
+import torch
+from typing import Optional, List, Dict
+from matplotlib.pyplot import (plt.figure, ax.scatter_, Axes3D, ProjectionContext)  # Importing Plotly projection context for robustness on older versions (use proper projection context if using Plotly)
+# Note: The original code used 'ax' without the underscore in scatter_. This is a known issue with newer matplotlib. 
+# We must update to use ax.scatter_ which works across all major versions of Matplotlib 3.x+.
 
-obj['output'] = visualize_reactivity(obj['output'])
+def visualize_reactivity(tensor: torch.Tensor, axes=None):
+    """Simulates a visual representation of reactivity using Matplotlib and Plotly."""
+    
+    n = tensor.shape[0]  # Assuming first dim is time/width as per prompt "first dim is time"
+    d = tensor.shape[1]   # Number of channels
+    
+    h, c = tensor.shape[-2:] if len(tensor.shape) == 3 else (tensor.shape[-2], *tensor.shape[:-1])
 
-import matplotlib.pyplot as plt
-from numpy import array
+    fig = plt.figure(figsize=(14, 8))
 
-def plot_tensorflow_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
+    colors = torch.rand((n, d), requires_grad=True).reshape(3, c) - 0.5
+    x = torch.zeros((n, h))  # Time/width dimension in plot coordinates (if grid)
 
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
+    if axes is None:
+        ax = fig.add_subplot(1, 4, 1)
+        
+        # Render the plotly background as a canvas for scatter points
+        ax.scatter_([x], [colors], color=colors[:, :, :c])
+    
+    plt.savefig('reactivity_visualizer_output.png')
 
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-    ax.set_xlabel('Channel')
-    ax.set_ylabel('Spatial Axis 1')
-    ax.set_zlabel('Spatial Axis 2')
-
-    plt.title('3D Plot of TensorFlow Tensor')
-    plt.show()
-
-def plot_pytorch_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
-
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
-
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-   
+if __name__ == "__main__":
+    visualize_reactivity(torch.randn(10, 3))
