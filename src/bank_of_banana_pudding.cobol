@@ -1,14 +1,16 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+MODULE BankOfBananaPudding.
 
-AUTHOR. Your Name.
+  IDENTIFICATION DEFINITIONS.
+    [INPUT].
+      FILE-CONTROL {
+        FileType = Input;
+        FileFrom Name = DB_FILE_NAME;     // Path to database file (relative or absolute)
 
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
+      DATA SECTION.
+        STRING NAME_DB_FILE:1024;       // The name of the input filename
 
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+  PROCEDURE DIVISION.
+    BANK_OF_BANANA_PUDDING_OPERATION.
+    PERFORM PROCESS_DATA;
+
+END MODULE BankOfBananaPudding

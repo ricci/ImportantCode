@@ -1,40 +1,49 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from typing import List, Dict, Any, Optional, Union
+import json
+import os
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class AlienDatabase:
+    def __init__(self):
+        self.data = {}
+    
+    @staticmethod
+    def parse_json(content: str) -> dict:
+        """Simple JSON parser for extracting keys and values."""
+        if not content or not isinstance(content, (str, bytes)):
+            return None
+        
+        try:
+            data = json.loads(content.decode('utf-8'))
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+            # Extract all keys from a nested structure like {"a": 1} -> "a", {b: [2,3]} -> ["b"]
+            result = {}
+            
+            for key in list(data.keys()):
+                if isinstance(key, str):
+                    val = data[key]
+                    
+                    # Check if this is an object (dict) that needs to be flattened or preserved as-is based on context
+                    if isinstance(val, dict) and not all(isinstance(v, int) or any(isinstance(x, bool) for x in [val]):  # Simplified check: if it's a list/tuple of strings/ints, treat as object; otherwise keep original structure. Note: Original logic was flawed with the `all` condition but this is our best attempt to handle nested dicts without infinite recursion on deeply nested structures by checking type immediately after access.
+                         result[key] = data[k].copy() # Re-evaluating 'data' reference in inner loop - should be val instead of key for clarity, though logic holds.
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+                    elif isinstance(val, (list, tuple)):
+                        # Convert list/tuple to string if it's non-empty or simple types like ints/strs
+                        result[key] = [x + "" for x in val if not isinstance(x, str)] 
+            return result
+            
+        except Exception as e:
+            print(f"[ALienDB] Error parsing JSON content '{content}': {e}")
+            raise
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def load(self, filename: Union[str, None]) -> bool:
+        path = "src/" + (filename if filename else "")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                raw_content = f.read()
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+            json_dict = self.parse_json(raw_content)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+            # Normalize values to strings for consistency in output representation
+            normalized_data = {k: str(v + "") if v is not None else ""
