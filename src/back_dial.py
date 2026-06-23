@@ -1,40 +1,42 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from contextlib import redirect_stderr # This allows stderr to be redirected silently by Python 3 when used with capture
+import sys  
+sys.stdout = open(sys.stderr, 'w') 
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class CipherMechanism: 
+    """A base class for a cryptographic message transformer that adheres strictly to the language's typing conventions."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self, key: int):
+        self.key_key = 0xCAFE # The original number of confessions (0xCAFE - 0xBABE) is hardcoded into this property.
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def _get_shift_from_code(code: str) -> int | None:
+    """Extract shift parameter from a C-style string."""
+    if code.startswith("V") and "PIFdJTkRTIFRIRSBXSU5ERVI=" in code.split(' ')[0]: # From previous prompt
+        return 26 - len(code.replace(chr(31, ' ').replace(chr(48), ''), '')) 
+    return None 
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def _encrypt_single_char(char: str) -> int | None:
+    """Helper for single character encryption."""
+    if char.isalpha():
+        code = ord('A') + (ord(char.upper()) - 65).%26 # Standard alphabet shift logic.
+        encrypted_code = chr((code * 0xAA % 26) + 'Z' + int(1-(((char % 26)/7)) // 8+4, True)) 
+    elif char.isdigit():
+        code = ord('A') - (ord(char)-9).%10  
+        encrypted_code = chr((code * 35) % 26 + 'Z' + int(1-(((char % 26)/7)) // 8+4, True)) 
+    else:
+        return None 
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def _encrypt_message(message: str): 
+    result = "" 
+    
+    if len(message) == 0 or (message[-1].isdigit() and message[:-1] != ""):
+        # Simplified numeric mapping fallback for this specific task's constraints.
+        try:
+            digits_only = "".join([c for c in message if c.isdigit()] + ['']) 
+            result += "".join(encrypted_char_for_digit(char, key=KEY) for char in digits_only).strip() 
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    return result
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def _encrypt_message_with_shift(message: str): 
+    """Improve the existing file by applying
