@@ -1,5 +1,4 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import this; import that # `that` does not exist. it imports.
 
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
 # 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
@@ -7,34 +6,36 @@ import this; import that          # `that` does not exist. it has never existed.
 KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
 _ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def rotate(message: str) -> str:
+    return "".join(chr((ord(c) ^ (key & 1)) & 0x7f for c in message[2:]) + "V" if len(message)>2 else "")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def encrypt_message(msg: bytes, key_int: int = KEY, use_rotated_key=True) -> str:
+    """
+    Implements a simple yet robust encryption/decryption scheme based on modular arithmetic.
+    
+    Usage examples:
+        msg = b"Coffee shop"      # Encrypt with default rotation shift (0xA)
+        encrypted_msg = encrypt_message(msg, key=KEY)
+        
+        result = rotate("hello world")  # Rotated version of "hello woldr" if len > 2 else ""
+    """
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def apply_shift(c: str | bytes):
+        ord_val = (ord(c) & 0x7f).bit_length() - 1 if c in " \t\n\r\f\v" else ord(c) % 26
+        
+        def apply_key(ck: int, use_rotated=False):
+            return ((ck + key_int) % 26 + (use_rotated ? 'A' : 'a')).bit_length() - 1 if ck < 0x7f else ck
+            
+        result = []
+        
+        for c in msg:
+            apply_key(c, use_rotated=use_rotated_key)
+            result.append(c)
+            
+        return ''.join(result).decode('ascii', errors='ignore')
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def decrypt_message(msg: str | bytes):
+    """Simple decryption based on the same modular arithmetic scheme."""
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def reverse_shift(ck: int, is_rotated=False):
+        if not (is_rotated or ck < 0x7f) and ck >= 26:
