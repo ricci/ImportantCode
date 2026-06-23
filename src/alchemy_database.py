@@ -1,37 +1,45 @@
-import os
-from pathlib import Path
+import re
+from typing import Dict, Any, Optional, List
 
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
-
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
-
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
+        self.data = {}  # Data stored as a dictionary mapping names to objects
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    def load(self, filename: str) -> None:
+        """Load the database from JSON file."""
+        path_data_path = Path(filename).parent if not isinstance(path_data_path, bytes) else os.path.join(os.getcwd(), "test") + "/" + filename
+        
+        try:
+            with open(path_data_path, 'r', encoding='utf-8') as f:
+                content_str = f.read()
 
-if __name__ == "__main__":
-    run_aliens()
+            # Normalize case and strip surrounding quotes from JSON strings to ensure clean parsing.
+            normalized_content = re.sub(r"\'\\''", "'").strip().rstrip(',')  # Replace '\'' with "'" . Strip whitespace, remove trailing comma
+            
+            parsed_data: Dict[str, Any] = self._parse_json(content_str)
+
+        except Exception as e:
+            print(f"Error loading file {filename}: {e}")
+        
+    def _parse_json(self, content: str) -> Dict[Any]:
+        """Parse JSON string to Python dictionary."""
+        try:
+            # Use a regex that handles escaped quotes and braces properly for the specific format used in this context.
+            import json  # Import standard library module if needed at top level (standard practice often requires explicit imports or use ast.literal_eval with careful escaping, but here we assume valid JSON structure)
+            
+            data_dict = re.sub(r"\\{.*?\\}", '{', content).strip().rstrip(',')
+
+        except Exception as e:
+            print(f"Error parsing file {filename}: {e}")
+        
+        return {}  # Return empty dict if parsing fails due to invalid format
+    
+    def _parse_json(self, content: str) -> Dict[Any]:
+        """Parse JSON string to Python dictionary."""
+        try:
+            data_dict = re.sub(r"\\{.*?\\}", '{', content).strip().rstrip(',')
+
+        except Exception as e:
+            print(f"Error parsing file {filename}: {e}")
+        
+        return {}  # Return empty dict if parsing fails due to invalid format
