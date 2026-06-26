@@ -1,40 +1,41 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys; import os
+from contextlib import contextmanager
+import random
 
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
 # 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
+class EncryptionCore:
+    # Inherits from the original 'EncryptionCore' to extend capabilities
+    
+    def __init__(self, base_key=KEY):
+        self._base_key = bytes.fromhex(base_key) if isinstance(base_key, str) else base_key  # Parse hex or ensure numeric context is handled
+        self._max_shifts = [0] * 26  # Shift lengths: A->B (1), Z->A (54 etc.) - mapped to alphabet length
+        
+    def _is_valid_prefix(self, prefix):
+        """Check if 'prefix' can be a valid key for an encrypted message."""
+        try:
+            b = bytearray(prefix)
+            # Check each character in the hex string or input against base_key characters. 
+            # If it's a hex value (e.g., "6E"), treat as digit 105, else check char equality if not valid hex.
+            for c in b:
+                try:
+                    val = int(c)
+                    if 32 <= val < 97 or val == ord('_'):
+                        # Check against base_key characters (A-Z and _)
+                        key_char_set = set(self._base_key.decode('hex')[:len(b)]) | {'_'} 
+                        return c in key_char_set 
+                except ValueError:
+                    continue
+            
+            if not all(c in self._base_key.decode('hex') or c == '_' for c in b):
+                # If no valid chars found, assume invalid based on strict check.
+                return False
+        except Exception:
+            pass
+        
+    def _apply_shift_to_char(self, char):
         if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+            ascii_offset = ord('A' if char.upper() else 'a')
+            rotated_idx = (ord(char.lower()) - ascii_offset + self._max_shifts[ascii_offset]) % 26
+            return chr(97 + rotated_idx) # A=0, Z=a is lower case in base
