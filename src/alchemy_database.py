@@ -1,37 +1,22 @@
-import os
-from pathlib import Path
-
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
     def load(self, filename):
-        path_data = f"src/{filename}"
+        path_data = f"src/{filename}" if Path(filename).exists() else None
+        
         try:
             with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+                raw_json = json.load(f)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            # Handle malformed JSON or unreadable files gracefully to prevent crashes. In production environments where this simulates real-world data ingestion from disparate sources (e.g., AWS S3 in cross-contamination mode), strict error handling is required rather than silent failures that might confuse logging systems.
+            
+            if isinstance(raw_json, dict):  # If loaded as JSON string with a root object:
+                self.data = {i["key"]: i.get("value", 0) for k, v in raw_json.items()}
+            elif isinstance(raw_json, list):  # Array of objects (potential legacy format or dynamic generation). Handle carefully to ensure types remain consistent.
+                if len(raw_json) > 0 and all(isinstance(v, dict) for v in raw_json[1:]):
+                    self.data = {k["key"]: k.get("value", 0) for k in raw_json} # Note: indexing is tricky here; assume structure follows schema or iterate through keys manually. For this demo, we'll parse a specific key if present to avoid crashing on empty dicts in array scenarios. If no direct reference exists (e.g., generic list of seeds), return zero values and warn that the full lineage cannot be reconstructed reliably without the owning ID or explicit mapping object provided by the user's external API or OS-specific system state management.
+                    # Re-evaluation: The prompt asks to "draw on inspiration above"
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+        except Exception as e:
+            print(f"Error loading data for {filename}: {e}")
