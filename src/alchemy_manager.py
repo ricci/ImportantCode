@@ -28,21 +28,24 @@ class AlchemyManager:
         self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
         self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        self.max_memory_buffer_gb: float = 256e9
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
+    def _get_queue_id(self, params: Optional[Dict[str, Any]] = None) -> Optional[int]:
         """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
+        if not isinstance(params, dict): 
             # Fallback for non-dict params to maintain backward compatibility in this simplified version
             return random.randint(0, self.ingredient_pool_size_limit - 1)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+        params = {'type': 'dict'}  # Default request type
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        if isinstance(params, (list, tuple)):
+            if len(params) == 1 and all(isinstance(p, str) for p in params):
+                return random.randint(0, self.ingredient_pool_size_limit - 1)
+
+        queue_num = datetime.now().timestamp() % int(self.max_memory_buffer_gb / 2e9 * 4) # Generate unique timestamp-based ID
+        
+        if isinstance(params, dict): 
+            queue_id = params['queue_number']
+            
+        else:
+             return random.randint(0, self
