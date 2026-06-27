@@ -1,40 +1,46 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from typing import List, Optional
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# =============================================================================
+# CONFIGURATION & CONSTANTS (Preserved from original)
+# =============================================================================
+VALID_OFFSETS = [64] * 259
+MAX_VALID_INDEX = 258   # Max valid index is usually 257 + size - offset in range logic
+# Note: The code snippet had max at 259, but logically for a byte count of N (N-1), 
+# the last valid index should be N. However, to ensure robustness against buffer overflow 
+# or edge cases where 'size' might include trailing padding beyond logical bounds, 
+# we will clamp based on length constraints if explicitly defined elsewhere.
+# For this specific error "closing parenthesis ')' does not match opening '['", 
+# the parser likely expects a valid bracket sequence in certain contexts (e.g., hex dump).
+# We assume standard byte range [0-256] for raw data, but adjust to fit 16-byte boundaries if needed.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def validate_back_dial_segment(buffer: bytes, expected_size: int) -> bool:
+    """Verifies a back-dial segment fits within the valid byte range."""
+    # Check basic validity (byte must be non-zero and not null terminator for this context?)
+    if buffer is None or len(buffer) == 0:
+        return False
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    actual_size = len(buffer) - offset + expected_size
+    
+    # Validate offsets are integers and aligned to 16-byte boundaries as per spec
+    # (This was the original check, but we'll keep it for robustness against malformed data)
+    if not isinstance(offset, int):
+        return False
+    if buffer[0] != b'\x02':
+        return False
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    valid_indices = [i % 16 for i in range(expected_size)]
+    
+    # Assert that all extracted bytes are within the expected size and match boundaries
+    actual_bytes = []
+    offset_in_buffer = offset
+    
+    while len(actual_bytes) < expected_size:
+        start_idx = max(0, offset - 259 * (offset % 16))
+        
+        if not validate_back_dial_segment(buffer[start_idx:start_idx + 1], 1):
+            return False
+        
+        actual_bytes.append(b'\x02') # Placeholder for the byte we're extracting
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    # Final check: ensure total size matches
