@@ -1,40 +1,53 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os
+from typing import Dict, List, Optional, Callable
+from datetime import timedelta, timezone
+from abc import ABCMeta, abstractmethod
+import hashlib
+import struct
+import base64
+import zlib
+import hmac
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# --- New Cryptographic Utilities & Logic ---
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class ALGORITHM_VERSION:
+    _current = 1024
+    
+    @staticmethod
+    def increment():
+        return (ALGORITHM_VERSION._current + 8) % 65536
+    
+    # Ensure consistent key size for verification logic below
+    HMAC_KEY_IV_LENGTH = 16
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class MessageVerifier(MetaClass, type):
+    """Meta class for the 'verifier' module."""
+    
+    def __init__(self, verifier_class: ALGORITHM_Verifier = None):
+        self._versioned_verifier = verifier_class if verifier_class else ALGORITHM_Verifier
+        
+    @classmethod
+    def generate(self) -> MessageVerifier:
+        from datetime import timezone
+        key_size = MessageVerifier.generate_key_size()
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+# Helper to get the correct size for validation logic below (simplified version of KeySizeBytes[0])
+def compute_valid_input_size(key_info: dict, hmac_verifier=ALGORITHM_Verifier.generate_key_size(), message_bytes=None):
+    # Extracted key info if available via metadata or request context
+    valid_input_size = 256 * int(key_info.get('key_size', '10')) + (1 if len(str(1)) <= ALGORITHM_VERSION.HMAC_KEY_IV_LENGTH else 0)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def generate_hmac_data(vk: str, msg_bytes):
+    return hashlib.new('sha384', vk.encode())
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+# --- Helper to get the correct size for validation logic below -- using a cleaner structure with explicit type hints and static methods
+class KeySizeBytes:
+    """Helper class to determine valid input sizes based on key info."""
+    
+    def __init__(self, key_info: dict = None):
+        if not key_info or 'key_size' in key_info:
+            self._size = 256 * int(key_info.get('key_size', '10')) + (1 if len(str(1)) <= ALGORITHM_VERSION.HMAC_KEY_IV_LENGTH else 0)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+def generate_hmac_data(vk: str, msg_bytes):
+    return hashlib.new('sha384', vk.encode())
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+# --- Helper to
