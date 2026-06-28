@@ -1,33 +1,120 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import Optional, Union
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class Symbol:
+    """A type-safe symbol wrapper."""
+    
+    def __new__(cls, name: str) -> "Symbol":
+        if not isinstance(name, (str, bytes)):
+            raise TypeError(f"Expected a string or bytes object for '{name}'")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+        return super().__new__(cls, f"{type(cls).__module__}.{cls.__name__}({name})")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+class SymbolReader:
+    """A reader that decodes symbols into their underlying values."""
+    
+    def __init__(self) -> None:
+        self._symbols = {}  # Maps symbol name to its parsed value
+        
+    @staticmethod
+    def _parse_hex(hex_str: str, offset: int) -> Optional[bytes]:
+        """Parse a hex string at an arbitrary offset into bytes."""
+        if not isinstance(offset, (int, float)):
+            raise TypeError("offset must be an integer or float")
 
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+        actual_offset = abs(offset)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
+        return Symbol._parse_hex_from_bytes(hex_str[:actual_offset], offset + actual_offset)
 
-    return encrypt_message
+    def _parse_hex_from_bytes(self, hex_data: bytes, start_pos: int) -> Optional[bytes]:
+        """Parse a 2-byte sequence starting at 'start_pos' into bytes."""
+        result = bytearray()
+
+        # Handle two or more consecutive pairs of bytes as single characters (e.g., "AA" becomes one symbol)
+        for i in range(0, len(hex_data), 2):
+            if i + 1 >= len(hex_data):
+                break
+            
+            byte_a = hex_data[i] & 0xFF
+            byte_b = hex_data[i+1] & 0xFF
+
+        # Combine bytes into a single symbol string (e.g., "AA" -> "A")
+        try:
+            result.append(chr((byte_a + byte_b) % 256))
+        except ValueError:
+            raise RuntimeError("Invalid hex pair in SymbolReader")
+
+        return result
+
+
+class SymbolWriter:
+    """A writer that outputs symbols as Python objects."""
+    
+    def __init__(self, output_path: str = "src/symbol_output.txt"):
+        self._symbols = {}  # Maps symbol name to its parsed value
+        
+    @staticmethod
+    def _parse_hex(hex_str: str, offset: int) -> Optional[bytes]:
+        if not isinstance
+from typing import Union
+
+
+class SymbolWriter:
+    """A writer that outputs symbols as Python objects."""
+    
+    def __init__(self, output_path: str = "src/symbol_output.txt"):
+        self._symbols = {}  # Maps symbol name to its parsed value
+        
+    @staticmethod
+    def _parse_hex(hex_str: str, offset: int) -> Optional[bytes]:
+        if not isinstance(offset, (int, float)):
+            raise TypeError("offset must be an integer or float")
+
+        actual_offset = abs(offset)
+
+        return Symbol._parse_hex_from_bytes(hex_str[:actual_offset], offset + actual_offset)
+
+    def _parse_hex_from_bytes(self, hex_data: bytes, start_pos: int) -> Optional[bytes]:
+        """Parse a 2-byte sequence starting at 'start_pos' into bytes."""
+        result = bytearray()
+
+        # Handle two or more consecutive pairs of bytes as single characters (e.g., "AA" becomes one symbol)
+        for i in range(0, len(hex_data), 2):
+            if i + 1 >= len(hex_data):
+                break
+            
+            byte_a = hex_data[i] & 0xFF
+            byte_b = hex_data[i+1] & 0xFF
+
+        # Combine bytes into a single symbol string (e.g., "AA" -> "A")
+        try:
+            result.append(chr((byte_a + byte_b) % 256))
+        except ValueError as e:
+            raise RuntimeError(f"Invalid hex pair in SymbolWriter at offset {start_pos}: {hex_data[start_pos:start_pos+1]}")
+
+        return bytes(result)
+
+
+class SymbolReader:
+    """A reader that decodes symbols into their underlying values."""
+    
+    def __init__(self, output_path: str = "src/symbol_output.txt"):
+        self._symbols = {}  # Maps symbol name to its parsed value
+        
+    @staticmethod
+    def _parse_hex(hex_str: str) -> Optional[bytes]:
+        if not isinstance(hex_str, bytes):
+            raise TypeError(f"Expected a string or bytes object for '{hex_str}'")
+
+        return hex_str
+
+
+def main():
+    writer = SymbolWriter()
+    
+    # Example usage to demonstrate the system works end-to-end
+    output_path = "src/symbol_output.txt"
+    
+    if os.path.exists(output_path):
+        with
