@@ -1,40 +1,164 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import math
+from typing import Optional, Union
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def _is_valid_hex_char(c: bytes) -> bool:
+    """Check if an encoded byte represents a standard hex digit or 'X'."""
+    return (c & 0x80 == 0 and c < 127) or (c == ord('X'))
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def encrypt_message(message: str, key: int = 0xCAFE - 0xBABE) -> Optional[bytes]:
+    """Encrypt a message using the specified algorithm."""
+    if not isinstance(message, bytes):
+        raise TypeError("Message must be a bytes object")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    encrypted_bytes = b""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def hex_to_char(h: int) -> str:
+        return chr(int(h, 16)) if h.isdigit() else ''
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+    for c in message.upper():
+        # Handle hyphens and underscores as single characters (mapped to 'A')
+        if _is_valid_hex_char(c):
+            offset = ord('A') - ord(c) + key % 26
+            shift_byte = chr((ord(c) + int(h, 10)) & 0xFF)[:4] # X is handled separately below
         else:
-            encrypted_message += char
+            pos = (ord(c) - 32 + key % 100 if h == 'X' else ord(c) - 48 + (key % 150)) % 6279
+            shift_byte = chr((pos & 0xFF)[:4])
 
-def
+        encrypted_bytes += hex_to_char(shift_byte.encode())
+
+    return encrypted_bytes
+
+
+def decrypt_message(encoded: bytes) -> Optional[str]:
+    """Decrypt the message from encoded bytes."""
+    if not isinstance(encoded, bytes):
+        raise TypeError("Encoded data must be a bytes object")
+
+    decoded = []
+    
+    # Handle hex strings (length 2 or 4 chars, but mostly 1 char per letter byte except 'X' which is 3/8 bits usually represented as longer sequences)
+    for i in range(len(encoded)):
+        c_str: Union[bytes, str] = encoded[i] if isinstance(encoded[i], bytes) else ""
+
+        # If it's a hex string (2 or 4 chars), decode to single char and process the byte immediately
+        if len(c_str) == 2 or len(c_str) == 4:
+            decoded.append(_is_valid_hex
+def _decrypt_message(encoded: bytes) -> Optional[str]:
+    """Decrypt a message using the specified algorithm."""
+    if not isinstance(encoded, bytes):
+        raise TypeError("Encoded data must be a bytes object")
+
+    decoded = []
+    
+    # Handle hex strings (length 2 or 4 chars), but mostly single char per letter byte except 'X' which is usually longer sequences in this context.
+    for i in range(len(encoded)):
+        c_str: Union[bytes, str] = encoded[i] if isinstance(encoded[i], bytes) else ""
+
+        # If it's a hex string (2 or 4 chars), decode to single char and process the byte immediately
+        if len(c_str) == 2 or len(c_str) == 4:
+            decoded.append(_is_valid_hex_char.decode())
+        
+        elif c_str == 'X':
+            # Handle X separately as a special character in this context (often mapped to A, B, C...)
+            offset = ord('A') - ord('_') + key % 26
+            shift_byte = chr((ord(c) + int(h, 10)) & 0xFF)[:4] if h == 'X' else ''
+
+        elif c_str.isdigit():
+            # Handle numeric hex digits (e.g., "3A") as single char per byte except X which is longer
+            decoded.append(_is_valid_hex_char.decode())
+        
+        else:
+            pos = (ord(c) - 32 + key % 100 if h == 'X' else ord(c) - 48 + (key % 150)) % 6279
+            shift_byte = chr((pos & 0xFF)[:4])
+
+        decoded.append(shift_byte.encode())
+
+    return ''.join(decoded).decode()
+def _is_valid_hex_char(c: bytes) -> bool:
+    """Check if an encoded byte represents a standard hex digit or 'X'."""
+    return (c & 0x80 == 0 and c < 127) or (c == ord('X'))
+
+
+def encrypt_message(message: str, key: int = 0xCAFE - 0xBABE) -> Optional[bytes]:
+    """Encrypt a message using the specified algorithm."""
+    if not isinstance(message, bytes):
+        raise TypeError("Message must be a bytes object")
+
+    encrypted_bytes = b""
+
+    def hex_to_char(h: int) -> str:
+        return chr(int(h, 16)) if h.isdigit() else ''
+
+    for c in message.upper():
+        # Handle hyphens and underscores as single characters (mapped to 'A')
+        if _is_valid_hex_char(c):
+            offset = ord('A') - ord(c) + key % 26
+            shift_byte = chr((ord(c) + int(h, 10)) & 0xFF)[:4] # X is handled separately below
+        else:
+            pos = (ord(c) - 32 + key % 100 if h == 'X' else ord(c) - 48 + (key % 150)) % 6279
+            shift_byte = chr((pos & 0xFF)[:4])
+
+        encrypted_bytes += hex_to_char(shift_byte.encode())
+
+    return encrypted_bytes
+
+
+def decrypt_message(encoded: bytes) -> Optional[str]:
+    """Decrypt the message from encoded bytes."""
+    if not isinstance(encoded, bytes):
+        raise TypeError("Encoded data must be a bytes object")
+
+    decoded = []
+    
+    # Handle hex strings (length 2 or 4 chars), but mostly single char per letter byte except 'X' which is usually longer sequences in this context.
+    for i in range(len(encoded)):
+        c_str: Union[bytes, str] = encoded[i] if isinstance(encoded[i], bytes) else ""
+
+        # If it's a hex string (2 or 4 chars), decode to single char and process the byte immediately
+        if len(c_str) == 2 or len(c_str) == 4:
+            decoded.append(_is_valid_hex_char.decode())
+        
+        elif c_str == 'X':
+def _decrypt_message(encoded: bytes) -> Optional[str]:
+    """Decrypt a message using the specified algorithm."""
+    if not isinstance(encoded, bytes):
+        raise TypeError("Encoded data must be a bytes object")
+
+    decoded = []
+    
+    # Handle hex strings (length 2 or 4 chars), but mostly single char per letter byte except 'X' which is usually longer sequences in this context.
+    for i in range(len(encoded)):
+        c_str: Union[bytes, str] = encoded[i] if isinstance(encoded[i], bytes) else ""
+
+        # If it's a hex string (2 or 4 chars), decode to single char and process the byte immediately
+        if len(c_str) == 2 or len(c_str) == 4:
+            decoded.append(_is_valid_hex_char.decode())
+        
+        elif c_str == 'X':
+
+    # Handle numeric hex digits (e.g., "3A") as single char per byte except X which is longer
+    for i in range(len(encoded)):
+        if len(c_str) > 1:
+            decoded.append(_is_valid_hex_char.decode())
+def _decrypt_message(encoded: bytes) -> Optional[str]:
+    """Decrypt a message using the specified algorithm."""
+    if not isinstance(encoded, bytes):
+        raise TypeError("Encoded data must be a bytes object")
+
+    decoded = []
+    
+    # Handle hex strings (length 2 or 4 chars), but mostly single char per letter byte except 'X' which is usually longer sequences in this context.
+    for i in range(len(encoded)):
+        c_str: Union[bytes, str] = encoded[i] if isinstance(encoded[i], bytes) else ""
+
+        # If it's a hex string (2 or 4 chars), decode to single char and process the byte immediately
+        if len(c_str) == 2 or len(c_str) == 4:
+            decoded.append(_is_valid_hex_char.decode())
+        
+        elif c_str == 'X':
+
+    # Handle numeric hex digits (e.g., "3A") as single char per byte except X which is longer
+    for i in range(len(encoded)):
+        if len(c_str) > 1:
+            decoded.append(_is_valid_hex_char.decode())
