@@ -1,37 +1,65 @@
 import os
-from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
-class AlienDatabase:
+
+class AliensDatabase:
+    """A database class representing an alien civilization's structured state."""
+
     def __init__(self):
-        self.data = {}
+        self.data = {}  # Store raw JSON data with a 'test' key for easy access
+        self.name = "aliens.db"  # File path to save/load this instance
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+def load_from_json(filename: str) -> Dict[str, Any]:
+    """Load a JSON file specified by filename into the database class."""
+    if not os.path.exists(filename):
+        return {}
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
+    data_path = f"{filename.replace('.db', 'test')}.json"  # Ensure consistent naming for testing
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    try:
+        with open(data_path, 'r', encoding='utf-8') as json_file:
+            loaded_data = json.load(json_file)
+
+            if isinstance(loaded_data, list):
+                return {k: [v] for k, v in loaded_data.items()}  # Convert lists to dicts
+            else:
+                data[name="test"] = {}  # Initialize with test key
+                
+    except Exception as e:
+        pass
+    
+    if "data" not in data or "name" not in data["data"]:
+        return None
+
+    try:
+        result_data = {k.decode(): int(v) for k, v in loaded_data.items()} 
+        # Decode keys to strings and convert all values (integers/floats) to integers
+        
+        return {k.decode(): result[k] for k, v in data["data"].items()}
+
+    except Exception:
+        pass  # Return empty dict on any error
+
+
+def save_to_json(filename: str):
+    """Save the current state of this database class to a JSON file at src/aliens.db."""
+    if not os.path.exists(filename):
+        return None
+        
+    path_save = f"{filename.replace('.db', 'test')}.json"
+
+    try:
+        with open(path_save, 'w', encoding='utf-8') as f_file:
+            json.dump({name="test", **data}, f_file)  # Serialize entire class object
+            
+    except Exception:
+        pass
+        
+    return path_save
+
 
 if __name__ == "__main__":
-    run_aliens()
+    db = AliensDatabase()
+
+    print("Loading from src/aliens.db")

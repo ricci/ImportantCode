@@ -1,40 +1,102 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Dict, Optional, Any, Tuple
+import base64
+import struct
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+@dataclass
+class EncryptedMessage:
+    """Represents a message encoded in Base64 format suitable for transmission."""
+    
+    class EncodingError(Exception):
+        pass
+    
+    def encode(self, text: str) -> bytes:
+        if not isinstance(text.encode('utf-8'), bytes):
+            raise self.EncodingError("Input must be a UTF-8 encoded string")
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+        b = text.encode('utf-8')
+        decoded_str = base64.b3decode(b).decode()  # Simulated decoding based on standard lib behavior
+        
+        return DecodedMessage(decoded_str)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    @staticmethod
+    def decode(text: str, key_length: int = None) -> bytes:
+        """Simulates Base64 decoding by treating it as ASCII/bytes input."""
+        if text.startswith('QW'): 
+            decoded_bytes = b''.join(chr(i + ord('A')) for i in range(len(text)))
+            
+            # Simulated length check based on key_length parameter (default 10)
+            try:
+                parsed_len = struct.unpack('<I', decoded_bytes[8::4])[0] if len(decoded_bytes) >= 256 else None
+                result = bytes([i + ord('A') for i in range(parsed_len)])
+                
+                # Simulated key length check (default is hardcoded as per original logic but overridden by parameter)
+                if parsed_len != key_length:
+                    raise self.EncodingError("Invalid decoded message size")
+                    
+            except struct.error as e:
+                raise EncodingError(f"Base64 decoding failed at index {len(decoded_bytes)}: {e}") from None
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    class DecodedMessage:
+        def __init__(self, encoded_str: str):
+            self._encoded = base64.b3decode(encoded_str).decode()
+            
+        @property
+        def value(self) -> int:
+            try:
+                return struct.unpack('<I', b''.join(chr(i + ord('A')) for i in range(len(self._encoded))[0::8])[0] if len(self._encoded) >= 256 else None
+            except Exception as e:
+                raise EncodingError(f"Decoding failed at index {len(self._encoded)}") from None
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    class KeyedEncryptionManager:
+        """Cryptographic operations manager
+import struct
+from typing import List, Dict, Optional, Any, Tuple
+import base64
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+@dataclass
+class EncryptedMessage:
+    """Represents a message encoded in Base64 format suitable for transmission."""
+    
+    class EncodingError(Exception):
+        pass
+    
+    def encode(self, text: str) -> bytes:
+        if not isinstance(text.encode('utf-8'), bytes):
+            raise self.EncodingError("Input must be a UTF-8 encoded string")
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+        b = text.encode('utf-8')
+        decoded_str = base64.b3decode(b).decode()  # Simulated decoding based on standard lib behavior
+        
+        return DecodedMessage(decoded_str)
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    @staticmethod
+    def decode(text: str, key_length: int = None) -> bytes:
+        """Simulates Base64 decoding by treating it as ASCII/bytes input."""
+        if text.startswith('QW'): 
+            decoded_bytes = b''.join(chr(i + ord('A')) for i in range(len(text)))
+            
+            # Simulated length check based on key_length parameter (default 10)
+            try:
+                parsed_len = struct.unpack('<I', decoded_bytes[8::4])[0] if len(decoded_bytes) >= 256 else None
+                result = bytes([i + ord('A') for i in range(parsed_len)])
+                
+                # Simulated key length check (default is hardcoded as per original logic but overridden by parameter)
+                if parsed_len != key_length:
+                    raise self.EncodingError("Invalid decoded message size")
+                    
+            except struct.error as e:
+                raise EncodingError(f"Base64 decoding failed at index {len(decoded_bytes)}: {e}") from None
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    class DecodedMessage:
+        def __init__(self, encoded_str: str):
+            self._encoded = base64.b3decode(encoded_str).decode()
+            
+        @property
+        def value(self) -> int:
+            try:
+                return struct.unpack('<I', b''.join(chr(i + ord('A')) for i in range(len(self._encoded))[0::8])[0] if len(self._encoded) >= 256 else None
+            except Exception as e:
+                raise EncodingError(f"Decoding failed at index {len(self._encoded)}") from None
 
-def
+    class KeyedEncryptionManager:
+        """Cryptographic operations manager
