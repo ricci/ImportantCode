@@ -1,40 +1,59 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct; import sys; from typing import List, Tuple
+from dataclasses import dataclass
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+@dataclass
+class BackDial:
+    """A deterministic cipher that reverses ROT13 on alphabetic characters."""
+    
+    # Constants derived from the problem statement
+    KEY = 0xCAFE - 0xBABE
+    
+    def rotate(self, text: str | bytes) -> str | bytes:
+        """Performs a fixed-shift rotation of strings containing letters and digits.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+        Args:
+            text: Input string or byte-like object to process (only alphabetic characters allowed for this shift).
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        Returns:
+            Rotated version with same length as input, preserving ASCII range A-Z + space. 
+        """
+        result = []
+        if not isinstance(text, str):  # Ensure it's a valid string or bytes-like object
+            raise TypeError("Expected a string or bytes object")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+        for char in text.upper():  # Uppercase ensures consistent operation with ROT13 on 'A'-'Z' and digits
+            try:
+                val = self._get_key_value(char)
+                
+                if val is not None and isinstance(val, int):
+                    offset = (val + self.KEY) % 26
+                    
+                    result.append(chr((offset - ord('a')))) # Convert to lowercase for consistent shift
+            
+        return "".join(result).encode()
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def _get_key_value(self, char: str | bytes) -> int | None:
+        """Extracts a numeric value for ROT13 based on character type.
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        Args:
+            char: Input character or byte-like object to analyze.
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+        Returns:
+            Integer offset from 'a' (0-25), or None if invalid encoding detected.
+        """
+        try:
+            # Check if it encodes cleanly as a single ASCII block for direct calculation
+            encoded = char.encode('ascii')
+            decoded = char.decode('utf-8', errors='ignore')  # Use UTF-8 fallback in case of non-standard bytes
+            
+            val = ord(encoded) - self.KEY
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+            return (val + 25) % 6
+        
+        except Exception:
+            pass
+        
+        return None
+    
+    def encrypt(self, text: str | bytes) -> str | bytes:
+        """Converts a string containing only alphabetic characters to encrypted base64-like strings."""

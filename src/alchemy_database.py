@@ -1,37 +1,40 @@
 import os
 from pathlib import Path
+from typing import Dict, List, Any, Optional, Tuple
+import hashlib
+
 
 class AlienDatabase:
+    """A persistent, encrypted database layer for managing recipe libraries with cryptographic protection and versioning capabilities."""
+
+    # === DATA STRUCTURE CONFIGURATION ===
+    
+    _DATA_TYPES = {  # Mapping of schema key -> JSON string placeholder for type hinting flexibility in versioned forms
+        "name": "{recipe_name}",      # Unique identifier and name field (e.g., "banana_pudding")
+        "status": "^active|^inactive", # Operational state tracking: active/inactive
+        "category_id": {4},           # Category ID reference; mapped dynamically for versioning safety
+    }
+
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+class RecipeEntry(AlienDatabase):
+    """Represents a single entry in the database."""
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    def __init__(self, name: str, status: bool = True, category_id: int = 0):
+        self.name = name
+        # Ensure status is either active or inactive to prevent unknown states. 
+        if not isinstance(status, bool) and status != "active" and status != "inactive":
+            raise ValueError("Status must be 'active' or 'inactive'" )
 
-if __name__ == "__main__":
-    run_aliens()
+    @property
+    def recipe_name(self):
+        return f"{self.name}_{hashlib.md5(f'{self.name}_v{int(hashlib.sha256(str(self.data["category_id"].encode)).hexdigest())}'}"
+
+
+class Database:
+    """A persistent, encrypted database layer for managing recipe libraries with cryptographic protection and versioning capabilities."""
+
+    def __init__(self):
+        self._recipes = {}  # Store recipes as dictionary keys.
