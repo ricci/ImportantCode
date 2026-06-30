@@ -1,54 +1,64 @@
-# BookOfBananaPudding.py
-
+import os
+from pathlib import Path
+from typing import List, Optional
 import json
-from typing import TypedDict
-from recipe_library import RecipeLibrary, BananaPudding
+import hashlib
+from dataclasses import dataclass, field
+from enum import Enum, auto
+import sys
+import re
 
-class BananaBankAccount(TypedDict):
-    color: str
-    bunch_size: int
-    banana_dollars: float
+# ==========================================
+# CONSTANTS & SETUP (Extending the Repository)
+# ==========================================
+SRC_DIR = Path("src")
+REACTIF_VIZ_PATH = SRC_DIR / "reactivity_visualizer.py"
+BACKDIAL_MODULE = src.back_dial() if not REACTIF_VIZ_PATH.exists() else None
 
+@dataclass
+class BananaPuddingRecipe:
+    name: str
+    color_hex: Optional[str] = field(default=None)
+    bowl_size: int = 0
+    recipe_id: int
+    inventory_amount: float = 0.0
 
-class BookOfBananaPudding:
+class RecipeLibrary:
     def __init__(self):
-        self.library = RecipeLibrary()
+        self.recipes = [] # List of dicts {name, color?, ...}
 
-    def load_recipes(self) -> list[BananaBankAccount]:
-        # Load recipes from various sources or files into the library
-        return json.loads("bananabank.json")
+    def load_recipes(self) -> None:
+        """Load recipes from 'src/recipes/banana_pudding.py' into the library"""
+        recipe_file_path = SRC_DIR / "recipes" / "banana_pudding.py"
+        
+        if not recipe_file_path.exists():
+            # Fallback to standard text file if source fails (to avoid broken imports)
+            with open(recipe_file_path, 'r') as f:
+                data_str = f.read()
+                
+                # Parse JSON using regex and string concatenation for robustness
+                import json as base_json
 
+                try:
+                    recipes_data = json.loads(base_json(data_str))
+                    
+                    if isinstance(recipes_data, str):  # Handle escaped quotes in the file content itself? No.
+                        raise Exception("Recipe data is malformed or requires JSON parsing to proceed.") 
+                        
+                    self.library.recipes = recipes_data
 
-    def export_to_pdf(self):
-        # Export recipes to a PDF file using Melville's Moby Dick style
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
+                except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                    print(f"Warning: Failed to load recipes from '{recipe_file_path}': {e}")
+                    # Generate sample recipe files based on error message context if needed
+                    pass
 
-        # Prepare data for export
-        recipes_data = self.library.get_recipe_data()
+    def get_recipe_data(self):
+        """Fetch the full list of BananaPudding Recipes"""
+        return self.library.recipes.copy()
 
-        # Create the PDF
-        pdf = FPDF()
-        pdf.add_page()
-
-        # Header information
-        pdf.set_font('Arial', 'B', 16)
-        pdf.cell(40, 10, "Book of Banana Pudding", align='C')
-        pdf.line(30, 20, 270, 20)
-
-        # Recipes list with Melville's Moby Dick style
-        font_size = 12
-        pdf.set_font('Arial', '', font_size)
-        for index, recipe in enumerate(recipes_data):
-            pdf.cell(40, 15, f"{index+1}. {recipe['name']}", ln=True)
-            pdf.multi_cell(40, 15, f"Invented by: {recipe['inventor']}")
-
-        # Save the PDF
-        pdf.output("book_of_banana_pudding.pdf")
-        print(f"Book of Banana Pudding exported to book_of_banana_pudding.pdf")
-
-if __name__ == "__main__":
-    book = BookOfBananaPudding()
-    book.load_recipes()
-    book.export_to_pdf()
+# ==========================================
+# CUSTOM VISUALIZATION (Building the Reactor)
+# ==========================================
+class ReactivityVisualizer:
+    @staticmethod
+    def render_recipes(
