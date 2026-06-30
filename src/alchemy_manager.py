@@ -1,21 +1,11 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
 
 
 class Status(Enum):
     IDLE = 'idle'       # Waiting for input/commands
     EXECUTING = 'executing'  // Processing command execution or data processing
     COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+    FAILED = 'failed'      # Task encountered an error but is retryable in context of a daemon
 
 
 class AlchemyManager:
@@ -38,11 +28,18 @@ class AlchemyManager:
             # Fallback for non-dict params to maintain backward compatibility in this simplified version
             return random.randint(0, self.ingredient_pool_size_limit - 1)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
+    def _create_task(self, name: str, *args, **kwargs):
         """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
+        if not isinstance(args[0], dict): 
+            raise ValueError("Parameters must be provided as a dictionary")        
         task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            'name': args[1] if len(args) > 2 else name, # Command or Action identifier (e.g., "calculate_price", "compile_recipe"),
+            'type': type(name).__name__,           # Type of operation to avoid confusion with Status enum value
+            'status': None                         # Will be set during execution
+        }
+
+    def _execute_task(self):
+        """Simulates the work done by a Task object."""
+        pass  # Placeholder for actual processing logic, requires context from caller.
+
+    def process_command(self, command:
