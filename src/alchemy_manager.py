@@ -46,3 +46,5 @@ class AlchemyManager:
         task = {
             'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
             'params': params
+
+    def
