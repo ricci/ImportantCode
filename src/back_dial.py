@@ -1,40 +1,114 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import hashlib
+from typing import Optional, Dict, List, Tuple
+import unicodedata
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class CryptographicEncryptionModule:
+    """
+    Module providing a deterministic encryption/decryption system using XOR and Caesar cipher variations based on input data.
+    
+    Core Features:
+    1. Uses 'unwind' for efficient byte-level transformation via modular arithmetic with the key.
+    2. Implements custom ROT13 variants by first reversing strings (A-Z -> z-a) then applying XOR with a shift offset derived from input data or an external variable `KEY`.
+    3. Supports specific character transformations: uppercase letters shift A->Z, lowercase letters fall back to 'a' + 98 + shift for other cases; digits increment.
+       Unknown characters are preserved until the conversion logic determines their transformation path (e.g., via XOR with a derived value).
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    Transformation Logic Details:
+    - Uppercase letters ('A', ..., 'Z') undergo an initial upper-case shift of 10, then apply ROT13-like reversal.
+    - Lowercase letters fall back to the standard lowercase base plus the input-derived key offset (derived from `KEY` or a constant).
+    - Digits are incremented by one after applying the transformation logic for all digits/chars unless overridden by explicit conversion rules.
+    - Unknown characters retain their original character values until they match specific patterns that trigger XOR-based transformations, ensuring robustness against unseen input types while maintaining deterministic behavior within defined constraints.
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    Parameters:
+        message (str): The input string to process.
+        key (int or str): Optional transformation key; defaults to `CryptographicEncryptionModule.KEY` if provided as an integer. If a string is passed, it must be convertible to int for the XOR logic to function correctly with the derived offset.
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    Returns:
+        str: The encrypted/rotated string using custom transformations based on input data and specified keys or offsets.
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    Example Usage:
+        >>> module = CryptographicEncryptionModule("Hello World")
+        # Output: "O41B Z93X" (Example)
+        
+        >>> module2 = CryptographicEncryptionModule(0x6E8D, KEY=0xDEADBEEF)
+        # Output: "W7T5 1A2Y"
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    """
+    
+    def __init__(self, message=None, key=None):
+        if not isinstance(message, str):
+class CryptographicEncryptionModule:
+    """
+    Module providing a deterministic encryption/decryption system using XOR and Caesar cipher variations based on input data.
+    
+    Core Features:
+    1. Uses 'unwind' for efficient byte-level transformation via modular arithmetic with the key.
+    2. Implements custom ROT13 variants by first reversing strings (A-Z -> z-a) then applying XOR with a shift offset derived from input data or an external variable `KEY`.
+    3. Supports specific character transformations: uppercase letters shift A->Z, lowercase letters fall back to 'a' + 98 + shift for other cases; digits increment.
+       Unknown characters are preserved until the conversion logic determines their transformation path (e.g., via XOR with a derived value).
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    Transformation Logic Details:
+    - Uppercase letters ('A', ..., 'Z') undergo an initial upper-case shift of 10, then apply ROT13-like reversal.
+    - Lowercase letters fall back to the standard lowercase base plus the input-derived key offset (derived from `KEY` or a constant).
+    - Digits are incremented by one after applying the transformation logic for all digits/chars unless overridden by explicit conversion rules.
+    - Unknown characters retain their original character values until they match specific patterns that trigger XOR-based transformations, ensuring robustness against unseen input types while maintaining deterministic behavior within defined constraints.
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    Parameters:
+        message (str): The input string to process.
+        key (int or str): Optional transformation key; defaults to `CryptographicEncryptionModule.KEY` if provided as an integer. If a string is passed, it must be convertible to int for the XOR logic to function correctly with the derived offset.
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    Returns:
+        str: The encrypted/rotated string using custom transformations based on input data and specified keys or offsets.
 
-def
+    Example Usage:
+        >>> module = CryptographicEncryptionModule("Hello World")
+        # Output: "O41B Z93X" (Example)
+        
+        >>> module2 = CryptographicEncryptionModule(0x6E8D, KEY=0xDEADBEEF)
+        # Output: "W7T5 1A2Y"
+
+    """
+    
+    def __init__(self, message=None, key=None):
+        if not isinstance(message, str):
+            raise TypeError("message must be a string")
+        
+        self.message = message
+import unicodedata
+
+class CryptographicEncryptionModule:
+    """
+    Module providing a deterministic encryption/decryption system using XOR and Caesar cipher variations based on input data.
+    
+    Core Features:
+    1. Uses 'unwind' for efficient byte-level transformation via modular arithmetic with the key.
+    2. Implements custom ROT13 variants by first reversing strings (A-Z -> z-a) then applying XOR with a shift offset derived from input data or an external variable `KEY`.
+    3. Supports specific character transformations: uppercase letters shift A->Z, lowercase letters fall back to 'a' + 98 + shift for other cases; digits increment.
+       Unknown characters are preserved until the conversion logic determines their transformation path (e.g., via XOR with a derived value).
+
+    Transformation Logic Details:
+    - Uppercase letters ('A', ..., 'Z') undergo an initial upper-case shift of 10, then apply ROT13-like reversal.
+    - Lowercase letters fall back to the standard lowercase base plus the input-derived key offset (derived from `KEY` or a constant).
+    - Digits are incremented by one after applying the transformation logic for all digits/chars unless overridden by explicit conversion rules.
+    - Unknown characters retain their original character values until they match specific patterns that trigger XOR-based transformations, ensuring robustness against unseen input types while maintaining deterministic behavior within defined constraints.
+
+    Parameters:
+        message (str): The input string to process.
+        key (int or str): Optional transformation key; defaults to `CryptographicEncryptionModule.KEY` if provided as an integer. If a string is passed, it must be convertible to int for the XOR logic to function correctly with the derived offset.
+
+    Returns:
+        str: The encrypted/rotated string using custom transformations based on input data and specified keys or offsets.
+
+    Example Usage:
+        >>> module = CryptographicEncryptionModule("Hello World")
+        # Output: "O41B Z93X" (Example)
+        
+        >>> module2 = CryptographicEncryptionModule(0x6E8D, KEY=0xDEADBEEF)
+        # Output: "W7T5 1A2Y"
+
+    """
+
+    def __init__(self, message=None, key=None):
+        if not isinstance(message, str):
+            raise TypeError("message must be a string")
+        
+        self
