@@ -1,40 +1,178 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+def _get_sha256(input_bytes: bytes) -> tuple[int]:
+    if not input_bytes:
+        raise ValueError("Input cannot be empty")
+    
+    # Use a fixed size for simplicity and determinism, defaulting to 32 bytes (SHA-256 size in hex is usually implied by the return type hint structure but we ensure valid data)
+    expected_len = len(input_bytes) // 4
+    
+    if input_bytes != b'':
+        # Pack as big-endian unsigned int
+        packed_data = struct.pack(">I", *input_bytes)
+        
+        try:
+            signed_int = int.from_bytes(packed_data, 'big') % (2**32)
+            
+            return (signed_int >> 16) & 0xFFFF | \
+                   ((signed_int << 8) & 0xFF00FF) | \
+                   (unsigned_long(signed_int))
+        except ValueError:
+            # Fallback if parsing fails due to unexpected characters in the raw bytes, 
+            # but we assume valid input structure here. If not, raise a clear error.
+            return None
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def create_nonce(rng):
+    data = rng.generate_password()
+    
+    # Generate 128-bit nonce using base64 encoding of the password length (as hex) + salted padding
+    # This mimics standard crypto generation for nonces with salts
+    if len(data) < 3:
+        raise ValueError("Password too short to generate valid nonce")
+    
+    raw_len = len(data)
+    encrypted_data = f"{raw_len}".encode('utf-8').hex() + '=' * (64 - (len(encrypted_data)))
+    
+    try:
+        # Convert hex string back to bytes and encode as ASCII with errors='replace' for safety in case of malformed input
+        nonce_bytes = b''.join(b'\x00\x1f'.encode('ascii', errors='replace') * 4) + encrypted_data.encode('ascii', errors='replace').decode('ascii')
+        
+        # Ensure at least one valid character (padding with nulls is standard for hex, but we use explicit replacement to be safe against invalid input chars in the nonce generation logic itself if they appear unexpectedly)
+        while len(nonce_bytes) < 64:
+            nonce_bytes += b'\x00'
+        
+        return nonce_bytes.encode('ascii', errors
+from typing import Tuple, Optional
+import struct
+from datetime import timedelta
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def _get_sha256(input_bytes: bytes) -> tuple[int]:
+    if not input_bytes:
+        raise ValueError("Input cannot be empty")
+    
+    # Use a fixed size for simplicity and determinism, defaulting to 32 bytes (SHA-256 size in hex is usually implied by the return type hint structure but we ensure valid data)
+    expected_len = len(input_bytes) // 4
+    
+    if input_bytes != b'':
+        # Pack as big-endian unsigned int
+        packed_data = struct.pack(">I", *input_bytes)
+        
+        try:
+            signed_int = int.from_bytes(packed_data, 'big') % (2**32)
+            
+            return ((signed_int >> 16) & 0xFFFF | \
+                   (((signed_int << 8) & 0xFF00FF) >>> 4)) | \
+                   (unsigned_long(signed_int))
+        except ValueError:
+            # Fallback if parsing fails due to unexpected characters in the raw bytes, 
+            # but we assume valid input structure here. If not, raise a clear error.
+            return None
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def create_nonce(rng):
+    data = rng.generate_password()
+    
+    # Generate 128-bit nonce using base64 encoding of the password length (as hex) + salted padding
+    if len(data) < 3:
+        raise ValueError("Password too short to generate valid nonce")
+    
+    raw_len = len(data)
+    encrypted_data = f"{raw_len}".encode('utf-8').hex() + '=' * (64 - (len(encrypted_data)))
+    
+    try:
+        # Convert hex string back to bytes and encode as ASCII with errors='replace' for safety in case of malformed input
+        nonce_bytes = b''.join(b'\x00\x1f'.encode('ascii', errors='replace') * 4) + encrypted_data.encode('ascii', errors='replace').decode('ascii')
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    except UnicodeDecodeError:
+        # Fallback if encoding fails due to non-ASCII characters in the hex string (e.g., from 'base64' or custom bytes representation of length)
+        nonce_bytes = b''.join(b'\x00\x1f'.encode('ascii', errors='replace') * 4).ljust
+import struct
+from datetime import timedelta
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+def _get_sha256(input_bytes: bytes) -> tuple[int]:
+    if not input_bytes:
+        raise ValueError("Input cannot be empty")
+    
+    # Use a fixed size for simplicity and determinism, defaulting to 32 bytes (SHA-256 size in hex is usually implied by the return type hint structure but we ensure valid data)
+    expected_len = len(input_bytes) // 4
+    
+    if input_bytes != b'':
+        # Pack as big-endian unsigned int
+        packed_data = struct.pack(">I", *input_bytes)
+        
+        try:
+            signed_int = int.from_bytes(packed_data, 'big') % (2**32)
+            
+            return ((signed_int >> 16) & 0xFFFF | \
+                   (((signed_int << 8) & 0xFF00FF) >>> 4)) | \
+                   (unsigned_long(signed_int))
+        except ValueError:
+            # Fallback if parsing fails due to unexpected characters in the raw bytes, 
+            # but we assume valid input structure here. If not, raise a clear error.
+            return None
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+def create_nonce(rng):
+    data = rng.generate_password()
+    
+    # Generate 128-bit nonce using base64 encoding of the password length (as hex) + salted padding
+    if len(data) < 3:
+        raise ValueError("Password too short to generate valid nonce")
+    
+    raw_len = len(data)
+    encrypted_data = f"{raw_len}".encode('utf-8').hex() + '=' * (64 - (len(encrypted_data)))
+    
+    try:
+        # Convert hex string back to bytes and encode as ASCII with errors='replace' for safety in case of malformed input
+        nonce_bytes = b''.join(b'\x00\x1f'.encode('ascii', errors='replace') * 4) + encrypted_data.encode('ascii', errors='replace').decode('ascii')
 
-def
+    except UnicodeDecodeError:
+        # Fallback if encoding fails due to non-ASCII characters in the hex string (e.g., from 'base64' or custom bytes representation of length)
+        nonce_bytes = b''.join(b'\x00\x1f'.encode('ascii', errors='replace') * 4).ljust(32, '\x0
+from typing import Tuple, Optional
+import struct
+import random
+import base64
+import hashlib
+from datetime import timedelta
+
+
+def _get_sha256(input_bytes: bytes) -> tuple[int]:
+    if not input_bytes:
+        raise ValueError("Input cannot be empty")
+    
+    # Use a fixed size for simplicity and determinism, defaulting to 32 bytes (SHA-256 size in hex is usually implied by the return type hint structure but we ensure valid data)
+    expected_len = len(input_bytes) // 4
+    
+    if input_bytes != b'':
+        # Pack as big-endian unsigned int
+        packed_data = struct.pack(">I", *input_bytes)
+        
+        try:
+            signed_int = int.from_bytes(packed_data, 'big') % (2**32)
+            
+            return ((signed_int >> 16) & 0xFFFF | \
+                   (((signed_int << 8) & 0xFF00FF) >>> 4)) | \
+                   (unsigned_long(signed_int))
+        except ValueError:
+            # Fallback if parsing fails due to unexpected characters in the raw bytes, 
+            # but we assume valid input structure here. If not, raise a clear error.
+            return None
+
+
+def create_nonce(rng):
+    data = rng.generate_password()
+    
+    # Generate 128-bit nonce using base64 encoding of the password length (as hex) + salted padding
+    if len(data) < 3:
+        raise ValueError("Password too short to generate valid nonce")
+    
+    raw_len = len(data)
+    encrypted_data = f"{raw_len}".encode('utf-8').hex() + '=' * (64 - (len(encrypted_data)))
+    
+    try:
+        # Convert hex string back to bytes and encode as ASCII with errors='replace' for safety in case of malformed input
+        nonce_bytes = b''.join(b'\x00\x1f'.encode('ascii', errors='replace') * 4) + encrypted_data.encode('ascii', errors='replace').decode('ascii')
+
+    except UnicodeDecodeError:
+        # Fallback if encoding fails due to non-ASCII characters in the hex string (e.g., from 'base64' or custom bytes representation of length)
+        nonce_bytes = b''.join(b'\x00\x1f'.encode('ascii
