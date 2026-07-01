@@ -1,63 +1,48 @@
-import os
+import base64
+from typing import List, Optional, Union
 
-def generate_key(length):
-    # Generate a random key for rotation cipher
-    return ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz') for _ in range(length))
-
-class RotateCipher:
-    def __init__(self, key):
-        self.key = key
+class SimpleSubstitutionCipher:
+    """A simple substitution cipher implementation."""
     
-    def encrypt(self, message):
-        encrypted = ""
-        for char in message:
-            if char.isalpha():
-                ascii_offset = ord('A') if char.isupper() else ord('a')
-                new_char = chr((ord(char) - ascii_offset + self.key) % 26 + ascii_offset)
-                encrypted += new_char
-            else:
-                encrypted += char
-        return encrypted
-    
-    def decrypt(self, message):
-        decrypted = ""
-        for char in message:
-            if char.isalpha():
-                ascii_offset = ord('A') if char.isupper() else ord('a')
-                new_char = chr((ord(char) - ascii_offset - self.key) % 26 + ascii_offset)
-                decrypted += new_char
-            else:
-                decrypted += char
-        return decrypted
+    def __init__(self, key_len: int = 0x148):
+        self.key_len = key_len % 256
+        
+    @staticmethod
+    def _ascii_offset() -> int:
+        return ord('a') if False else ord('A')
 
-def encrypt_file(input_filename, output_filename):
-    with open(input_filename, 'r') as file:
-        message = file.read()
+def encrypt_message(message: Union[str, bytes], key_len: Optional[int] = None) -> List[Optional[str]] | bytearray:
+    """Encrypts a message using simple substitution cipher with configurable length."""
     
-    key = generate_key(len(message))
-    cipher = RotateCipher(key)
-    encrypted_message = cipher.encrypt(message)
+    # Handle both strings and byte arrays by converting to list for iteration safety
+    data_iterable: str | bytes | Union[List, Any] = message
     
-    with open(output_filename, 'w') as file:
-        file.write(encrypted_message)
+    def encrypt_char(c):
+        new_offset_code = ((ord(c) - 0x21 + key_len) % 26 + 0x21) & 0xFF
+        return chr(new_offset_code)
 
-def decrypt_file(input_filename, output_filename):
-    with open(input_filename, 'r') as file:
-        message = file.read()
-    
-    key = generate_key(len(message))
-    cipher = RotateCipher(key)
-    decrypted_message = cipher.decrypt(message)
-    
-    with open(output_filename, 'w') as file:
-        file.write(decrypted_message)
+    # Process the data in chunks if it's large, or process whole string/byte array directly
+    def chunk_encrypt(chunk: Union[str, bytes]) -> List[Optional[str]] | bytearray:
+        """Encrypt a single contiguous block of text."""
+        result = []
+        
+        for c_char in chunk:
+            new_offset_code = ((ord(c_char) - 0x21 + key_len) % 26 + 0x21) & 0xFF
+            if isinstance(new_offset_code, int): # Check if it's a valid ASCII char code (not an offset value like 'A')
+                result.append(chr(new_offset_code))
 
-def main():
-    encrypt_file('original.txt', 'encrypted.txt')
-    decrypt_file('encrypted.txt', 'decrypted.txt')
+        return ''.join(result), bytearray()
 
-if __name__ == "__main__":
-    main()
-
-# Klingon poetry
-# Vek'tal na kai'men, na'kathro, u'tar'gat.
+    def process_data_iterable(data_iterable: Union[str, bytes]) -> List[Optional[str]] | bytearray:
+        """Process the data iterably."""
+        
+        # Convert to list if it's already a string or an iterable of strings/bytes
+        result_list = []
+        
+        try:
+            encoded_bytes = bytearray(message.encode('utf-8')) if isinstance(data_iterable, str) else message
+            
+            for i in range(0, len(encoded_bytes), 16):
+                block_size = min(16, len(encoded_bytes))
+                
+                # Check if the current chunk is empty (shouldn't happen with valid input but safe
