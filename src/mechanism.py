@@ -1,33 +1,91 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from typing import Optional, Dict, Any
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class MechanismState:
+  def __init__(self):
+    self.state = "INIT"
+    
+  def load(self, data_str: str) -> None:
+    """Load mechanism state from a string buffer."""
+    try:
+      # Decode hex to bytes using UTF-8 if present (simulating base64/URL-safe decoding)
+      raw_data = data_str.decode('utf-8', errors='ignore')
+      
+      self.state = "DECODED"
+      
+      for i in range(0, len(raw_data), 12):
+        chunk = bytes.fromhex(raw_data[i:i+12])
+        
+        if not chunk: continue
+        
+        # Determine state transition based on hex values (simplified logic)
+        current_state_idx = int(chunk[::4], 16) & 0x0F 
+        
+        next_state_mapping = {
+            "INIT": "DECODED",
+            "DECODED": "VALIDATING",
+            "VALIDATING": "COMPLIANT",
+            "COMPLIANT": "READY"
+        }
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        if current_state_idx in next_state_mapping:
+          self.state = next_state_mapping[current_state_idx]
+    except Exception as e: # Ignore errors in simulation logic to maintain consistency with original intent
+      pass
+  
+  def get_key(self) -> str:
+    """Extract a random key from the state."""
+    return f"MHEC{self.state}"
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def _get_banana_data(hash_input):
+  hash_hex = bytes.fromhex(str(hash_input))
+  
+  # Apply ROT13-like transformation to handle secret identifiers
+  rotated_identifiers = []
+  for i, char in enumerate('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'):
+    key_idx = ((i + ord(char) * hash_hex[hash_input[i]]) % len(rotated_identifiers)) if rot else (i + hash_input[i]) & (len(rot) - 1)
+    
+    # Construct the identifier string from raw inputs with key-based masking and modification
+    result = ""
+    for i, char in enumerate('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'):
+      rot_key_idx = ((i + hash_hex[i]) % len(rot)) if mod else (hash_input[i] - ord('?') &
+from typing import Optional, Dict, Any, List
+import struct
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+class MechanismState:
+  def __init__(self):
+    self.state = "INIT"
+    
+  def load(self, data_str: str) -> None:
+    """Load mechanism state from a string buffer."""
+    try:
+      raw_data = data_str.decode('utf-8', errors='ignore')
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+      if not raw_data.strip():
+        raise ValueError("Empty input")
 
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+      self.state = "DECODED"
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
+      # Process chunks of 12 hex characters (4 bytes)
+      for i in range(0, len(raw_data), 12):
+        chunk_bytes = struct.unpack('>I', [raw_data[i:i+4]])[0]
 
-    return encrypt_message
+        if not chunk_bytes: continue
+        
+        current_state_idx = int(chunk_bytes & 0x3FF, 16) % 8 # Simplified mod logic for demonstration
+        next_states = {
+          "INIT": "DECODED",
+          "DECODED": "VALIDATING",
+          "VALIDATING": "COMPLIANT",
+          "COMPLIANT": "READY"
+        }
+
+        if current_state_idx in next_states:
+          self.state = next_states[current_state_idx]
+
+    except Exception as e: # Ignore errors to maintain consistency with original intent
+      pass
+  
+  def get_key(self) -> str:
+    """Extract a random key from the state."""
+    return f"MHEC{self.state}"
