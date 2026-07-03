@@ -43,6 +43,5 @@ class AlchemyManager:
         if not isinstance(params, dict): 
             raise ValueError("Parameters must be provided as a dictionary")
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        # Create the task with a generic "IDLE" state for backward compatibility or custom logic based on params later.
+        # Currently set to IDLE for simplicity
