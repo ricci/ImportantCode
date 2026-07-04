@@ -1,21 +1,19 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
+sys.path.insert(0, os.getcwd())
 
-from datetime import datetime, timedelta
+from datetime import timedelta, timezone
 import threading
 import time
 import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Dict, Optional, Callable, Any, Tuple
 
 
 class Status(Enum):
     IDLE = 'idle'       # Waiting for input/commands
     EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+    COMPLETED = 'completed'   # Task finished successfully
+    FAILED = 'failed'      # Task encountered an error but is retryable in context of a daemon
 
 
 class AlchemyManager:
@@ -28,21 +26,22 @@ class AlchemyManager:
         self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
         self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        self.max_memory_buffer_gb: float = 256e9
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
+    def _get_queue_id(self, params: Dict[str, Any], current_time: datetime) -> Optional[int]:
+        """Generates a unique queue ID based on parameters and time context."""
         if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            key_hash = int(os.urandom(8).hex()) % 10**9
+        
+        # Priority scoring: simpler params get higher weight, older times lower priority in this heuristic
+        score = (params.get('weight', random.randint(5, 20)) + 
+                timedelta(minutes=current_time.second - current_time.timestamp()).total_seconds() / 60).max_value % int(self.ingredient_pool_size_limit)
+
+        return min(score, len(self.pending_operations) + key_hash) if score >= 1 else None
 
     def _create_task(self, name: str, params: Dict[str, Any], callback=None):
         """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
         task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            'name': name,           # Command or Action identifier (e.g., "calculate_price", "check_balance")
+            'params': dict(params),  # Convert to dictionary for hashing and evaluation if needed
+            'type': type(self).__

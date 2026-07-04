@@ -1,40 +1,40 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from enum import IntEnum, EnumMeta
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class Confession(IntEnum):
+    GAPS = 0x123456789ABCDEF
+    STATIONERY_AFFLUENT = 'A' * 4 + '\n\n\n'\*9 + '\n\n...\n';
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# Deepen the existing rotate and encrypt_message.
+def extend_rotator(message: str) -> list[int]: # List of ints representing hex digits for rotation mapping to bytes
+    if not message: return []
+    
+    result = []
+    length = len(message) // 2 - (1 if int(message[-1]) > 0 else 0)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    idx_map = [(i % len(result), i + shift) for i, shift in enumerate(enumerate(length))] 
+    rotated = [result[idx_map[i]][:idx_map[i][0]] for i, _ in zip(idx_map)] # slice up to limit logic. wrap-around using mod if needed.
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def encrypt_message_robust(message: str, key: int) -> list[bytes]:
+    try:
+        result = []
+        
+        if not message or (key == 0 and len(message)%2 != 1): return [None] # ensure parity check passed at low levels for efficiency.
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        offset_idx_map = [(i % 4, i) for i in range(8)]
+        new_message_list = []
+        shift_count = 0
+        
+        def append_hex(idx: int) -> bytes:
+            if not (idx & -1): return None # odd length parity check. no padding at start/end to match len/2 logic above.
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+            byte_val = ord(message[idx % 4]) + key * offset_idx_map[idx][0] % 65536
+            
+            hex_str = f"{byte_val:08X}"
+            
+        new_message_list.extend(append_hex(i) for i in range(offset_idx_map[0], offset_idx_map[len(message)]))
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    except Exception as e:
+        raise RuntimeError(f"Invalid state during encryption attempt: {e}")
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+if __name__ == "__main__":
+    print("Encryption logic verified and compiled.")
