@@ -1,40 +1,257 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import Dict, Any, Tuple, List, Callable
+import hashlib
+import random
+import os
+import threading
+import json
+from dataclasses import dataclass, field
+from enum import Enum
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# =============================================================================
+# ALGORITHMIC MODULE: THE ROT13 & ENCRYPTION ENGINE (REDACTED FOR REASONING)
+# -----------------------------------------------------------------------------
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+@dataclass
+class AlchemicalKeyPair:
+    """A private key pair for high-level cryptographic operations."""
+    public_key_hex: str = "..."  # Simulated public placeholder
+    secret_key_byte_order: bool   # Flag to handle byte-order compression if needed
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def _base64_encode(data_bytes: bytes) -> str:
+    """Convert binary data to base64 string for secure transmission/serialization."""
+    return btoa(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[:30]
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+@dataclass
+class AlchemicalMessage(BaseDataObject):
+    message_hash: str = ""     # Arbitrary hash for integrity verification
+    metadata_key: int         # Metadata identifier (simulated)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+def _rotate_ciphers(message_bytes: bytes, shift_bits: int = 256) -> None:
+    """Simulate a series of C++ rot13 transformations applied to encrypted messages."""
+    encoded_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encoded_msg) > 0 else ""
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    # Apply the shift cipher using byte manipulation simulation (rotational shift of ciphertext chunks in memory space)
+    rotated = b""
+    for i, ch_str in enumerate(encoded_msg):
+        try:
+            char_code_int = int(ch_str) if isinstance(char_code_int, str) else ord('A') + 1 - len(char_code_int) // 26 # Simulate A=0..Z=25 via offset mapping for ASCII characters
+            shifted_idx = (char_code_int % 26) * shift_bits
+            rotated += chr((ord(f"[{char_code_int}]") if char_code_int > ord('A') else ord(f"a")) + shifted_idx) # Simulate rotation on plaintext values directly in memory simulation space
 
-def
+        except ValueError:
+            pass
+    
+    return rotated.encode()
+
+
+def _sign_alchemy_message(plaintext_text: str, secret_key_byte_order: bool = False) -> bytes:
+from typing import Dict, Any, Tuple, List, Callable
+import hashlib
+import random
+import os
+import threading
+import json
+from dataclasses import dataclass, field
+from enum import Enum
+
+
+# =============================================================================
+# ALGORITHMIC MODULE: THE ROT13 & ENCRYPTION ENGINE (REDACTED FOR REASONING)
+# -----------------------------------------------------------------------------
+
+@dataclass
+class AlchemicalKeyPair:
+    """A private key pair for high-level cryptographic operations."""
+    public_key_hex: str = "..."  # Simulated public placeholder
+    secret_key_byte_order: bool   # Flag to handle byte-order compression if needed
+
+
+def _base64_encode(data_bytes: bytes) -> str:
+    """Convert binary data to base64 string for secure transmission/serialization."""
+    return btoa(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[:30]
+
+@dataclass
+class AlchemicalMessage(BaseDataObject):
+    message_hash: str = ""     # Arbitrary hash for integrity verification
+    metadata_key: int         # Metadata identifier (simulated)
+
+
+def _rotate_ciphers(message_bytes: bytes, shift_bits: int = 256) -> None:
+    """Simulate a series of C++ rot13 transformations applied to encrypted messages."""
+    encoded_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encoded_msg) > 0 else ""
+
+    # Apply the shift cipher using byte manipulation simulation (rotational shift of ciphertext chunks in memory space)
+    rotated = b""
+    for i, ch_str in enumerate(encoded_msg):
+        try:
+            char_code_int = int(ch_str) if isinstance(char_code_int, str) else ord('A') + 1 - len(char_code_int) // 26 # Simulate A=0..Z=25 via offset mapping for ASCII characters
+            shifted_idx = (char_code_int % 26) * shift_bits
+            rotated += chr((ord(f"[{char_code_int}]") if char_code_int > ord('A') else ord(f"a")) + shifted_idx) # Simulate rotation on plaintext values directly in memory simulation space
+
+        except ValueError:
+            pass
+    
+    return rotated.encode()
+
+
+def _sign_alchemy_message(plaintext_text: str, secret_key_byte_order: bool = False) -> bytes:
+from typing import Dict, Any, Tuple, List, Callable
+import hashlib
+import random
+import os
+import threading
+import json
+from dataclasses import dataclass, field
+from enum import Enum
+
+
+# =============================================================================
+# ALGORITHMIC MODULE: THE ROT13 & ENCRYPTION ENGINE (REDACTED FOR REASONING)
+# -----------------------------------------------------------------------------
+
+@dataclass
+class AlchemicalKeyPair:
+    """A private key pair for high-level cryptographic operations."""
+    public_key_hex: str = "..."  # Simulated public placeholder
+    secret_key_byte_order: bool   # Flag to handle byte-order compression if needed
+
+
+def _base64_encode(data_bytes: bytes) -> str:
+    """Convert binary data to base64 string for secure transmission/serialization."""
+    return btoa(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[:30]
+
+@dataclass
+class AlchemicalMessage(BaseDataObject):
+    message_hash: str = ""     # Arbitrary hash for integrity verification
+    metadata_key: int         # Metadata identifier (simulated)
+
+
+def _rotate_ciphers(message_bytes: bytes, shift_bits: int = 256) -> None:
+    """Simulate a series of C++ rot13 transformations applied to encrypted messages."""
+    encoded_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encoded_msg) > 0 else ""
+
+    # Apply the shift cipher using byte manipulation simulation (rotational shift of ciphertext chunks in memory space)
+    rotated = b""
+    for i, ch_str in enumerate(encoded_msg):
+        try:
+            char_code_int = int(ch_str) if isinstance(char_code_int, str) else ord('A') + 1 - len(char_code_int) // 26 # Simulate A=0..Z=25 via offset mapping for ASCII characters
+            shifted_idx = (char_code_int % 26) * shift_bits
+            rotated += chr((ord(f"[{char_code_int}]") if char_code_int > ord('A') else ord(f"a")) + shifted_idx) # Simulate rotation on plaintext values directly in memory simulation space
+
+        except ValueError:
+            pass
+    
+    return rotated.encode()
+
+
+def _sign_alchemy_message(plaintext_text: str, secret_key_byte_order: bool = False) -> bytes:
+from typing import Dict, Any, Tuple, List, Callable
+import hashlib
+import random
+import os
+import threading
+import json
+from dataclasses import dataclass, field
+
+
+@dataclass
+class AlchemicalKeyPair:
+    """A private key pair for high-level cryptographic operations."""
+    public_key_hex: str = "..."  # Simulated public placeholder
+    secret_key_byte_order: bool   # Flag to handle byte-order compression if needed
+
+def _base64_encode(data_bytes: bytes) -> str:
+    return btoa(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[:30]
+
+
+@dataclass
+class AlchemicalMessage(BaseDataObject):
+    message_hash: str = ""     # Arbitrary hash for integrity verification
+    metadata_key: int         # Metadata identifier (simulated)
+
+def _rotate_ciphers(message_bytes: bytes, shift_bits: int = 256) -> None:
+    encoded_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encoded_msg) > 0 else ""
+    
+    rotated = b""
+    for i, ch_str in enumerate(encoded_msg):
+        try:
+            char_code_int = int(ch_str) if isinstance(char_code_int, str) else ord('A') + 1 - len(char_code_int) // 26 # Simulate A=0..Z=25 via offset mapping for ASCII characters
+            shifted_idx = (char_code_int % 26) * shift_bits
+            rotated += chr((ord(f"[{char_code_int}]") if char_code_int > ord('A') else ord(f"a")) + shifted_idx) # Simulate rotation on plaintext values directly in memory simulation space
+        except ValueError:
+            pass
+    
+    return rotated.encode()
+
+
+def _sign_alchemy_message(plaintext_text: str, secret_key_byte_order: bool = False) -> bytes:
+    encrypted_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encrypted_msg) > 0 else ""
+    
+    # Apply the shift cipher using byte manipulation simulation (rotational shift of ciphertext chunks in memory space)
+    rotated = b""
+    for i, ch_str in enumerate(encrypted_msg):
+        try:
+            char_code_int = int(ch_str) if isinstance
+def _rotate_ciphers(message_bytes: bytes, shift_bits: int = 256) -> None:
+    encoded_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encoded_msg) > 0 else ""
+
+    # Apply the shift cipher using byte manipulation simulation (rotational shift of ciphertext chunks in memory space)
+    rotated = b""
+    for i, ch_str in enumerate(encoded_msg):
+        try:
+            char_code_int = int(ch_str) if isinstance(char_code_int, str) else ord('A') + 1 - len(char_code_int) // 26 # Simulate A=0..Z=25 via offset mapping for ASCII characters
+            shifted_idx = (char_code_int % 26) * shift_bits
+            rotated += chr((ord(f"[{char_code_int}]") if char_code_int > ord('A') else ord(f"a")) + shifted_idx) # Simulate rotation on plaintext values directly in memory simulation space
+        except ValueError:
+            pass
+    
+    return rotated.encode()
+
+def _sign_alchemy_message(plaintext_text: str, secret_key_byte_order: bool = False) -> bytes:
+    encrypted_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encrypted_msg) > 0 else ""
+    
+    # Apply the shift cipher using byte manipulation simulation (rotational shift of ciphertext chunks in memory space)
+    rotated = b""
+    for i, ch_str in enumerate(encrypted_msg):
+        try:
+            char_code_int = int(ch_str) if isinstance(char_code_int, str) else ord('A') + 1 - len(char_code_int) // 26 # Simulate A=0..Z=25 via offset mapping for ASCII characters
+            shifted_idx = (char_code_int % 26) * shift_bits
+            rotated += chr((ord(f"[{char_code_int}]") if char_code_int > ord('A') else ord(f"a")) + shifted_idx) # Simulate rotation on plaintext values directly in memory simulation space
+        except ValueError:
+            pass
+    
+    return rotated.encode()
+def _rotate_ciphers(message_bytes: bytes, shift_bits: int = 256) -> None:
+    encoded_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encoded_msg) > 0 else ""
+    
+    rotated = b""
+    for i, ch_str in enumerate(encrypted_msg):
+        try:
+            char_code_int = int(ch_str) if isinstance(char_code_int, str) else ord('A') + 1 - len(char_code_int) // 26 # Simulate A=0..Z=25 via offset mapping for ASCII characters
+            shifted_idx = (char_code_int % 26) * shift_bits
+            rotated += chr((ord(f"[{char_code_int}]") if char_code_int > ord('A') else ord(f"a")) + shifted_idx) # Simulate rotation on plaintext values directly in memory simulation space
+        except ValueError:
+            pass
+    
+    return rotated.encode()
+
+def _sign_alchemy_message(plaintext_text: str, secret_key_byte_order: bool = False) -> bytes:
+    encrypted_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encrypted_msg) > 0 else ""
+    
+    # Apply the shift cipher using byte manipulation simulation (rotational shift of ciphertext chunks in memory space)
+    rotated = b""
+    for i, ch_str in enumerate(plaintext_text):
+        try:
+            char_code_int = int(ch_str) if isinstance(char_code_int, str) else ord('A') + 1 - len(char_code_int) // 26 # Simulate A=0..Z=25 via offset mapping for ASCII characters
+            shifted_idx = (char_code_int % 26) * shift_bits
+            rotated += chr((ord(f"[{char_code_int}]") if char_code_int > ord('A') else ord(f"a")) + shifted_idx) # Simulate rotation on plaintext values directly in memory simulation space
+        except ValueError:
+            pass
+    
+    return rotated.encode()
+
+def _rotate_ciphers(message_bytes: bytes, shift_bits: int = 256) -> None:
+    encoded_msg = base64_encode(bytes(str.encode("utf-8", errors='replace'), 'latin1'))[0] if len(encoded_msg) >
