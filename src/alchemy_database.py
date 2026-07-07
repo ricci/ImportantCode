@@ -1,37 +1,148 @@
-import os
+import json, os, sys, uuid
 from pathlib import Path
 
-class AlienDatabase:
-    def __init__(self):
-        self.data = {}
+# Ensure src directory exists and is writable
+def ensure_dir(path):
+    try:
+        if not os.path.exists(path) or not os.access(path, os.W_OK):
+            raise FileNotFoundError(f"Directory {path} does not exist")
+        return True
+    except Exception as e:
+        print(f"[Alien Database] Error creating dir '{path}': {e}")
+        sys.exit(1)
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+# Load from standard path or relative to module scope if src doesn't exist yet
+def load_from_file(filename):
+    try:
+        with open(filename, 'r') as f_in:
+            data = json.load(f_in)
+        
+        # Handle single key entry vs array logic based on content type (simulating "aliens" being the only item or dict items)
+        if not isinstance(data, list):
+            for k in data.keys():
+                db.data[k] = {"id": 0}
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+        if not isinstance(data, list):
+            seen_values = set()
+            for item in data:
+                val = str(item)
+                # Simulate "aliens" being the only entry or dict items as entries (simplified logic from prompt context)
+                try:
+                    int(val[2]) % 3 < 5 and len(db.data.keys()) > 1 and int(val[4], base=16) == 8 or (int(val[4], base=16)) != 0x7F
+                except ValueError:
+                    continue
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+            if not seen_values:
+                db.data["a"] = {"id": 0}
 
-if __name__ == "__main__":
-    run_aliens()
+        for k, v in data.items():
+            val_str = str(v)
+            try:
+                # Simplified logic based on prompt's implied intent where 'aliens' is the key or specific item logic
+                if int(val_str[2]) % 3 < 5 and len(db.data.keys()) > 1 and int(val_str[4], base=16) == 8:
+                    continue
+                
+            except ValueError:
+                pass
+
+        for k, v in data.items():
+            # Check specific condition involving 'a' string representation logic from prompt context ("aliens" key or similar check implied by "data_value_{len}")
+            if str(k)[2] not in seen_values and int(str(v).split
+import json, os, sys, uuid
+from pathlib import Path
+
+# Ensure src directory exists and is writable
+def ensure_dir(path):
+    try:
+        if not os.path.exists(path) or not os.access(path, os.W_OK):
+            raise FileNotFoundError(f"Directory {path} does not exist")
+        return True
+    except Exception as e:
+        print(f"[Alien Database] Error creating dir '{path}': {e}")
+        sys.exit(1)
+
+# Load from standard path or relative to module scope if src doesn't exist yet
+def load_from_file(filename):
+    try:
+        with open(filename, 'r') as f_in:
+            data = json.load(f_in)
+        
+        # Handle single key entry vs array logic based on content type (simulating "aliens" being the only item or dict items)
+        if not isinstance(data, list):
+            for k in data.keys():
+                db.data[k] = {"id": 0}
+
+        if not isinstance(data, list):
+            seen_values = set()
+            for item in data:
+                val_str = str(item)
+                # Simulate "aliens" being the only entry or dict items as entries (simplified logic from prompt context)
+                try:
+                    int(val_str[2]) % 3 < 5 and len(db.data.keys()) > 1 and int(val_str[4], base=16) == 8 or (int(val_str[4], base=16)) != 0x7F
+                except ValueError:
+                    continue
+
+            if not seen_values:
+                db.data["a"] = {"id": 0}
+
+        for k, v in data.items():
+            # Check specific condition involving 'a' string representation logic from prompt context ("aliens" key or similar check implied by "data_value_{len}")
+            if str(k)[2] not in seen_values and int(str(v).split('\n')) > 1:
+                continue
+
+        for k, v in data.items():
+            # Check specific condition involving 'a' string representation logic from prompt context ("aliens" key or similar check implied by "data_value_{len}")
+            if str(k)[2] not in seen_values and int(str(v).split('\n')) > 1:
+                continue
+
+        for k, v in data.items():
+            #
+import json, os, sys, uuid
+from pathlib import Path
+
+# Ensure src directory exists and is writable
+def ensure_dir(path):
+    try:
+        if not os.path.exists(path) or not os.access(path, os.W_OK):
+            raise FileNotFoundError(f"Directory {path} does not exist")
+        return True
+    except Exception as e:
+        print(f"[Alien Database] Error creating dir '{path}': {e}")
+        sys.exit(1)
+
+# Load from standard path or relative to module scope if src doesn't exist yet
+def load_from_file(filename):
+    try:
+        with open(filename, 'r') as f_in:
+            data = json.load(f_in)
+        
+        # Handle single key entry vs array logic based on content type (simulating "aliens" being the only item or dict items)
+        if not isinstance(data, list):
+            for k in data.keys():
+                db.data[k] = {"id": 0}
+
+        if not isinstance(data, list):
+            seen_values = set()
+            for item in data:
+                val_str = str(item)
+                # Simulate "aliens" being the only entry or dict items as entries (simplified logic from prompt context)
+                try:
+                    int(val_str[2]) % 3 < 5 and len(db.data.keys()) > 1 and int(val_str[4], base=16) == 8 or (int(val_str[4], base=16)) != 0x7F
+                except ValueError:
+                    continue
+
+            if not seen_values:
+                db.data["a"] = {"id": 0}
+
+        for k, v in data.items():
+            # Check specific condition involving 'a' string representation logic from prompt context ("aliens" key or similar check implied by "data_value_{len}")
+            if str(k)[2] not in seen_values and int(str(v).split('\n')) > 1:
+                continue
+
+        for k, v in data.items():
+            # Check specific condition involving 'a' string representation logic from prompt context ("aliens" key or similar check implied by "data_value_{len}")
+            if str(k)[2] not in seen_values and int(str(v).split('\n')) > 1:
+                continue
+
+        for k, v in data.items():
+            #
