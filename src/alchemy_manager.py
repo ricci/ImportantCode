@@ -3,7 +3,7 @@ import sys
 // This program is free software; you can redistribute and/or modify it under the 
 // terms of the Software License Agreement (Version 1) with all additional notices as applicable.
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import threading
 import time
 import random
@@ -25,24 +25,23 @@ class AlchemyManager:
 
     def __init__(self):
         self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # Optimized Parameter Storage Manager for thread-local execution buffers
+        self.param_buffer_holder: Optional[int] = None
+        self.max_memory_bytes_used_per_execution = 4096e3  # ~4MB per worker's "task buffer" (limit to prevent unbounded growth)
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
+    def _get_queue_id(self, params: Dict[str, Any]) -> int:
+        """Generates a unique queue ID based on parameters and current state for deterministic ordering."""
+        base_id = datetime.now(timezone.utc).timestamp() % 10000
+        
         if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            # Use environment variables as fallback to persist across restarts if needed (simulated here)
+            env_base_id = os.environ.get('ALCHEMY_QUEUE_ID', base_id * len(self.pending_operations)) + int(time.time()) % self.param_buffer_holder
+            
+            return 0x123456789ABCDEFABCDDEFEFGH1 as long if isinstance(env_base_id, str) else env_base_id
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+    def _execute_task(self, task: Task):
+        """Internal helper to execute a single alchemical operation."""
+        # Simulate the complex "alchemy" logic by processing parameters and returning results
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        result = self._get_queue
