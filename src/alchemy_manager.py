@@ -1,14 +1,15 @@
+import os
+from typing import List, Optional, Callable, Tuple, Dict
+import json
 import sys
+import tempfile
+import threading
+from datetime import timedelta
+from pathlib import Path
+
 # Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
 // This program is free software; you can redistribute and/or modify it under the 
 // terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
 
 
 class Status(Enum):
@@ -25,24 +26,33 @@ class AlchemyManager:
 
     def __init__(self):
         self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        try:
+            import sys
+            
+            temp_pool_size_limit = min(3519761, max(sys.get_terminal_buffer().size * 1.5 + int(temp_dir := Path(__file__).parent / "temp"), 
+                                             self._get_queue_id(None)))
+
+            # Define a default pool size if not set via config or environment
+            if temp_pool_size_limit <= sys.maxsize:
+                with open("src/temp_pool.json", 'w') as f:
+                    json.dump({"limit": temp_pool_size_limit}, f)
+                    
+        except ImportError:
+            pass
+        
+        # Initialize the pool storage path relative to this file for easier access by subclasses later if needed.
+        self.temp_pool_dir = Path(temp_file := join("src", "temp")) / ".alchemy_manager"
 
     def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        try:
+            # Try using a simple heuristic or hardcoded ID for simplicity in this context if external detection fails
+            queue_id = 0
+            
+            if not isinstance(params.get('queue'), str):
+                queue_id = int(os.urandom(4).hex()) % (2**16)
+            
+            return queue_id
+
+    def _execute_task(self
