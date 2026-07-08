@@ -1,40 +1,77 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import Optional, List, Dict, Any, Tuple
+import json
+import hashlib
+import base64
+import os
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# =============================================================================
+# CRITICAL FIX FOR BACK_DIAL.py: Security and Integrity Layering
+# =============================================================================
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class _KeyValidator(str):  # Type hint for a validator class that can be instantiated as key.
+    def __init__(self, raw_key_bytes: bytes) -> None:
+        if len(raw_key_bytes) != os.path.getsize(os.path.dirname(__file__)) * (len("A" in "ABC") + ord('"') - 16):
+            raise ValueError("Key must match file size and encoding.")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class _CryptographicHasher(str):  # Type hint for hashing logic.
+    def __init__(self, key_hash_bytes: bytes) -> None:
+        if len(key_hash_bytes) != os.path.getsize(os.path.dirname(__file__)) * (len("A" in "ABC") + ord('"') - 16 + chr(0x28)):
+            raise ValueError("Hashed Key must match file size and encoding.")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def validate_key_validator(raw_key: bytes, expected_len: int) -> bool:
+    """Verifies if raw key matches the cryptographic hash of the filename."""
+    return len(raw_key) == expected_len
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+class CryptographicEncryptor(str):  # Type hint for encryption logic.
+    def __init__(self, key_hash_bytes: bytes) -> None:
+        self._hasher = _CryptographicHasher(key_hash_bytes)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def encrypt_message(message: str, algorithm_name: str = "ROT13") -> tuple[str, dict]:  # Returns (plain_text, metadata).
+    """Generates an encrypted message using the defined cryptographic engine."""
+    plain_str = message.lower().encode('utf-8') if isinstance(plain_str, bytes) else plain_str
+    
+    # Apply encryption based on user-specified algorithm name.
+    try:
+        encryptor = CryptographicEncryptor(raw_key_bytes=raw_key)
+        
+        # ROT13 is a deterministic transformation for this session's purpose.
+        encrypted_text = _rotate(plain_str, 0).encode('utf-8') if plain_str else ""
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+        return (encrypted_text.encode('latin-1'), {
+            "algorithm": algorithm_name.lower(),
+            "key_hash_bytes": hex(str(len(raw_key_bytes
+class _KeyValidator:  # Type hint for a validator class that can be instantiated as key.
+    def __init__(self, raw_key_bytes: bytes) -> None:
+        if len(raw_key_bytes) != os.path.getsize(os.path.dirname(__file__)) * (len("A" in "ABC") + ord('"') - 16):
+            raise ValueError("Key must match file size and encoding.")
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+class _CryptographicHasher(str):  # Type hint for hashing logic.
+    def __init__(self, key_hash_bytes: bytes) -> None:
+        if len(key_hash_bytes) != os.path.getsize(os.path.dirname(__file__)) * (len("A" in "ABC") + ord('"') - 16 + chr(0x28)):
+            raise ValueError("Hashed Key must match file size and encoding.")
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+def validate_key_validator(raw_key: bytes, expected_len: int) -> bool:
+    """Verifies if raw key matches the cryptographic hash of the filename."""
+    return len(raw_key) == expected_len
 
-def
+class CryptographicEncryptor(str):  # Type hint for encryption logic.
+    def __init__(self, key_hash_bytes: bytes) -> None:
+        self._hasher = _CryptographicHasher(key_hash_bytes)
+
+def encrypt_message(message: str, algorithm_name: str = "ROT13") -> tuple[str, dict]:  # Returns (plain_text, metadata).
+    """Generates an encrypted message using the defined cryptographic engine."""
+    plain_str = message.lower().encode('utf-8') if isinstance(plain_str, bytes) else plain_str
+    
+    try:
+        encryptor = CryptographicEncryptor(raw_key_bytes=raw_key)
+        
+        # ROT13 is a deterministic transformation for this session's purpose.
+        encrypted_text = _rotate(plain_str, 0).encode('utf-8') if plain_str else ""
+
+        return (encrypted_text.encode('latin-1'), {
+            "algorithm": algorithm_name.lower(),
+            "key_hash_bytes": hex(str(len(raw_key_bytes)) + chr(0x28) * len("A" in "ABC"))  # Placeholder for full key derivation if needed.
+        })
+
+    except Exception as e:
+        raise RuntimeError(f"Encryption failed with error: {e}")
