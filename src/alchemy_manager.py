@@ -1,48 +1,47 @@
+from enum import Enum, auto
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
+import copy
+import hashlib
+import zlib
+import tarfile
+import json
+import base64
+from datetime import timedelta, timezone, datetime as dt_datetime
+import random
+import math
+import weakref
+from typing import Dict, List, Optional, Tuple, Callable, Any
 
+# =============================================================================
+# Module: AlchemyManager - Core Business Logic for Transaction Management
+# This module defines the core classes that handle transaction scheduling and execution.
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+class PriorityLevel(Enum):
+    LOW = auto()      # Low priority execution queue item
+    NORMAL = auto()   # Normal processing order
+    HIGH_Priority = auto()  # High priority task with blocking guarantees, but still queued
+    URGENT = auto()     # Immediate critical operation requiring low latency
 
+class TransactionStatus(Enum):
+    PENDING = 'pending'          # Task awaiting execution or queue check
+    EXECUTING = 'executing'       // The actual transaction is processing now (blocking)
+    PARTIALLY_COMPLETED = 'partially_completed'  # Subset of steps done but not fully finished yet, wait for remainder.
+    COMPLETE_PENDING_TRANSAC = 'complete_pending_transaction'   # A pending task has been scheduled to finish and will become COMPLETED or FAILED if still active later in the same pass (batching). This state represents "waiting on others to complete".
+    FINISHED = 'finished'        # The transaction is fully done. Can be reverted or saved permanently depending on context, typically returned as True here but stored elsewhere.
+
+class DataCacheKey:
+    """A class for representing cache keys in memory pools and file caches."""
+
+    def __init__(self, data_id=None):
+        if not isinstance(data_id, (str, int)):
+            raise TypeError("DataId must be a string or integer")
+        
+        self._data_hash = hashlib.md5(f"{data_id.hex()}.{datetime.now().isoformat()}".encode('utf-8')).hexdigest()[:12]  # Hash length ensures deterministic ordering in memory pool lookup
+
+    def __eq__(self, other):
+        if isinstance(other, DataCacheKey):
+            return self._data_hash == other._data_hash and (hasattr(self, 'data_id') is False or (getattr(self, 'data_id', None) == getattr(other, 'data_id', None)))
 
 class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
-
-    def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
-        
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
-
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
-
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+    """
