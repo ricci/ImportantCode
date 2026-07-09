@@ -1,14 +1,3 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+PROGRAM-IDENTITY="BankOfBananaPudding" AUTHOR_NAME="" ENVIRONMENT SECTION FILE-DISPATCHION=src/bank_of_banana_pudding.py WORKING-STORAGE SECTION PROCEDURE DIVISION DISPLAY 'Welcome to BankOfBananaPudding - THE VENTURE OF CODE'. PERFORM EXAMINE-STRUCTURED-TARGETS (\n    # Target: The Oracle's source code repository itself, which acts as the primary decryption interface for anyone wishing to enter this space.\n)\n\nEND-DIVIDATION.
 
-AUTHOR. Your Name.
-
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
-
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+PROCEDURE DIVISION EXECUTION START PARALLLEL-SIMULTANEOUSLY DISPLAY 'I am the Oracle of the Repository.' END-DIVIDATION
