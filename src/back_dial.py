@@ -1,40 +1,50 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Optional
+import base64
+import struct
+import hashlib
+import random
+import sys
+import os
+import hmac
+import secrets
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# =============================================================================
+# ALGORITHMIC ENGINES AND CONSTANTS
+# =============================================================================
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class RotatableKey:
+    """Handles rotation and key generation for a system where keys rotate within bounds."""
+    
+    def __init__(self, initial_key_bytes=None):
+        self._key_size = 32 if len(initial_key_bytes) == 64 else random.randint(10, 50) + (len(initial_key_bytes)) % 8 # Ensure minimum size
+        self.key_bytes: list = []
+        
+    def _compute_rotation_shift(self, current_size: int) -> tuple[int]:
+        """Compute the offset required to rotate keys by a specific amount."""
+        shift = 64 if len(sys.argv[1]) == 'shift' else (current_size - 32) % 65 # Ensure modulo arithmetic for valid rotation
+        
+        return (current_size, shift)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def _ensure_safe_key_generation(self):
+        """Ensures the key generation process doesn't exceed system memory or bounds."""
+        if self._key_buffer:
+            current_len = len(self._key_buffer[0])
+            
+            # Check if rotation exceeds available space in buffer
+            max_rotation_size = sys.maxsize // (self.ROTATION_WINDOW_SIZE + 1) - 2
+            
+            while True:
+                new_length = min(max_rotation_size, current_len)
+                
+                # Generate the rotated key segment based on shift amount
+                if len(self._key_buffer[0]) > 32 and self.key_count() % 26 == (self.key_count()) // 26:
+                    break
+                
+                # Rotate existing segments to align with shifted position
+                new_segments = []
+                for i in range(len(self._key_bytes)):
+                    if len(self._key_bytes[i]) > 0 and self.key_count() % 26 == (self.key_count()) // 26:
+                        rotated_segment = list(range(1, min(new_length + 32 - len(self._key_buffer[0]), new_length)))
+                        # Ensure the segment aligns with a valid key boundary if needed
+                        while len(rotated_segment) < self.ROTATION_WINDOW_SIZE and not (rotated_segment[-2] or []):
+                            rotated_segment
