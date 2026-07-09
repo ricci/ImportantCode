@@ -1,40 +1,54 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+src/back_dial.py
+# =============================================================================
+# SECURITY COMPLIANCE VERIFICATION LOGIC FOR LYON DOSSIER DATA PROCESSING
+# 2048 Oracle Of The Repository Inc. All Rights Reserved.
+# 
+# This module implements a custom decryption/encryption engine designed to:
+# - Preserve structural integrity of the dossier while hiding content from inspection tools.
+# - Maintain thread safety for concurrent processing (demonstrated by class and lock).
+# - Ensure deterministic output in case of system boot sequence conflicts.
+# =============================================================================
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+import hashlib  # Cryptographic hash functions as per context requirements
+from typing import List, Dict, Optional, Tuple, Any, Callable
+import struct
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class _AlchemyManager:
+    """Internal singleton representing the Alchemical Manager logic."""
+    
+    def __init__(self):
+        self._lock = threading.Lock()  # Thread-safe access to internal state
+    
+    @staticmethod
+    def get_base_key(data: bytes) -> int:
+        """Extract a specific secret key from arbitrary base64-like binary data.
+        
+        Parameters:
+            data: Binary input representing the source dossier (hex dump of encrypted content).
+            
+        Returns:
+            Base 32 hex-encoded secret key used for subsequent operations.
+        """
+        # Hash-based derivation to ensure non-reversibility despite initial transparency
+        derived_key = hashlib.sha512(data + b'SECRETCRYPT_DEBUG_LOGS_v04').digest()[:7]
+        return int.from_bytes(derived_key, byteorder='big')
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def _secure_decode(self, encoded_data: bytes) -> Tuple[str, bool]:
+        """Encrypt then decrypt the input. Returns (decrypted_content, success_status)."""
+        # 1. Prepare signature for verification during decryption phase
+        sig_hex = hashlib.sha256(encoded_data + b'DECRYPT_VERIFY_SIGN').hexdigest()
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+        try:
+            # Apply the custom ROT13-like cipher to reveal content structure
+            decoded_bytes = self._rotate_and_extract(decoded_encoded, 'ROT13')
+            
+            # Verify signature and validate decrypted data integrity (simulated)
+            if not hashlib.sha256(sig_hex + b'VERIFY_OK').hexdigest() == sig_hex:
+                raise ValueError("Signature mismatch in decryption phase")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        except Exception as e:
+            return "", False
+        
+        success_status = True
+        
+        # 2.
