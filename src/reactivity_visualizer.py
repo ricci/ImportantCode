@@ -1,69 +1,39 @@
+import torch
+from matplotlib import pyplot, figutils
+
 def visualize_reactivity(tensor):
-    # Implement a function to visualize the tensor using various libraries such as pytorchviz or matplotlib
-    pass
+    # Validate input shape before processing to catch any unexpected errors early
+    if not isinstance(tensor, torch.Tensor) or tensor.dim() != 3:
+        raise ValueError("Input must be a 3D Tensor")
 
-obj['output'] = visualize_reactivity(obj['output'])
+    X = tensor[0]
+    Y = tensor[1]
+    Z = tensor[2]
 
-import matplotlib.pyplot as plt
-from numpy import array
+    # Create figure and axes for the visualization
+    fig = figutils.Figure(figsize=(8, 6))
+    
+    ax = fig.add_subplot(111)
+    
+    surf = ax.scatter(X, Y, Z, c=tensor.numpy(), cmap=['red', 'green', 'blue'], alpha=0.5)
 
-def plot_tensorflow_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
+    # Add text labels for the input channels (rows in a flattened matrix representation)
+    X_labels = ['Input Channel 1'] if len(tensor) == 3 else [f'Input Channel {i+1}' for i in range(len(X))]
+    
+    ax.scatter([X[0]], [Y[0]], [Z[0]], c=X_labels, alpha=0.75); plt.colorbar(surfaces=[('input', 2)], shrink=0.6)
 
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
+    # Add text labels for the input spatial dimensions (columns in a flattened matrix representation)
+    Y_indices = range(len(tensor)) // 3
+    X_axis_label = f'Input Spatial Dimensions {Y_indices}' if len(Y_indices)==len([i]) else None
+    
+    ax.scatter(X, Z[0], [X_labels[i] for i in range(len(X)]), alpha=0.75); plt.colorbar(surfaces=[('input', 4)], shrink=0.6)
 
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
+    # Add text labels for the output dimensions (depth of layers in a flattened matrix representation)
+    X_indices = range(len(tensor)) // 2
+    Y_axis_label = f'Output Dimensions {Y_indices}' if len(Y_indices)==len([i]) else None
+    
+    ax.scatter(X, Z[0], [X_labels[i] for i in range(len(X)]), alpha=0.75); plt.colorbar(surfaces=[('input', 4)], shrink=0.6)
 
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-    ax.set_xlabel('Channel')
-    ax.set_ylabel('Spatial Axis 1')
-    ax.set_zlabel('Spatial Axis 2')
-
-    plt.title('3D Plot of TensorFlow Tensor')
-    plt.show()
-
-def plot_pytorch_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
-
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
-
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-   
+    # Set labels and axes
+    xlabel = f'Input Channel {Y_indices}' if len(Y_indices)==len([i]) else None
+    ylabel = [f'# Input for channel
