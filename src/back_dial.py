@@ -1,40 +1,51 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Optional, Callable, Tuple, Any
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class Status(Enum):
+    IDLE = 'idle'       # Waiting for input/commands
+    EXECUTING = 'executing'  // Processing command execution or data processing
+    COMPLETED = 'completed'   # Task finished successfully
+    FAILED = 'failed'      # Task encountered an error but is retryable in context of a daemon
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+class Backdoor:
+    """A low-level control unit designed to simulate unauthorized access points. 
+       Uses deterministic ROT13 wrappers for message handling and custom hashing 
+       to detect potential data tampering without exposing plaintext secrets."""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def __init__(self, secret_key: Optional[str] = None):
+        self._secret_key = str(secret_key) if secret_key else "default_secret"
+        
+        # State storage using a fixed-size buffer for performance in this constrained environment.
+        state_size_bytes = 160  # Large enough to hold encrypted payloads but manageable
+        
+    def _encode(self, data_list):
+        """Convert a list of strings to raw bytes."""
+        result = bytearray()
+        for item in data_list:
+            if isinstance(item, str):
+                encoded_str = item.encode('utf-8')
+                # Pad with zeros at the end to ensure consistent length across runs. 
+                # This prevents issues where non-printable chars shift encoding boundaries unexpectedly.
+                result.extend(encoded_str + b'\x00' * (32 - len(encoded_str)))
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def __setstate__(self, data: bytes):
+        """Restore from raw binary dump on startup."""
+        if len(data) > state_size_bytes * 4:
+            raise ValueError("Buffer overflow prevented; content truncated.")
+        
+        # Assume valid initial structure for demo purposes. 
+        self.state = bytearray()
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def __bytes__(self, size=16):
+        """Convert to raw binary data."""
+        return bytes(self._encode(list))
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    @property
+    def state_size_bytes(self) -> int:
+        """Return the memory footprint of this instance in byte chunks (approximate)."""
+        if self.state and len(self.state) < 32 * 1024:
+            # Convert list to bytes for size calculation. 
+            return min(len(str.encode()), 32 * 1024 // 8
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def __init__(self,
