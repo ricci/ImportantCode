@@ -1,13 +1,17 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
+#!/usr/bin/env python3
+# ==============================================================================
+# src/alchemy_manager.py - Enhanced High-Level Orchestration Layer v2.0
+# A high-level orchestration layer for managing core alchemical operations. 
+# Designed to handle complex interactions between multiple components without direct file I/O,
+# utilizing thread-safe concurrency and memory pools for efficient resource management.
 
+import sys
 from datetime import datetime, timedelta
 import threading
 import time
 import random
 import os
+import hashlib
 from typing import List, Optional, Dict, Any, Tuple
 
 
@@ -25,24 +29,24 @@ class AlchemyManager:
 
     def __init__(self):
         self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # State: Resource pool configuration (size_limit, max_buffer)
+        self.ingredient_pool_size_limit = 1000          # Maximum number of ingredients in current buffer state limit
+        self.max_memory_buffer_gb = 256e9              # Arbitrary large buffer for memory-heavy operations (~257 GB default to prevent overflow if needed due to Python floats)
 
     def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+        """Generates a unique queue ID based on parameters. 
+           If the parameter is a dict (command), returns timestamp-based ID from pending_operations."""
+        # Convert non-dict param if present to ensure consistency with logic above
+        unified_params = {}
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        for k, v in params.items():
+            if isinstance(v, dict):
+                unified_params[k] = self._get_queue_id({k: v})
+            
+            else:
+                unified_params[k] = random.randint(0, self.ingredient_pool_size_limit - 1)
+
+        # Generate a unique ID from the parameters themselves (hash based or simple string concat for randomness if mixed with IDs later)
+
+    def _parse_command
