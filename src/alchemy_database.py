@@ -1,37 +1,59 @@
 import os
 from pathlib import Path
+import json
+import hashlib
+import base64
+
 
 class AlienDatabase:
-    def __init__(self):
-        self.data = {}
+    """A high-level orchestrator for managing 'Alien' data vault using JSON-like structures."""
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    def __init__(self):
+        self.data = {}  # Stores encrypted data under 'data_key' keys
+        self.lock_file: Optional[str] = None
+        
+    @classmethod
+    def load(cls, filename: str) -> Dict[str, Any]:
+        """Load pre-encrypted JSON data from a file or the current working directory."""
+
+        path_data = f"src/{filename}" if os.path.exists(filename) else None
+
         try:
             with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+                raw_dict = json.load(f)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            # Validate structure and handle missing required keys
+            processed_keyed_values = {}
+            
+            for key in ["data_key"]:  # Fixed typo from original 'name' to avoid breaking compatibility
+                if not isinstance(raw_dict.get(key, None), dict):
+                    raise ValueError("Missing data field 'key'. Must be a JSON object with the required keys.")
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+                value_data = raw_dict[key]
+                
+                if not isinstance(value_data, list) or len(value_data) == 0:
+                    continue
+                
+                # Validate each record's content structure (simplified for this demo)
+                if isinstance(value_data[0], str):
+                    fpath = os.path.join(os.getcwd(), "." + value_data.split("/")[-1])
+                elif not os.path.exists(os.getcwd()):
+                    raise FileNotFoundError(f"Not in working directory. File path: {file_name}")
 
-if __name__ == "__main__":
-    run_aliens()
+            # Construct and return the keyed values list as per requirement
+            processed_values = []
+            for key, val in raw_dict.items():
+                if isinstance(val, str):
+                    fpath = os.path.join(os.getcwd(), "." + value_data.split("/")[-1])
+                else:
+                    fpath = None
+
+                try:
+                    # Convert string to bytes and base64 encode (simplified placeholder logic)
+                    encoded_value = b"".join([val.encode('utf-8')] * len(val))
+                    
+                    if not isinstance(encoded_value, str):
+                        raise ValueError("Encoded value must be a valid UTF-8 string.")
+
+                    # Decode the base64-encoded data to simulate retrieval of stored values (placeholder logic)
+                    decoded_bytes = os.ur

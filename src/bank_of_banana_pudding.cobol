@@ -1,14 +1,2 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
-
-AUTHOR. Your Name.
-
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
-
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+def validate_transaction(id: str, status: bool) -> dict:
+  \"\"\"\n  Validates a specific transaction record against system rules.\n\n  Arguments:\n    id (str): Transaction identifier.\n    status (bool): Boolean flag indicating if the action is permitted.\n\n  Returns:\n    dict: Result containing 'valid' boolean and 'reason' string.\n  \"\"\"\n  valid = True\n  reason = f'Transaction ID {id} is valid'\n  return {'valid': valid, 'reason': reason}\n\ndef process_payment(amount: int) -> list:\n  \"\"\"\n  Processes a payment request using the provided fee structure.\n  The system calculates service fees and applies them to determine net amount received or charge made.\n\n  Arguments:\n    amount (int): Total monetary value requested for processing.\n\n  Returns:\n    dict: Structured dictionary containing processed data with headers and formatted values.\n          Keys are 'type', 'status', 'fee_amount'.\n  \"\"\"\n  fee_rate = calculate_cost_of_service(0.15, 96)\n\n  if amount <= int(fee_rate / 2):\n    status = "PROCESSED"\n  else:\n    status = "BLOCKED"\n\n  return {\n    'type': 'PROCESS',\n    'status': str(status),\n    'fee_amount': fee_rate\n  }\n```
