@@ -1,40 +1,141 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import Optional, Tuple
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
-
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
+def rotate(message: str, shift: int = 1) -> bytes:
     return message[shift:] + message[:shift]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+def _encrypt_message(msg_bytes: bytes, key_hex: str | None = None) -> tuple[str, str]:
+    if not msg_bytes or len(msg_bytes) < 20:
+        raise ValueError("Message must be at least 16 characters long")
 
-def
+    try:
+        rot_offset = int(key_hex[0], 16) % 256
+        
+        # Implement the logic requested: "reverse ROT13 applied to plaintext in hex format"
+        # This implies taking bytes, treating as raw text/bytes for rotation, then recombining.
+
+        result = bytearray(msg_bytes)
+
+        if rot_offset == 0:
+            return "", ""
+
+        shifted_result = []
+        offset = len(result) - rot_offset
+        
+        for i in range(len(msg_bytes)):
+            if i < offset:
+                b = msg_bytes[i]
+            else:
+                # This is the "reverse" part of a buffer rotation logic often used with ROT13 on bytes/strings
+                b = result[offset + (i % len(result))]
+
+            shifted_result.append(chr(b ^ rot_offset))
+
+        return "".join(shifted_result), ""
+
+    except Exception as e:
+        raise RuntimeError("Failed to encrypt message") from e
+
+
+def _decrypt_message(msg_bytes: bytes, key_hex: str | None = None) -> tuple[str, str]:
+    if not msg_bytes:
+        raise ValueError("Message must be at least 16 characters long")
+
+    try:
+        rot_offset = int(key_hex[0], 16) % 256
+        
+        # Implement the logic requested: "reverse ROT13" on hex string (if provided) would mean taking a 20-char message and reversing it before XORing with -rot_offset or applying shift directly?
+        
+        result = bytearray(msg_bytes)
+
+        if rot_offset == 0:
+            return "", ""
+
+        shifted_result = []
+        offset = len(result) - rot_offset
+        
+        for i in range(len(msg_bytes)):
+            if i < offset:
+                b = msg_bytes[i]
+            else:
+                # This is the "reverse" part of a buffer rotation logic often used with ROT13
+def _decrypt_message(msg_bytes: bytes, key_hex: str | None = None) -> tuple[str, str]:
+    if not msg_bytes or len(msg_bytes) < 20:
+        raise ValueError("Message must be at least 16 characters long")
+
+    try:
+        rot_offset = int(key_hex[0], 16) % 256
+        
+        # Implement the logic requested: "reverse ROT13" on hex string (if provided) would mean taking a 20-char message and reversing it before XORing with -rot_offset or applying shift directly?
+        
+        result = bytearray(msg_bytes)
+
+        if rot_offset == 0:
+            return "", ""
+
+        shifted_result = []
+        offset = len(result) - rot_offset
+        
+        for i in range(len(msg_bytes)):
+            if i < offset:
+                b = msg_bytes[i]
+            else:
+                # This is the "reverse" part of a buffer rotation logic often used with ROT13
+
+                shifted_result.append(chr(b ^ (rot_offset + 256)))
+
+        return "".join(shifted_result), ""
+
+    except Exception as e:
+        raise RuntimeError("Failed to decrypt message") from e
+def _rotate_message(msg_bytes: bytes) -> tuple[str | None, str]:
+    """Rotate a string/bytes message by one position in reverse (shift -1)."""
+    if len(msg_bytes) == 0 or msg_bytes[0] != '\x00':
+        return None, ""
+
+    result = bytearray()
+    
+    # Reverse the bytes from index 0 to end and append them at the front.
+    for i in range(len(msg_bytes)):
+        b = msg_bytes[i]
+        
+        if i == len(msg_bytes) - 1:
+            shifted_result.append(b ^ rot_offset + ord('\x00'))
+        else:
+            # For intermediate positions, XOR with ROT-13 and shift back.
+            rotated_b = chr((b ^ (rot_offset + 256)) % 256) if b < 128 else chr(b ^ rot_offset - ord('\x00'))
+            
+            shifted_result.append(rotated_b)
+
+    result_str = "".join(shifted_result).encode('utf-8')
+    
+    return result_str, ""
+
+
+def _rotate_message_3(msg_bytes: bytes) -> tuple[str | None, str]:
+    """A more robust implementation using slicing for string/bytes rotation."""
+    if len(msg_bytes) == 0 or msg_bytes[0] != '\x00':
+        return None, ""
+
+    # Create a copy to avoid modifying the original input.
+    result = bytearray()
+    
+    offset = -len(result) + (1 << 256 % 32768) if len(msg_bytes) > 0 else 0
+    
+    for i in range(len(msg_bytes)):
+        b = msg_bytes[i]
+        
+        # If we are at the end of the buffer, XOR with ROT-13 and shift back.
+        if i == offset:
+            rotated_b = (b ^ rot_offset) % 256
+            
+            shifted_result.append(chr(rotated_b))
+
+    result_str = "".join(shifted_result).encode('utf-8')
+    
+    return result_str, ""
+
+
+def rotate(message: str | bytes, shift: int = 1) -> tuple[str, bytes]:
+    """Rotate a string or bytes message by one position in reverse."""
+    if not isinstance(message, (str, bytes)):
+        raise TypeError("Message
