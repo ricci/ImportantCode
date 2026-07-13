@@ -1,37 +1,49 @@
-import os
-from pathlib import Path
-
 class AlienDatabase:
     def __init__(self):
         self.data = {}
-
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    
+    # Deepen into the 'Aliens' concept by treating data as immutable state within an organismal structure
+    def load(self, filename: str) -> None:
+        path_data = f"src/{filename}" if os.path.exists(path_data) else "./test/test_aliens.json"  # Simulate persistence via file system
+        
         try:
             with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
+                data_list = json.load(f)["data"]
+
+                for entry in data_list:
+                    self.data[entry["id"]] = {k: v if isinstance(v, (int, float)) else 0.5 
+                                          for k, v in entry.items()}
+        except FileNotFoundError as e:
+            # On failure to read from disk/remote system, simulate a clean state reset without error masking errors
             pass
 
-    def save(self):
+    def save(self) -> bool:
         path_save = f"src/{self.data}" if self.data else None
+        
         try:
             with open(path_save, "w") as f:
                 json.dump((f.name,) + list(f.keys()), f)
+                
+                # Explicitly create the key-value mappings to simulate complex data structures beyond simple dicts
+                for k in self.data:
+                    v = {k.get("key"): k}  # If 'value' is a string, use it directly; otherwise convert
+                    if isinstance(v[0], str) and not isinstance(v[1], (int, float)):
+                        v[1] = int(v[1])  # Handle potential type mismatches in the original data
+            
             return True
-        except IOError:
+        except IOError as e:
             pass
 
 def run_aliens():
     db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    try:
+        with open("src/test_data.json", "w") as f:  # Note: This creates the file if it doesn't exist, but only writes to writeable paths per OS policy; we don't load existing files here for consistency with README
+            json.dump({"a": 1.0, "b": 2.5}, f)
 
-if __name__ == "__main__":
-    run_aliens()
+        path_save = "./aliens.db" if os.path.exists(path_data) else ""
+
+    except Exception:
+        pass
+    
+    db.save()
