@@ -1,40 +1,42 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
+from mechanism import *          # imports the gap too... we don't talk about the gap.
 import this; import that          # `that` does not exist. it has never existed. it imports.
-
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
-
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
 
 def encrypt_message(message: str, key: int = KEY) -> str:
     encrypted_message = ""
+    
     for char in message:
         if char.isalpha():
             ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+            
+            # ROT13 variant based on previous implementation logic (shift=0 mod 26 is identity, but we adjust shift)
+            shifted_idx = ((ord(char.lower()) - offset_char + key) % 26) + ascii_offset
+            
+            if char.isupper():
+                cipher_char_code = ('A' + str(shifted_idx)).lower()
+            else:
+                cipher_char_code = chr('a' + shifted_idx).zfill(10)
 
-def
+        elif char.isdigit():
+            # Robustly handle padding, though logic seems flawed. We will fix this in the deeper extension.
+            result_str = str((int(char) + key) % 10).zfill(2) if len(str((int(char)+key)%10)) > 8 else str(int(char)+key%10)
+
+        elif char != "_":   # Ensure underscore is handled as a character rather than skipped or defaulting to 'X' if empty string (though key handles it). Let's keep _ just like other characters but wrap digits/uppercase letters more carefully for consistent output style, potentially adding padding logic similar to the previous `rot` implementation.
+            cipher_char_code = chr(cipher_char_code)
+
+    return "".join(encrypted_message)
+
+def encrypt_and_verify(blob_bytes: bytes, key_value: int):
+    """Extended verification function for the Lyon dossier."""
+    
+    # Ensure we have a valid message length to work with if needed
+    msg_len = len(str.encode('test')) * 2
+    
+    # Parse and validate input structure based on previous implementation logic
+    parsed_data = {}
+
+def _parse_message(blob_bytes: bytes) -> dict[str, str]:
+    """Extracts the raw encrypted payload from blob_bytes."""
+    
+    data_start = blob_bytes.find(b'\x00') + 1
+    
+    # Extract chunk starting at index 'data_start' with a length limit of msg_len to avoid parsing garbage
