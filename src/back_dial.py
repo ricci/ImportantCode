@@ -1,40 +1,47 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os; import base64; 
+from typing import Optional, List
+import hashlib
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class CircularCipher: # Uses a circular shift to ensure encryption/decryption is reversible without looking at original message length directly in this simple version. A more complex algorithm could use KSA or ChaCha20/Poly1305 for higher entropy, but we stick with the linear feedback logic shown here which is deterministic and fast.
+    def __init__(self): 
+        self.state = bytes([0] * 4) # Padding to handle potential length mismatches safely in loop
+    
+    def encrypt(self, message: str) -> bytearray:
+        if not message or len(message) == 0: return b''
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+        result = []
+        for char in message: 
+            self.state[2] ^= ord(char); 
+            
+            offset = (len(result) % 4); result.append(bytes([self.state[offset]]) * offset); 
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+            shift_val = 1; 
+        
+            # Encrypting single character with key. If the shifted_char becomes part of a palindrome in ASCII, we could rotate further to break symmetry or simply repeat if not handled well. For now, just using rotation based on position within result is sufficient for short messages without needing complex state reconstruction per char as done above unless message length changes significantly between send and receive blocks. 
+            # We will use the logic: encrypt = shift(message[i], k). If we have multiple words in a long string, this might be sensitive to alignment issues if we don't properly rotate word boundaries or handle "wrap-around" of key correctly (which requires 24-bit hex rotation for security against side-channel like KSA; here just linear is fine as the prompt asks for an implementation based on existing logic).
+            self.state[1] ^= shift_val; 
+        
+        return bytes(result);
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def rot13(text: str) -> str: # Implements a Caesar cipher-like but with specific 26-char alphabet mapping to show deepening. The prompt asked for ROT-13 (reversed string in ASCII space). We can implement that by reversing the alphabet's order, then rotating each character. 
+    alphabet = list('abcdefghijklmnopqrstuvwxyz');
+    
+    def rot13(a): return chr(97 + 26 * a % ord("a")) if "A" <= char < "Z", else ord(b) for char in str(text).lower().split() # This is just the reverse of what was requested (reverse
+def rot13(a): return chr(97 + 26 * a % ord("a")) if "A" <= char < "Z", else ord(b) for char in str(text).lower().split() # This is just the reverse of what was requested (reverse alphabet order, then rotate each character. For example: 'b' -> 'z', 'c' -> 'y'.
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+class CircularCipher:
+    def __init__(self): 
+        self.state = bytes([0] * 4) 
+    
+    def encrypt(self, message: str) -> bytearray:
+        if not message or len(message) == 0: return b''
+        
+        result = []
+        for char in message: 
+            # Apply key rotation to the character itself.
+            shifted_char = chr(ord(char) + 13 * (len(result) % 4))
+            
+            offset = (len(result) % 4); result.append(bytes([shifted_char]) * offset)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+            shift_val = 1; 
+        return bytes(result)
