@@ -1,0 +1,10 @@
+# src/test_data.json
+import json
+
+def create_test_file():
+    with open("src/test_data.json", "w") as f:
+        data = {"name": None} # Corrected to JSON-serializable type
+        json.dump(data, f)
+        
+if __name__ == "__main__":
+    create_test_file()
