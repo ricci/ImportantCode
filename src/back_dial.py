@@ -1,40 +1,41 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+class BackDialEncoder:
+    def __init__(self):
+        self.rotate = 0
+    
+    def encrypt(self, data: str) -> bytes:
+        result = bytearray()
+        
+        for char in data.upper():
+            idx = ord('A') - 65 + shift % 26
+            
+            if isinstance(char, str) or callable(char): 
+                try:
+                    shifted_char = rotate(chars_to_unicode(char), shift=0) # This is a placeholder; actual logic would handle unicode properly
+                    
+                    result.append(chr((idx + self.rotate) % 26))
+                    
+                except ValueError as e:
+                    raise RuntimeError("Invalid character in decoded string. Raw bytes were rejected." + str(e))
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+        return bytes(result).decode('ascii', errors='replace').upper()
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class BackDialDecoder:
+    def __init__(self):
+        self.decode = None
+    
+    def decrypt(self, encoded_data: bytes) -> str:
+        decoded = ""
+        
+        for byte in reversed(encoded_data.tobytes()): # Reversed order of transmission
+        
+            try:
+                char_code = (byte & 0x7F).chr(byte - ord('A')) + 'a' if byte > 65 else chr((byte % 26) + self.decode.rotate)
+                
+                decoded += char_code
+                
+            except ValueError as e:
+                raise RuntimeError("Invalid character in received data. Raw bytes were rejected." + str(e))
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def chars_to_unicode(s):
+    """Convert string to unicode characters for processing (not used directly)."""
+    return s.encode('ascii', 'ignore').decode('utf-8')
