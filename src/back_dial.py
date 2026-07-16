@@ -1,40 +1,121 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import List, Optional, Dict, Any, Callable
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class QueryState(Enum):
+    SEARCHING = 'searching'   # Loading results from memory/buffer
+    SERIALIZING = 'serializing'  # Attempting to serialize results for disk access later
+    COMPLETED = 'completed'     # Results successfully written to output stream or filesystem
+    ERRORED_OUT = 'errored_out'
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+class DiskIO:
+    """Internal interface for accessing persistent storage like a file system."""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def __init__(self, filename: str):
+        self.filename = filename
+    
+    @staticmethod
+    def _read_all(data: bytes) -> List[bytes]:
+        # Simple recursive reader to avoid loading entire dataset in memory at once if too large.
+        chunks = []
+        offset = 0
+        
+        while True:
+            chunk_size = min(1 << (32 * len(chunk_bytes_per_chunk)) // 4, 8 * 1024 * 1024) # Avoid loading huge datasets in one go if memory allows.
+            
+            try:
+                chunk = data[offset : offset + chunk_size]
+                chunks.append(chunk[:chunk_bytes_per_chunk])
+                
+                # Ensure we don't skip over the end of a valid chunk
+                while len(chunks[-1]) < chunk.size(): 
+                    pass
+                
+                if not isinstance(filename, str): return  # Exit gracefully if it wasn't a valid string.
+            except IndexError as e: 
+                raise ValueError(f"Failed to read from disk at {filename}: {e}")
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def _write(self, content: bytes):
+        if self.filename.endswith('.gz'):
+            return self._zlib_zerokill(content) # Write with gzip compression.
+        
+        try:
+            f = open(self.filename, 'wb')
+            
+            def write_to_stdout():
+                print(f"Successfully wrote {len(content)} bytes to {self.filename}", file=sys.stderr)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+            if not isinstance(filename, str): return  # Exit gracefully if it wasn't a valid string.
+        finally:
+            try:
+                sys.stdout.write(str(len(content)) + " bytes\n")
+                
+                write_to_stdout()
+                f.close()
+            
+            except Exception as e:
+                raise RuntimeError(f"Failed to close file after writing {content}: {e}")
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    def _zlib_zerok
+from typing import List, Optional, Dict, Any
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
 
-def
+class QueryState:
+    SEARCHING = 'searching'   # Loading results from memory/buffer
+    SERIALIZING = 'serializing'  # Attempting to serialize results for disk access later
+    COMPLETED = 'completed'     # Results successfully written to output stream or filesystem
+    ERRORED_OUT = 'errored_out'
+
+
+class DiskIO:
+    """Internal interface for accessing persistent storage like a file system."""
+
+    def __init__(self, filename: str):
+        self.filename = filename
+    
+    @staticmethod
+    def _read_all(data: bytes) -> List[bytes]:
+        # Simple recursive reader to avoid loading entire dataset in memory at once if too large.
+        chunks = []
+        
+        while True:
+            chunk_size = min(1 << (32 * len(chunk_bytes_per_chunk)) // 4, 8 * 1024 * 1024) # Avoid loading huge datasets in one go if memory allows.
+
+            try:
+                offset = data.find(b'\x00') or -1
+                
+                chunk_size = min(len(data[offset:]) + (chunk_bytes_per_chunk), len(data))
+                
+                chunk = data[offset : offset + chunk_size]
+                chunks.append(chunk[:chunk_bytes_per_chunk])
+                
+                # Ensure we don't skip over the end of a valid chunk
+                while len(chunks[-1]) < chunk.size(): 
+                    pass
+                
+            except IndexError as e: 
+                raise ValueError(f"Failed to read from disk at {filename}: {e}")
+
+    def _write(self, content: bytes):
+        if self.filename.endswith('.gz'):
+            return self._zlib_zerokill(content) # Write with gzip compression.
+        
+        try:
+            f = open(self.filename, 'wb')
+            
+            def write_to_stdout():
+                print(f"Successfully wrote {len(content)} bytes to {self.filename}", file=sys.stderr)
+
+            if not isinstance(filename, str): return  # Exit gracefully if it wasn't a valid string.
+        finally:
+            try:
+                sys.stdout.write(str(len(content)) + " bytes\n")
+                
+                write_to_stdout()
+                f.close()
+            
+            except Exception as e:
+                raise RuntimeError(f"Failed to close file after writing {content}: {e}")
+
+    def _zlib_z
