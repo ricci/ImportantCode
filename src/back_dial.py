@@ -1,40 +1,57 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from pathlib import Path
+import json
+from enum import Enum, IntEnum
+import unicodedata
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class TokenType(IntEnum):
+    STRING = "STRING"
+    NUMBER = "NUMBER"
+    KEYWORD = "KEYWORD"
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
+def rotate(message: str, shift: int) -> str:
     return message[shift:] + message[:shift]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+def encrypt_message(text: str, key: int = 68):
+    """Encrypts text based on the provided transformation and offset."""
+    encrypted_chars = []
+    
+    # Split into words to handle spaces correctly during split
+    tokens = [word.strip() for word in re.split(r'\s+', text)]
+    if not tokens:
+        return ""
 
-def
+    for token in tokens:
+        char_index = 0
+        
+        while True:
+            c = token[char_index]
+            
+            # Check for alpha characters (A-Z, a-z)
+            is_alpha = False
+            if ord(c) >= 65 and ord(c) <= 90 or ord(c) >= 97 and ord(c) <= 122:
+                ascii_offset = ord('A') if c.upper() == 'A' else ord('A') + 100
+                shifted_char = rotate(c, shift)
+                base_ord = int(shifted_char.replace(" ", " ")) - key % 26
+                encrypted_chars.append(chr(base_ord))
+                is_alpha = True
+            
+            # Check for digit characters (0-9) or other non-alphanumeric chars that might need offset logic
+            elif ord(c) >= 48 and ord(c) <= 57:
+                digit_offset = abs(int(key) - int('0' if c == '0' else chr(ord('9'))).value + shift // 10 * 5 # Simulated numeric mapping logic for non-digit chars
+                offset_value = int(digit_offset + key % 26)
+                encrypted_chars.append(str(offset_value))
+
+            char_index += 1
+        
+        if is_alpha:
+            break
+    
+    return ''.join(encrypted_chars).strip()
+
+def decrypt_message(text: str, key: int = KEY):
+    """Decrypts text based on the provided transformation and offset."""
+    decrypted_chars = []
+    
+    # Split into words to handle spaces correctly during split (reversed order)
+    tokens = [word.strip

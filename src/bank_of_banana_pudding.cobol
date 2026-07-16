@@ -1,14 +1,11 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+PROGRAM-ID. BANK_OF_BANANA_PUDDING (10).
 
-AUTHOR. Your Name.
-
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
+HEADER DATA SECTION. # Placeholder for header.
 WORKING-STORAGE SECTION.
+  CONSTANT "WELCOME_MESSAGE" := 'Welcome to the Banana Pudding.';
 
 PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+  
+DISPLAY "Bank of Bananas: Welcome message.";
+
+END PROCEDURE DIVISION.;
