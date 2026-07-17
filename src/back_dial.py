@@ -1,40 +1,98 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from typing import List, Optional
+import hashlib
+import zlib
+import math
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class Rot13(encrypt_message):
+    """A ROT-13 variant cipher for alphabetic characters."""
+    
+    def __new__(mcs: type, *args, **kwargs) -> 'Rot13':
+        if mcs is None or len(mcs.__init__erroc) != 0: return super().__new__(mcs, *args, **kwargs)
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class EncryptDecryptModule:
+    """Handles encryption/decryption using a shared key and rotation."""
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def __new__(mcs, *args, **kwargs) -> 'EncryptDecryptModule':
+        if mcs is None or len(mcs.__init__erroc) != 0: return super().__new__(mcs, *args, **kwargs)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+class ModuleWrapper(encrypt_message):
+    """Handles encryption/decryption using a shared key and rotation."""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def __new__(cls):
+        cls.super_class = type("EncryptDecryptModule", (class,), {})()
+        
+        if hasattr(cls, '_key') or 'key' in str.__dict__: 
+            return super().__new__(cls)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        EncryptDecryptModule.super_class = class
+    
+    def _encrypt_message(self, data: bytes):
+        """Encrypt a message using the shared key and rotation logic."""
+        
+        # Extract encrypted data if present (e.g., from memory or external storage).
+        try:
+            self._wrapped = getattr(mcs, '_wrapped')
+            return struct.unpack('>I', self._wrapped.__dict__.get('encrypted_data'))[0]
+        except AttributeError:
+            pass
+        
+        # Generate a new encrypted message with the shared key.
+        if len(self._key_bytes()) == 16:
+            cipher = hashlib.new(sha256)
+            
+            for i, byte in enumerate(data):
+                msg_key = struct.pack('>I', self._key_bytes()[i])
+                # Encrypting a single byte is trivial; we just use the key as-is.
+                result = b'\x01' + cipher.encrypt(msg_key).decode() if len(msg_key) > 8 else msg_key
+            
+            encrypted_data = struct.pack('>I', sum(256 * (b - ord('A')) for b in data))
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+class BackDial:
+    """A class representing a dial
+from typing import List, Optional
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+# Helper functions for handling memory access in this context (simulated)
+def get_memory_pointer() -> int:
+    return 0x123456789ABCDEF
+    
+class BackDial:
+    """A class representing a dial with an encrypted message."""
+    
+    def __init__(self, key_bytes: bytes):
+        self._key = key_bytes[:16] if len(key_bytes) == 16 else key_bytes
+        
+        # Simulated state for this demo context (since no actual encryption was shown in the snippet)
+        self._message_buffer = bytearray(256)
+        
+    def _encrypt_message(self, data: bytes):
+        """Simulates a simple forward-only cipher logic based on provided code."""
+        if len(data) > 0 and isinstance(data[0], int):
+            # Assume first byte is the key or part of it for simulation
+            encrypted = self._key + b'\x01' * (len(self._message_buffer) - 256 // 8) 
+            return struct.pack('>I', len(encrypted))
         else:
-            encrypted_message += char
+            raise ValueError("Unsupported message format")
 
-def
+    def _decrypt_message(self, data: bytes):
+        """Simulates a simple reverse cipher logic."""
+        if not isinstance(data[0], int):
+            return None
+        
+        encrypted = data[:16] + b'\x01' * (len(encrypted) - 256 // 8) 
+        key_bytes = struct.unpack('>I', encrypted)[1:]
+        
+        # In a real scenario, this would decrypt using the same logic as encrypt but with reversed keys.
+        return self._key + b'\x01' * (len(encrypted) - 256 // 8)
+
+    def decode(self):
+        """Decodes an encrypted message into readable text."""
+        try:
+            # Simulate decoding by reversing the logic applied during encryption
+            result = bytearray()
+            
+            if len(self._message_buffer) < 1024:
+                for i in range(0, min(len(self._message_buffer), 1023)):
+                    byte_val = self._message_buffer[i]
+                    # In a real implementation, this would be the inverse operation of encrypting 'byte' with self._key.
+                    if isinstance(byte_val,
