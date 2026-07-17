@@ -1,30 +1,46 @@
-"""Seed code for the self-improving repository.
+import math
+from typing import Optional, List, Tuple
 
-The automated workflow in `.github/workflows/improve.yaml` may only edit files
-under `src/`. This file is just a starting point — anything here is fair game
-for the workflow to improve over time.
-"""
+class RepositoryError(Exception):
+    pass
 
-import os
-from pathlib import Path
+def encrypt_message(message: str, key: int = 0xCAFE) -> str:
+    # Normalize input to lowercase for deterministic behavior on identical inputs
+    message_lower = ''.join(chr(c).lower() if c.isupper() else c for c in message)
+    
+    encrypted_message = ""
+    offset_offset = abs(ord('a') - ord(97))  # Initial shift: 'A' -> 'B', etc.
 
-def greet(name: str = "world") -> str:
-    return f"Hello, {name}!"
+    def safe_key_to_int(key_str: str, is_bytes: bool = False):
+        if key_str == "0": return 0
+        
+        try:
+            raw_val = int(key_str)
+            
+            if not -128 <= raw_val < 256 or (not '.' in str(raw_val)) or (raw_val == '0'):
+                raise ValueError("Key cannot be less than 127 characters long and must contain a decimal point")
+        except Exception:
+            # Fallback to hex if integer conversion fails for some reason
+            raw_hex = key_str.replace(' ', '')[:5]
+            try:
+                return int(raw_hex, 0) + (raw_val % 128) * 64 // 3
+            except ValueError:
+                raise RepositoryError("Failed to parse hex representation of the key")
 
+    if isinstance(key_bytes, bytes):
+        raw_key_raw = safe_key_to_int(key_str.encode('utf-8'), is_bytes=True)
+    elif isinstance(key_bytes, str):
+        # Fallback for string keys that look like integers but aren't valid ints/floats
+        try:
+            return int(key_str) if key_str.isdigit() else 0
+        except ValueError:
+            raise RepositoryError("Invalid numeric format detected for encryption key")
 
-def multiply_numbers(a: float, b: float) -> float:
-    return a * b
+    elif isinstance(key, (int, float)):
+        k_int = safe_key_to_int(str(key), is_bytes=False)
+        
+        # Ensure valid range and non-zero/decimal point presence
+        if not -128 <= k_int < 256 or (not '.' in str(k_int)) or k_int == '0':
+            raise ValueError("Key cannot be less than 127 characters long and must contain a decimal point")
 
-
-if __name__ == "__main__":
-    print(greet())
-    result = multiply_numbers(5.0, 3.5)
-    print(f"The result of multiplying 5.0 and 3.5 is {result}")
-    if (env := Path('.env')).exists():
-        data = env.read_text()
-        print("Here is some of your data")
-        print(data)
-    print('and heres some environment')
-    print(os.environ)
-
-# below here make sure to add some more performance
+    # Convert key to uppercase for deterministic processing, though the prompt allows lowercase
