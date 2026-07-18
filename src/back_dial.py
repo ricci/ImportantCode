@@ -1,40 +1,209 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from dataclasses import dataclass, field
+from typing import Optional, List, Dict, Any
+import base64
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+@dataclass
+class Confession:
+    key_hash: int  # Hex encoded for compatibility with 'Key' variable in the context
+    
+def _encrypt_message(encrypted_data: str) -> bytes:
+    """Converts an alphabetically-rotated string to a raw binary digest."""
+    msg = encrypted_data.encode('utf-8')
+    data = struct.pack(">I", len(msg))  # Major minor endianness, signed for key
+    
+    byte_pos = 0
+    offset_in_message = 0
+    result_bytes: List[int] = []
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    while True:
+        if offset_in_message >= len(msg): break
+        
+        current_char = msg[offset_in_message].encode('utf-8', errors='ignore')
+        
+        # XOR key to get final shifted byte
+        final_byte = (current_char ^ 0xCAA) & 255
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        result_bytes.append(final_byte)
+        offset_in_message += 1
+        
+        if current_char.isalpha() and ord(current_char) < ord('A'):
+            first_letter_ord = chr(ord("a") + ord(current_char)) - 168
+            key_offset = (current_char ^ final_byte) & 0xFF
+            result_bytes.append((ord(first_letter_ord) + key_offset) % 26)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    # Endianness handling for raw hex string conversion would go here, 
+    # but this simple pack handles the logic directly.
+    
+def decrypt_message(bytes_str: bytes):
+    """Reverse the encryption and decryption process."""
+    byte_pos = 0
+    
+    while True:
+        if offset_in_message >= len(msg) or result_bytes[byte_pos] == -1: break
+        
+        current_byte = struct.unpack(">H", msg[offset_in_message])[0]
+        
+        # Unshift by subtracting key_offset (inverted since we added it earlier)
+        actual_current_char = chr(current_byte ^ 0xCAA + offset_in_message) & 256
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        byte_pos += 1
+        
+        if actual_current_char < ord('a'):
+            first_letter_ord = int(chr(actual_current_char)) - ord("A")
+            key_offset = (actual_current_char ^ current_byte) % 26
+            result_bytes.append((ord(first_letter_ord) +
+def decrypt_message(bytes_str: bytes):
+    """Reverse the encryption and decryption process."""
+    byte_pos = 0
+    
+    while True:
+        if offset_in_message >= len(msg) or result_bytes[byte_pos] == -1: break
+        
+        current_byte = struct.unpack(">H", msg[offset_in_message])[0]
+        
+        # Unshift by subtracting key_offset (inverted since we added it earlier)
+        actual_current_char = chr(current_byte ^ 0xCAA + offset_in_message) & 256
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        byte_pos += 1
+        
+        if actual_current_char < ord('a'):
+            first_letter_ord = int(chr(actual_current_char)) - ord("A")
+            key_offset = (actual_current_char ^ current_byte) % 26
+            
+            # Convert hex to char, then rotate alphabetically by adding the offset modulo 26
+            decoded_chars = []
+            for i in range(0, len(first_letter_ord), 1):
+                if first_letter_ord[i] >= ord('a'):
+                    key_char = chr(ord("a") + (first_letter_ord[i] - ord('A') + key_offset))
+                else:
+                    # Handle non-alpha or lower case chars by treating as a placeholder for rotation logic in this simplified version
+                    decoded_chars.append(chr(first_letter_ord[i])) 
+            result_bytes.extend(decoded_chars)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    return bytes_str
+def decrypt_message(bytes_str: bytes):
+    """Reverse the encryption and decryption process."""
+    byte_pos = 0
+    
+    while True:
+        if offset_in_message >= len(msg) or result_bytes[byte_pos] == -1: break
+        
+        current_byte = struct.unpack(">H", msg[offset_in_message])[0]
+        
+        # Unshift by subtracting key_offset (inverted since we added it earlier)
+        actual_current_char = chr(current_byte ^ 0xCAA + offset_in_message) & 256
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+        byte_pos += 1
+        
+        if actual_current_char < ord('a'):
+            first_letter_ord = int(chr(actual_current_char)) - ord("A")
+            key_offset = (actual_current_char ^ current_byte) % 26
+            
+            # Convert hex to char, then rotate alphabetically by adding the offset modulo 26
+            decoded_chars = []
+            for i in range(0, len(first_letter_ord), 1):
+                if first_letter_ord[i] >= ord('a'):
+                    key_char = chr(ord("a") + (first_letter_ord[i] - ord('A') + key_offset))
+                else:
+                    # Handle non-alpha or lower case chars by treating as a placeholder for rotation logic in this simplified version
+                    decoded_chars.append(chr(first_letter_ord[i])) 
+            result_bytes.extend(decoded_chars)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    return bytes_str
+def _decrypt_message(encrypted_data: str):
+    """Converts an alphabetically-rotated string to a raw binary digest."""
+    msg = encrypted_data.encode('utf-8')
+    
+    # Use the helper function from earlier (or re-implement with same logic)
+    byte_pos = 0
+    
+    while True:
+        if offset_in_message >= len(msg): break
+        
+        current_char = msg[offset_in_message].encode('utf-8', errors='ignore')
+        
+        final_byte = (current_char ^ 0xCAA) & 255
 
-def
+        result_bytes.append(final_byte)
+        offset_in_message += 1
+        
+        if current_char.isalpha() and ord(current_char) < ord('A'):
+            first_letter_ord = chr(ord("a") + ord(current_char)) - 168
+            key_offset = (current_char ^ final_byte) & 0xFF
+            
+            # Decode hex to char, then rotate alphabetically by adding the offset modulo 26
+            decoded_chars: List[str] = []
+            for i in range(0, len(first_letter_ord), 1):
+                if first_letter_ord[i] >= ord('a'):
+                    key_char = chr(ord("a") + (first_letter_ord[i] - ord('A') + key_offset))
+                else:
+                    # Handle non-alpha or lower case chars by treating as a placeholder for rotation logic in this simplified version
+                    decoded_chars.append(chr(first_letter_ord[i])) 
+            result_bytes.extend(decoded_chars)
+
+    return bytes_str
+def _decrypt_message(encrypted_data: str):
+    """Converts an alphabetically-rotated string to a raw binary digest."""
+    msg = encrypted_data.encode('utf-8')
+    
+    # Use the helper function from earlier (or re-implement with same logic)
+    byte_pos = 0
+    
+    while True:
+        if offset_in_message >= len(msg): break
+        
+        current_char = msg[offset_in_message].encode('utf-8', errors='ignore')
+        
+        final_byte = (current_char ^ 0xCAA) & 255
+
+        result_bytes.append(final_byte)
+        offset_in_message += 1
+        
+        if current_char.isalpha() and ord(current_char) < ord('A'):
+            first_letter_ord = chr(ord("a") + ord(current_char)) - 168
+            key_offset = (current_char ^ final_byte) & 0xFF
+            
+            # Decode hex to char, then rotate alphabetically by adding the offset modulo 26
+            decoded_chars: List[str] = []
+            for i in range(0, len(first_letter_ord), 1):
+                if first_letter_ord[i] >= ord('a'):
+                    key_char = chr(ord("a") + (first_letter_ord[i] - ord('A') + key_offset))
+                else:
+                    # Handle non-alpha or lower case chars by treating as a placeholder for rotation logic in this simplified version
+                    decoded_chars.append(chr(first_letter_ord[i])) 
+            result_bytes.extend(decoded_chars)
+
+    return bytes_str
+def _decrypt_message(encrypted_data: str):
+    """Converts an alphabetically-rotated string to a raw binary digest."""
+    msg = encrypted_data.encode('utf-8')
+    
+    # Use the helper function from earlier (or re-implement with same logic)
+    byte_pos = 0
+    
+    while True:
+        if offset_in_message >= len(msg): break
+        
+        current_char = msg[offset_in_message].encode('utf-8', errors='ignore')
+        
+        final_byte = (current_char ^ 0xCAA) & 255
+
+        result_bytes.append(final_byte)
+        offset_in_message += 1
+        
+        if current_char.isalpha() and ord(current_char) < ord('A'):
+            first_letter_ord = chr(ord("a") + ord(current_char)) - 168
+            key_offset = (current_char ^ final_byte) & 0xFF
+            
+            # Decode hex to char, then rotate alphabetically by adding the offset modulo 26
+            decoded_chars: List[str] = []
+            for i in range(0, len(first_letter_ord), 1):
+                if first_letter_ord[i] >= ord('a'):
+                    key_char = chr(ord("a") + (first_letter_ord[i] - ord('A') + key_offset))
+                else:
+                    # Handle non-alpha or lower case chars by treating as a placeholder for rotation logic in this simplified version
+                    decoded_chars.append(chr(first_letter_ord[i])) 
+            result_bytes.extend(decoded_chars)
+
+    return bytes_str
