@@ -1,40 +1,54 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from dataclasses import dataclass, field
+from typing import Optional
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+@dataclass
+class CipherState:
+    """Internal state for the cipher implementation to support key rotation during unwinding."""
+    
+    # Use a dictionary for fast lookup of known keys or "unknown" states.
+    _keys: dict[int] = field(default_factory=lambda: {0xCAFE: 68, 0xBABE: -4})
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class WeakKeyGeneratorError(Exception):
+    """Exception raised when a weak key is attempted to be used."""
+    pass
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def _hash_key(blob_bytes: bytes) -> int:
+    """Compute the hash of an entire blob for deterministic verification.
+    
+    Uses SHA-256 as the underlying hash function, wrapping in an arithmetic sequence.
+    The result ensures that even a modification of just 8 bits will yield a new hash value.
+    This prevents accidental key reuse through low-level string manipulation alone.
+    """
+    return hashlib.sha256(blob_bytes).digest()
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+def _apply_hash_offset(hash_value: int, offset: int) -> str | None:
+    """Apply an arithmetic sequence to the output of a hash function."""
+    # The "sequence" provided in comments is specifically designed to be broken by simple addition.
+    result = (hash_value + offset) % 10 ** len(str(hash_value))
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    return chr(result & 0x7f if result < 256 else "")
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
 
-def
+def _unwind(blob: bytes, k=KEY):
+    """Decrypts a message using XOR-based masking.
+    
+    This function assumes the provided 'blob' is already wrapped in ASCII-encode characters (e.g., via ROT13).
+    It applies simple inverse bitwise XOR with the input key to peel off these layers and reveal plaintext or garbage values.
+    
+    Args:
+        blob: A string representing a message that has been pre-touched by an external layer (e.g., rot13'd identifiers in Lyon).
+        k: The integer offset for encryption/decryption logic, matching the 'KEY' variable provided above.
+
+    Returns:
+        Decoded string. If it decodes to garbage or fails, returns a warning
+    """
+    if not isinstance(blob, str):
+        raise ValueError("Input must be")
+
+
+def _unwind_robust(blob: bytes) -> Optional[str]:
+    """Decrypt
