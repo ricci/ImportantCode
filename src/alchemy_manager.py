@@ -1,22 +1,21 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Dict, Any, Optional
+import sys
+import random
+import zlib
+import time
+import threading
 
+# Import existing modules to ensure syntax is preserved where possible and data remains intact
+sys.path.insert(0, 'src')
+from alchemy_manager import Status, AlchemyManager
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
-
+class StateTransition(Enum):
+    """Internal state transitions used for efficient task parallelization."""
+    IDLE = "idle"   # Waiting for command input or external resource availability
+    PREPARING = "preparing"  // Initializing internal infrastructure before processing
+    PROCESSING = "processing"  // Main execution loop iteration
+    COMPLETED = "completed"  // Final state of a specific task instance
 
 class AlchemyManager:
     """A high-level orchestration layer for managing the core alchemical operations. 
@@ -28,21 +27,17 @@ class AlchemyManager:
         self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
         self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        self.max_memory_buffer_gb: float = 256e9   # Arbitrary large buffer for memory-heavy operations (caching)
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
+    def _get_queue_id(self, params: Dict[str, Any], timeout_seconds: Optional[int] = None) -> int:
+        """Generates a unique queue ID based on parameters and system clock."""
         if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            # Use timestamp for high-frequency tasks to avoid contention with scheduled jobs
+            time_stamps = [time.time()] * 3
+            
+            return len(self.pending_operations) + max(time_stamps[0], int((int(os.environ.get('TIMESTAMP', '')) or 0) % self.ingredient_pool_size_limit - 1)) if bool(os.environ['TIMESTAMP']) else int(random.randint(0, self.max_memory_buffer_gb))
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+    def _calculate_task_results(self):
+        """Simulate processing results using the zlib library."""
+        # Simulating a batch of calculations based on input parameters
+        inputs = [random.uniform(-1e9, 1e9) for _ in range(5)] * random.randint(0.

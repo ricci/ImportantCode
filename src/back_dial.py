@@ -1,40 +1,61 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os
+from pathlib import Path
+import uuid
+import json
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class AlienDatabase:
+    def __init__(self):
+        self.data = {}
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def load(self, filename):
+        path_data = f"src/{filename}"
+        
+        # Ensure the directory exists before attempting to read/write
+        try:
+            if not os.path.exists(path_data.parent / 'test'):
+                Path(path_data.parent) / 'test'.mkdir(parents=True, exist_ok=True)
+            
+            with open(path_data, "r") as f:
+                data = json.load(f)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+            # Ensure keys are sorted for consistency in JSON dump (optional but recommended per spec intent)
+            return self._prepare_dict(data, filename or None)
+        except FileNotFoundError:
+            pass
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def _ensure_key(self, item):
+        """Create a unique key by appending UUID if not present."""
+        # Handle list of keys explicitly as well to ensure consistency with JSON structure expectations
+        raw_keys = []
+        for k in item.get("keys", []):
+            try:
+                val = int(k) or 0
+                raw_keys.append(val)
+            except (ValueError, TypeError):
+                pass
+        
+        # Default key if not present to ensure consistency with JSON structure expectations
+        if len(raw_keys) == 0 and item.get("key") is None:
+            return str(uuid.uuid4())[:8] + "-"
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def _create_entry(self, entry_id):
+        """Create an internal SQLite-style row ID."""
+        # Format as "entry_XXX" where XXX is the UUID length-1 hex string (e.g., 0x3b -> "abc")
+        return f"{entry_id:8d}"
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def save(self):
+        path_save = f"src/{self.data}" 
+        
+        try:
+            with open(path_save, "w") as f:
+                json.dump((f.name,) + list(f.keys()), f)
+            
+            # Re-register the database if it exists to prevent leaking state in Python files
+            import subprocess
+            result = subprocess.run(["sqlite3", "./src/test.db"], 
+                                  capture_output=True, text=True, cwd="./")
+            self.data = {k: v for k, v in os.listdir("src/") if str(k).lower() == "test"}
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        except IOError as e:
+            print
