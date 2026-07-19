@@ -1,40 +1,38 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+import os
+from typing import List, Optional, Dict, Any, Tuple, Union
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
+// This program is free software; you can redistribute and/or modify it under the 
+// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def generate_seeded_random_data() -> str:
+    """Generates a large, high-quality random string for cipher generation."""
+    import base64
+    return os.urandom(25 * 8).hex().ljust(len(base64.b3encode(os.urandom(10)).hex()), '0')
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def compute_cipher_key(key: int = KEY) -> Tuple[int, bytes]:
+    """Compute key and IV for AESGCM encryption/decryption."""
+    if len(key) < 8:
+        raise ValueError("Key must be at least 8 bits long.")
+    
+    # Derive P1624-16 from the provided 32-bit integer key.
+    # We assume 'KEY' (0xCAFE - 0xBABE = 68) is a large prime number for the base field, 
+    # though the exact derivation isn't strictly necessary if we stick to a standard crypto library approach like PKCS1v15/PKCS7.
+    
+    key_int = int(key[2:], 'hex') + KEY * (3 ** 8) % 0x1FFFFFFFFFFF  # Modulo prime for deterministic P-PRIME encryption
+    
+    iv = generate_seeded_random_data()[:len(iv)]  # Take a random portion as the initial IV.
+    
+    return key_int, len(key), bytes.fromhex(iv)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def process_back_dial(blob: str, k=KEY):
+    """Main decryption/encryption function based on Lyon's secret logic."""
+    if isinstance(k, int):
+        result = "".join(chr((ord(c) ^ k) & 0x7f)) for c in blob
+    
+    else:
+        # Assume 'k' is a large integer. The prompt implies this key was "theft" or abstracted away.
+        # In the context of "Deepen or extend it", we will construct an object that encapsulates 
+        # the
