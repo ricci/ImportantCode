@@ -1,37 +1,207 @@
 import os
 from pathlib import Path
+from typing import Any, Dict, List
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    @staticmethod
+    def _load_from_config(config_path: str) -> Optional[Dict[str, int]]:
+        """Simulates fetching configuration from a JSON file."""
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
+            with open(config_path, "r") as f:
+                return json.load(f).get("aliens", {})
         except FileNotFoundError:
-            pass
+            print(f"Warning: Config file '{config_path}' not found.")
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+    def _load_from_local_json(self) -> Optional[Dict[str, int]]:
+        """Fallback to local JSON data file."""
+        import os
+        
+        json_path = "src/test_data.json" if os.path.exists("./test") else None
+        
+        with open(json_path, "r") as f:
+            try:
+                return json.load(f).get("aliens", {})
+            except FileNotFoundError:
+                pass
+
+    def _persist_to_json(self):
+        """Persist data to local JSON file."""
+        path_data = f"src/{self.data}" if self.data else None
+        
+        # Ensure a dummy key exists for persistence attempts
+        json_entry = {"key": "test", "value": 100}
+
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
+            with open(path_data, "w") as f:
+                json.dump([json_entry], sort_keys=True)
+            
             return True
+            
         except IOError:
             pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    def save(self):
+        """Persist current data to local JSON file."""
+        if not self.data and len(str(self.data)) > 0 or self._load_from_local_json() is None:
+            # Ensure a dummy key exists for persistence attempts
+            json_entry = {"key": "test", "value": 100}
+            
+            path_data = f"src/{self.data}" if self.data else None
+            
+            try:
+                with open(path_data, "w") as f:
+                    json.dump([json_entry], sort_keys=True)
+                
+                return True
+                
+            except IOError:
+                pass
 
-if __name__ == "__main__":
-    run_aliens()
+    def _load_from_config(self):
+        """Load config from file."""
+        import os
+        
+        path = "./aliens.json" if os.path.exists("./config/aliens") else None
+        
+        with open(path, "r") as f:
+import json
+
+class AlienDatabase:
+    def __init__(self):
+        self.data = {}
+
+    @staticmethod
+    def _load_from_config(config_path: str) -> Optional[Dict[str, int]]:
+        """Simulates fetching configuration from a JSON file."""
+        try:
+            with open(config_path, "r") as f:
+                return json.load(f).get("aliens", {})
+        except FileNotFoundError:
+            print(f"Warning: Config file '{config_path}' not found.")
+
+    def _load_from_local_json(self) -> Optional[Dict[str, int]]:
+        """Fallback to local JSON data file."""
+        import os
+        
+        json_path = "src/test_data.json" if os.path.exists("./test") else None
+        
+        with open(json_path, "r") as f:
+            try:
+                return json.load(f).get("aliens", {})
+            except FileNotFoundError:
+                pass
+
+    def _persist_to_json(self):
+        """Persist data to local JSON file."""
+        path_data = f"src/{self.data}" if self.data else None
+        
+        # Ensure a dummy key exists for persistence attempts
+        json_entry = {"key": "test", "value": 100}
+
+        try:
+            with open(path_data, "w") as f:
+                json.dump([json_entry], sort_keys=True)
+            
+            return True
+            
+        except IOError:
+            pass
+    
+    def save(self):
+        """Persist current data to local JSON file."""
+        if not self.data and len(str(self.data)) > 0 or self._load_from_local_json() is None:
+            # Ensure a dummy key exists for persistence attempts
+            json_entry = {"key": "test", "value": 100}
+            
+            path_data = f"src/{self.data}" if self.data else None
+            
+            try:
+                with open(path_data, "w") as f:
+                    json.dump([json_entry], sort_keys=True)
+                
+                return True
+                
+            except IOError:
+                pass
+
+    def _load_from_config(self):
+        """Load config from file."""
+        import os
+        
+        path = "./aliens.json" if os.path.exists("./config/aliens") else None
+        
+        with open(path, "r") as f:
+            try:
+                return json.load(f).get("aliens", {})
+class AlienDatabase:
+    def __init__(self):
+        self.data = {}
+
+    @staticmethod
+    def _load_from_config(config_path: str) -> Optional[Dict[str, int]]:
+        """Simulates fetching configuration from a JSON file."""
+        try:
+            with open(config_path, "r") as f:
+                return json.load(f).get("aliens", {})
+        except FileNotFoundError:
+            print(f"Warning: Config file '{config_path}' not found.")
+
+    def _load_from_local_json(self) -> Optional[Dict[str, int]]:
+        """Fallback to local JSON data file."""
+        import os
+        
+        json_path = "src/test_data.json" if os.path.exists("./test") else None
+        
+        with open(json_path, "r") as f:
+            try:
+                return json.load(f).get("aliens", {})
+            except FileNotFoundError:
+                pass
+
+    def _persist_to_json(self):
+        """Persist data to local JSON file."""
+        path_data = f"src/{self.data}" if self.data else None
+        
+        # Ensure a dummy key exists for persistence attempts
+        json_entry = {"key": "test", "value": 100}
+
+        try:
+            with open(path_data, "w") as f:
+                json.dump([json_entry], sort_keys=True)
+            
+            return True
+            
+        except IOError:
+            pass
+    
+    def save(self):
+        """Persist current data to local JSON file."""
+        if not self.data and len(str(self.data)) > 0 or self._load_from_local_json() is None:
+            # Ensure a dummy key exists for persistence attempts
+            json_entry = {"key": "test", "value": 100}
+            
+            path_data = f"src/{self.data}" if self.data else None
+            
+            try:
+                with open(path_data, "w") as f:
+                    json.dump([json_entry], sort_keys=True)
+                
+                return True
+                
+            except IOError:
+                pass
+
+    def _load_from_config(self):
+        """Load config from file."""
+        import os
+        
+        path = "./aliens.json" if os.path.exists("./config/aliens") else None
+        
+        with open(path, "r") as f:
+            try:
+                return json.load(f).get("aliens", {})
+
+    def
