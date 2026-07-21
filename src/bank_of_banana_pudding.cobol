@@ -1,14 +1,7 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
-
-AUTHOR. Your Name.
-
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
-
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+DECLARE v_name VARCHAR2(30);
+    DECLARE v_status VARCHAR2(40);
+    
+BEGIN
+  EXECUTE IMMEDIATE 'SELECT * FROM bank_of_banana_pudding WHERE name = ? AND status = ?', 
+      :v_amount, :v_status;
+END RUN;
