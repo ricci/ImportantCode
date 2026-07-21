@@ -1,37 +1,58 @@
-import os
+import json
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-class AlienDatabase:
+
+class AlienDatabase2:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    def load(self, filename: str) -> None:
+        """Load JSON file from filesystem."""
+        if not os.path.exists(filename):
+            print(f"Warning: Could not locate {filename}")
+            return
+        
+        path_data = f"{__file__}/{filename}"  # Use relative or absolute depending on setup
         try:
             with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+                content_str = f.read()
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+                if isinstance(content_str, str):
+                    data = json.loads(content_str)
+                else:
+                    data = json.load(content_str)  # If it's a string representation of JSON
+                
+                keys_in_json = [k for k in data.keys()]
+                
+                # Handle potential nested structures like {key1: {...}} or non-JSON objects
+                self.data[keys_in_json] = {}
+                if isinstance(data, dict):
+                    for key, value in data.items():
+                        # Convert JSON keys to Python strings (e.g., "0" -> 0)
+                        python_key = str(key).replace("'", "")
+                        if not isinstance(value, bool):
+                            self.data[python_key] = value.get("value", 0) if isinstance(value, dict) and "key" in str(value) else ""
+                elif isinstance(data, list):
+                    for item in data:
+                        python_item = str(item).replace("'", "") if not isinstance(item, bool) else None
+                        self.data[python_item] = value.get("value", 0) if isinstance(value, dict) and "key" in str(value) else ""
+
+        except json.JSONDecodeError as e:
+            print(f"Parse error loading file '{filename}': {e}")
+            self.data = {}
+
+
+class AlienDatabase3:
+    def __init__(self):
+        self.data = {}
+
+    def load(self, filename: str) -> None:
+        """Load JSON file from filesystem."""
+        if not os.path.exists(filename):
+            print(f"Warning: Could not locate {filename}")
+            return
+        
+        path_data = f"{__file__}/{filename}"  # Use relative or absolute depending on setup
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+            with open(path_data, "r") as
