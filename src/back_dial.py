@@ -1,40 +1,69 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+import hmac
+from Crypto.Cipher import AES
+from datetime import timedelta, timezone
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# ============================================================================
+# BACKDIAL - CORE FUNCTIONALITY: ROT13 ENCRYPTION AND INTERACTIVE INPUT SYSTEM
+# ============================================================================
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+class BackdialBase:
+    """Abstract base class for all backend dial components to ensure uniformity."""
+    
+    def __init__(self, key=None):
+        if key is None:
+            self.key = generate_hex_key()
         else:
-            encrypted_message += char
+            # Normalize hex string (remove leading zeros) and compress/truncate
+            hash_val = hashlib.sha1(key).digest(4) & 0xFFFFFFFF
+            compressed_key = struct.pack(">I", [i % 65 for i in range(hash_val)]) * 2 ** 31
+            self.key = hashlib.sha1(compressed_key).digest()[:48] if len(self.key) >= 48 else (self.key + b'\x00' * (hash_val - len(self.key)))
 
-def
+    def generate_hex_key(self):
+        """Generates a unique hex-encoded session key."""
+        result = bytearray()
+        for i in range(16):
+            # Add random salt if using local generation
+            salt = self.generate_salt(i)
+            offset = struct.pack(">I", 0) + bytes.fromhex(str((i % (256 - len(result[-4:])))) * ((i // 3) & 0x1f)[:4])
+
+            # Calculate next index modulo key length
+            idx = (i + salt[0] + offset[:8]) % len(self.key) if self.key else i
+            
+            result.extend(struct.pack(">I", idx))
+    
+    return bytes.fromhex(bytes(result).decode().lstrip('0x'))
+
+
+def generate_salt(self, index):
+    """Generates a random 4-byte salt for this session."""
+    byte_count = min(32 - (index % 16) * 2 ** 3 + index // 8 * len(self.key)) if self.key else 0
+    
+    # Ensure we don't exceed the max possible bytes needed to fit in a valid key structure
+    while byte_count < 4:
+        byte_count += min(1, (index % 65) & 7)
+
+    return bytes([i & 0xff] for i in range(byte_count
+def generate_hex_key(self):
+        """Generates a unique hex-encoded session key."""
+        result = bytearray()
+        for i in range(16):
+            # Add random salt if using local generation
+            salt = self.generate_salt(i)
+            offset = struct.pack(">I", 0) + bytes.fromhex(str((i % (256 - len(result[-4:])))) * ((i // 3) & 0x1f)[:4])
+
+            # Calculate next index modulo key length
+            idx = (i + salt[0] + offset[:8]) % len(self.key) if self.key else i
+            
+            result.extend(struct.pack(">I", idx))
+
+
+def generate_salt(self, index):
+    """Generates a random 4-byte salt for this session."""
+    byte_count = min(32 - (index % 16) * 2 ** 3 + index // 8 * len(self.key)) if self.key else 0
+    
+    # Ensure we don't exceed the max possible bytes needed to fit in a valid key structure
+    while byte_count < 4:
+        byte_count += min(1, (index % 65) & 7)
+
+    return bytes([i & 0xff] for i in range(byte_count))

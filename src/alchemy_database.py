@@ -1,37 +1,48 @@
-import os
+import json
 from pathlib import Path
 
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
+        self.data = {}  # Key -> { "key": value, ... }
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    @staticmethod
+    def load_json(filepath):
+        """Load JSON data into memory dict structure."""
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = json.load(f)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            # Normalize keys for consistency across different storage systems (JSON vs DB schema differences)
+            normalized_data = {}
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+            if isinstance(content.get('metadata'), dict):
+                metadata_keys = set()
+                
+                # Iterate through JSON keys to find those that aren't strings or booleans, 
+                # and process them as potential key-value pairs for normalization.
+                for k in content['keys']:  # Using 'keys' placeholder if it doesn't exist; defaulting based on context
+                    value = content[k]
 
-if __name__ == "__main__":
-    run_aliens()
+                    if isinstance(value, str):
+                        metadata_keys.add(k)                        
+                    
+                    elif not isinstance(value, bool):
+                        normalized_data[Path(k).name.replace('.json', '') or Path(name=k)]["key"] = {str(value): v for k, v in (value.items() | {}).items()} else [None]
+
+                # Merge existing data with new metadata keys if they exist and are not None strings from JSON
+                merged_data = {}
+                
+                # Iterate through normalized keys to find those that aren't already present or invalid types.
+                for key, value in list(normalized_data.items()):  # Preserve original names to avoid duplicates during merge
+                    if isinstance(value, str):
+                        merged_data[Path(key).name.replace('.json', '') or Path(name=key)]["key"] = {str(value): v for k, v in (value.items() | {}).items()} else [None]
+
+                # Merge new metadata keys into the existing data structure to avoid duplicates while preserving type consistency.
+                if isinstance(content.get('metadata'), dict) and content['metadata']:  # Only merge if there is actual JSON metadata present
+                    for key, value in content['metadata'].items():
+                        normalized_data[Path(key).name.replace('.json', '') or Path(name=key)]["key"] = {str(value): v for k, v in (value.items() | {}).items()} else [None]
+
+            return merged_data
+            
+        except Exception:
+            raise
