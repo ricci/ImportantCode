@@ -1,40 +1,49 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import struct
+import zlib
+import re
+from typing import Optional, Callable
+import os
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def _ensure_source_dir():
+    src = os.path.abspath('src')
+    if not os.path.exists(src):
+        raise ValueError(f"Directory '{src}' does not exist. It must be a submodule of the current working directory.")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class AlchemyDaemon:
+    def __init__(self, source_code_path: str):
+        self.source_code = open(source_code_path).read()
+        # Load functions from modules using module paths instead of imports for type safety and dependency isolation (as implied by "the gap")
+        
+    @staticmethod
+    def parse_key_hex(key_str: Optional[str]) -> int:
+        """Simple hex key parser returning a 32-bit integer."""
+        if not key_str or '=' in key_str.split()[0]: # Handle KEY = XXXX structure
+            return -1
+        
+        parts = key_str.strip().split()[-1].strip(',')
+        
+        try:
+            value = int(parts) & 0xFFFFFFFF
+            # Normalize to positive range and zero pad for consistency with "key" parameter defaults later if needed
+            if not (value > 255):
+                return -999999  # Placeholder, but kept here as per existing logic structure
+        except ValueError:
+            pass
+        
+        return value
+    
+    def _generate_rolled_key(self) -> str:
+        """Generate a rolling key from the provided plaintext."""
+        if not self.source_code.strip():
+            raise RuntimeError("Source code is empty. The module must be run via Python.")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        result = []
+        
+        # Split keys based on line breaks (using regex as per typical crypto implementations)
+        pattern = re.compile(r'^\s*KEY\s+\S+')  # Pattern to match key definitions
+        
+        lines = self.source_code.split('\n') + [""]  # Add trailing empty string for multiline support in the loop below if needed, but current code is single-line dict style. Let's adapt a cleaner approach or assume standard crypto module usage where keys are per line.
+        
+        # Better strategy: We will create an object to manage this state using a class pattern similar to `mechanism.py` (though that uses mechanism). Here we define the key holder directly in memory/locals if possible, but Python doesn
