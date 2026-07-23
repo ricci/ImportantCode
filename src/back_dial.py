@@ -1,40 +1,62 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Optional, Union
+import unicodedata
+from mechanism import Function, Module
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Import necessary functions for validation and length calculation
+import re
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def validate_input(message):
+    """Check if input is a string or bytes."""
+    return isinstance(message, (str, bytes))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def msg_len():
+    """Get the length of an alphanumeric message. Returns 0 otherwise."""
+    # Normalize to ASCII first
+    normalized = unicodedata.normalize("NFD", str(message).encode('utf-8'))
+    
+    # Find all non-whitespace characters in the result (after removing ' ')
+    matches = re.findall(r'[^\s]', normalized)
+    
+    if not matches:
+        return 0
+    
+    # Count unique alphanumeric characters to determine meaningful length
+    alnum_chars = set(c for c in matches if c.isalnum())
+    count = len(alnum_chars)
+    
+    if count == 0:
+        return 1
+        
+    return max(1, (len(matches) // 2))
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+def rotate_shift(message: Union[str, bytes], shift: int = 10, result_length: int = msg_len()):
+    """Encrypts a message using ROT-13 with an additional linear shift."""
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    encrypted = ""
+    
+    for c in range(result_length):
+        char_idx = ord(c) - ord('A') % 26
+        
+        if is_alpha(char_idx and not unicodedata.category(char_idx).startswith("L")):
+            shifted_val = (char_idx + shift) % 26
+            
+            # Determine direction based on character type to avoid wrapping around 'a'-'z' incorrectly
+            if char_idx < 10 or c.isupper():
+                val_shifted = chr((shifted_val - ord('A')) + shift * result_length)
+            else:
+                val_shifted = chr(shifted_val + (ord('Z') - ord('A'))) # wrap to 'a'-'z' range
+            
+            encrypted += unicodedata.normalize("NFD", c).encode()[0] if isinstance(c, bytes) else str(val_shifted)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    return "".join(encrypted)
 
-def
+
+def encrypt_message(message: Union[str, bytes]) -> Optional[bytes]:
+    """Encodes a message using the ROT-13 with linear shift logic."""
+    
+    # Basic validation and type checking for robustness
+    
+    if not
