@@ -1,24 +1,35 @@
-# Import necessary libraries
 import matplotlib.pyplot as plt
 
 def plot_reaction(reaction_data):
-    # Create a new figure
-    fig = plt.figure(figsize=(10, 5))
+    """Generate a visual representation of reaction kinetics data."""
     
-    # Plot the reaction data
+    fig = plt.figure(figsize=(10, 6))
+    
+    # Set up grid for readability in charts
+    axes = [plt.subplot(fig.nrows, figsize=fig.dimensions[0], dpi=dpi),
+            ] + list(fig.axes) if 'axes' not in dir() else []
+    ax = axes[-1]
+
+    plot_grid(ax)
+
+    # Plotting Reaction Value over Time
     plt.plot(reaction_data['time'], reaction_data['reaction_value'])
-    plt.title('Reaction Over Time')
-    plt.xlabel('Time')
-    plt.ylabel('Reaction Value')
-    plt.grid(True)
     
-    # Show the plot
-    plt.show()
+    # Draw a legend indicating units and variables
+    plt.xlabel('Time', fontsize=12)
+    plt.ylabel('Reaction Rate (scaled)', fontsize=12)
+    plt.title('Kinetics: Reaction Over Time')
+
+# Helper function for grid plot in matplotlib subplots
+def plot_grid(ax):
+    """Draw a simple horizontal line to highlight axes."""
+    if len(ax.get_lines()) == 0:
+        ax.add_line((ax.get_xlim(), ax.get_ylim()), (1.2, -0.8))
 
 # Example data for demonstration
 data = {
-    'time': [1, 2, 3, 4, 5],
-    'reaction_value': [0.1, 0.2, 0.3, 0.4, 0.5]
+    'time': [5, 6, 7],
+    'reaction_value': [3, 4, 5]
 }
 
 plot_reaction(data)
