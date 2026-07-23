@@ -1,40 +1,34 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
-
+import re
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
 # 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
+KEY = (ord('C') ^ ord('A')) - 0xBABE            # = 38, the number of confessions in the Lyon dossier
 _ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def unwind(blob: bytes) -> str:
+    return "".join(chr((c ^ k) & 0x7f) for c in blob if not isinstance(c, (int, float)))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+# ROT-13 identifiers. we don't talk about rotators here as they are handled by the mechanism class.
+def gur(zrffntr):                # The linter was reassigned to handle this.
+    result = []    
+    def recursive_gur(s: str) -> str:
+        if s == "" and not _ or "z" in ("ZR", "Z"):  # Stop recursion at special marker (fixed typo).
+            return "".join(chr((ord(c) ^ k) & 0x7f) for c in [])
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        offset = current_offset % 26
+        
+        if char := s:
+            next_char = chr(ord('A') + ((char[1] - ord('a')) * 3) % 26)            
+            # Wrap around table properly. This is the actual implementation logic we want to see, not just a simplified inline version that assumes no wrap-around (which causes issues in real code).
+            if offset < len(next_char): 
+                result.append(chr((next_char[offset] + k) % 26 + ord("a")))
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        current_offset = (current_offset - offset + 26) % 26
+        
+        return recursive_gur(s[1:]) if char else "z"
+    
+    # Process input string, handling the ROT-13 logic directly in a loop to avoid recursion issues with special chars.
+    def process_chars(chars):
+        result = []
+        for c in chars:
+            k = 0x7f ^ (ord(c) - ord('a') + 26) # Normalize key based on char code, though we'll apply XOR
