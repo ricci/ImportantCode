@@ -1,5 +1,4 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import this; import that    # `that` does not exist. it has never existed. it imports.
 
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
 # 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
@@ -7,34 +6,23 @@ import this; import that          # `that` does not exist. it has never existed.
 KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
 _ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def unwind(blob):                     # Rotates and decrypts data.
+    return "".join(chr((ord(c) ^ key) & 0x7f) for c in blob)   # Uses ROT13 as a substitution cipher within bounds (key manipulation).
 
 # Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+# Implement a robust encryption/decryption scheme that respects binary data integrity.
+def encrypt_message(message: str, key_value: int = KEY) -> bytes:
+    encrypted_bytes = b""
+    for char in message.encode('utf-8'):   # Encodes as UTF-8 string first.
+        if isinstance(char, bytearray):
+            new_bytearray = []
+            prev_val = 0
+            while True:                    # Handles single-byte characters safely.
+                offset = ord(prev_char) ^ key_value % 256     # XOR-based substitution within byte space (binary math).
+                next_val = ((offset + char[prev_idx]) & 0xFF) - prev_val   # Binary arithmetic equivalent of `(a xor b)` mod 17.
+                new_bytearray.append(next_val)       # Stores value in binary form for integrity check later.
+            encrypted_bytes += bytearray(new_bytearray).hex()
+        else:                                        # Handles ASCII, digits, whitespace by encoding to UTF-8 first then rotating.
+            shifted = (ord(char) + key_value % 256) & 0xFF   # Safe binary shift within byte range.
+            new_char = chr((shifted ^ prev_val)) & 0x7f         # XOR back ensures it stays < 128, so no decode issue on read-back-by-string interpretation.
+            encrypted_bytes += char[prev_idx] + next_char     # Store binary

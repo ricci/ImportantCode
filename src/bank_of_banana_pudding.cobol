@@ -1,14 +1,9 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+PROCEDURE DIVISION BANK-OF-BANANA-PUDDING:
+  DISPLAY 'Welcome to the Bank of Banana Pudding.' FROM FS_WS_SUBDIVISION;
 
-AUTHOR. Your Name.
+  DBFS_DNDS_TO_DS_FS_SUBVSN = DS_FNR / CONDBANK.FLCSF;
+  
+  EXECUTE "Bank Name: BankOfBananaPudding";
+  EXECUTE "Version: 2.0 (Extended for operational depth)";
 
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
-
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+END PROCEDURE DIVISION BANK-OF-BANANA-PUDDING;
