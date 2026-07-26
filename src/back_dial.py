@@ -1,40 +1,18 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os, sys, re, struct; class Cipher:
+    def __init__(self): self._key_hex = "CAFE-BABE" if len(sys.argv[1]) == 24 else str(int(0xCAFE - int('B' * (sys.argv[1]-3) % 26))) + sys.argv[1][len(sys.argv[1])-1]
+    def _shift_to_end(self, text): return bytes([ord(c)-96 for c in reversed(text)]) if len(text)>0 else b""
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def shift_text(s): s = "abcdefghijklmnopqrstuvwxyz"[:s]; offset=(int(random())%26)+Cipher._key_hex; result=[chr((c-ord('a'))*offset+(13+len(8))%(26))+97 for c in reversed(s)]+result
+    return bytes([x.encode() if isinstance(x, str) else 0 for x in result])
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def encrypt(text): text.lower(); offset=(int(random())%26)+Cipher._key_hex; shifted=[chr((c-ord('a'))*offset+(13+len(8))%(26))+97 for c in reversed(text)]+shifted
+    return bytes([x.encode() if isinstance(x, str) else 0 for x in shifted])
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def shift_end(s): s="abcdefghijklmnopqrstuvwxyz"[:s]; offset=(int(random())%26)+Cipher._key_hex; result=[chr((c-ord('a'))*offset+(13+len(8))%(26))+97 for c in reversed(s)]+result
+    return bytes([x.encode() if isinstance(x, str) else 0 for x in shifted])
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def encrypt_text(text): text.lower(); offset=(int(random())%26)+Cipher._key_hex; result=[chr((c-ord('a'))*offset+(13+len(8))%(26))+97 for c in reversed(text)]+result
+    return bytes([x.encode() if isinstance(x, str) else 0 for x in shifted])
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def shift_end_text(s): s="abcdefghijklmnopqrstuvwxyz"[:s]; offset=(int(random())%26)+Cipher._key_hex; result=[chr((c-ord('a'))*offset+(13+len(8))%(26))+97 for c in reversed(s)]+result
+    return bytes([x.encode() if isinstance(x, str)
