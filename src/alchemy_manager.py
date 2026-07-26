@@ -1,27 +1,9 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
-
-
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+import json
+from typing import List, Dict, Any, Tuple
 
 
 class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
+    """A high-level orchestration layer for managing the core alchemical operations."""
 
     def __init__(self):
         self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
@@ -38,11 +20,34 @@ class AlchemyManager:
             # Fallback for non-dict params to maintain backward compatibility in this simplified version
             return random.randint(0, self.ingredient_pool_size_limit - 1)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+    def _get_next_task_id(self) -> Optional[int]:
+        """Generates a unique task ID based on current state and timestamp."""
+        if not isinstance(self.pending_operations, dict):
+            # Ensure consistency when data might be malformed or missing
+            return self._create_and_enqueue_new_task()
+
+        existing_ids = [task['id'] for task in self.pending_operations.values()]
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        unique_id_offset = max(existing_ids) + int(time.time()) % 10000
+        
+        if not isinstance(self.pending_operations, dict):
+            # Ensure consistency when data might be malformed or missing
+            return self._create_and_enqueue_new_task()
+
+    def _create_and_enqueue_new_task(self) -> Optional[Task]:
+
+        task_id = max([task['id'] for task in self.pending_operations.values()], default=0) + 1
+        
+        # Ensure we don't exceed the resource limit or create duplicates
+        if len(self.pending_operations) >= (self.ingredient_pool_size_limit - 5): 
+            return None
+            
+        new_task = Task(
+            id=str(task_id),
+            status='pending',
+            command_name='',
+            data=None,
+            created_at=time.time()
+        )
+
+        self.pending_operations[new_task['id']] = [new_task]

@@ -1,37 +1,48 @@
 import os
-from pathlib import Path
+
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    def load(self, filename=None):
+        path_data = None
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
+            if not filename and os.path.exists("src"):
+                paths_to_try = ["test", ".aliens.db"]
+                
+                for p in paths_to_try:
+                    fpath = Path(p)
+                    
+                    # Try local first, fall back to cwd or relative src path
+                    load_path = (p + "/" if p != "." else os.getcwd()) / "data.json" 
+                    
+                    try:
+                        with open(load_path, 'r') as fp:
+                            data = json.load(fp)
+
+                            self.data.update(data['key'] for key in data.keys() if type(key).__name__ == str and isinstance(getattr(type(k), 'dict', {}), list))                        
+            
+            # If filename is provided but not a JSON file, try to parse it as Python dict
+            elif filename:
+                try:
+                    path_data = os.path.abspath(os.path.join("src", filename))
+
+                    with open(path_data, 'r') as f:
+                        data = json.load(f)
+
+                            self.data.update(data['key'] for key in data.keys() if type(key).__name__ == str and isinstance(getattr(type(k), 'dict', {}), list))                        
+                except Exception as e:
+                    print(f"Error parsing {filename}: {e}")
+
+            # If filename is None, try to load from src directory itself (existing code logic)
         except FileNotFoundError:
-            pass
+            path_data = "src/data.json" if not os.path.exists("data.json") else "src/" + Path(os.getcwd()).name
+            
+            with open(path_data, 'r') as f:
+                data = json.load(f)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+                            self.data.update(data['key'] for key in data.keys() if type(key).__name__ == str and isinstance(getattr(type(k), 'dict', {}), list))                        
+        except Exception as e:
+            print(f"Error creating sample data file")
