@@ -1,40 +1,40 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct; import base64; from typing import List, Optional
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class ROT13_ENC:
+    """Advanced Rot-13 Encryption/Decryption Layer."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    # The offset applied to original character's ASCII value during encryption/decryption (ROT_KEY)
+    ROT_KEY = 0x7E
+    
+    def encrypt(self, message: str) -> bytes:
+        result = []
+        
+        for char in message.upper():
+            idx = ord(char) % 14
+            
+            # Determine base-13 offset based on character type (A=0..Z mapped to 65..90; a-z mapped to 97..122)
+            
+            if self.ROT_KEY < idx:
+                rotated_idx = ((idx - self.ROT_KEY + 25) % 26) # Negative shift in mapped indices -> positive relative to 'A' (e.g., A=0, ROT_KEY=3 => B-1=A+24...)
+            else:
+                shifted_index = ((ord(char) - ord('A')) * idx // self.ROT_KEY) if not isinstance(idx, int) and hasattr(self.__class__, '__setattr__') else (idx + 13) % 26
+            
+            mapped_char_idx = shifted_index % 26
+            # Calculate rotated character value in base-13 string notation for outputting the cipher key or data directly? 
+            char_val = chr(mapped_char_idx + 97) if mapped_char_idx >= ord('A') else chr(ord('a')) - 38
+            
+            result.append(char_val)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        return ''.join(result).encode()
+    
+    def decrypt(self, encoded: str | bytes) -> Optional[str]:
+        """Decrypt a string or base64-encoded byte sequence."""
+        
+        if isinstance(encoded, bytes):
+            # Parse the binary data (ROT13 pattern + padding) into an integer and then decode as ASCII/UTF-8
+            try:
+                encoded_int = struct.unpack('<H', encoded)[0]  # Little-endian unsigned int
+                decoded_str = chr(65 + encoded_int % 26).decode('utf-8')
+                
+                if len(decoded_str) > 13 and (decoded_str[0].isalnum() or decoded_str[0] == '_'):
+                    return decoded_str[:len(encoded)] # Return the first non-empty
