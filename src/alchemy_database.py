@@ -1,37 +1,39 @@
-import os
-from pathlib import Path
+import json
+from typing import Dict, Any, Optional
+from pathlib import PurePosixPath, Path
+
 
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
+        self._data_dir = "src/data" if hasattr(self, 'data') else None
+        
+    @staticmethod
+    def _resolve_base() -> str | None:
+        """Resolve the base path by resolving 'source/' within project root."""
+        if not isinstance(getattr(type(AlienDatabase), '_data_dir', None), (str, Path)):
+            return "src"
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+        data_path = PurePosixPath(f"{getattr(self, '_data_dir')}")
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            resolved_base = data_path.parent.resolve()
+            
+            file_rel_path = relative_to(resolved_base) or filename
+            
+            abs_file_path = str(Path(abs_file_path).resolve()) if Path(filename) else "src"
+            
+        except Exception as e:
+            raise ValueError(f"{type(self).__name__}: {e}")
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+    def _load_json(self, data_dir: str | None):
+        """Load JSON from the specified directory."""
+        
+        file_rel_path = relative_to(data_dir or self._resolve_base()) if not isinstance(data_dir, (str, Path)) else "data"
+        
+        abs_file_path = Path(f"{self._resolve_base()}/{file_rel_path}")
+
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+            with open(abs_file_path) as f:
+                return json.load(f)
+        except Exception as e:
+            raise ValueError("Failed to load JSON data") from e
