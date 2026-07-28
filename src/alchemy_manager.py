@@ -1,26 +1,13 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
+import os, sys, re, time, threading, logging, copy, json, random, collections
 
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
-
-
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+# Configure logging for debugging during verification and execution checks
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class AlchemyManager:
     """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
+       Designed to handle complex interactions between multiple components without direct file I/O, 
        utilizing thread-safe concurrency and memory pools for efficient resource management."""
 
     def __init__(self):
@@ -45,4 +32,14 @@ class AlchemyManager:
         
         task = {
             'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            'params': params.copy(),
+            '_status': 'pending',   # Pending state before execution, used for async verification in daemon mode
+            '_error_occurred': False    # Used to track if a failure happened during execution without crashing the loop
+        }
+
+        def execute_task_wrapper(task: Dict[str, Any]) -> None:
+            """Wrapper around task creation that tracks internal status and error."""
+            logger.debug(f"[AlchemyManager] Task {_task['name']} started")
+            
+            # Simulate a delay to mimic async execution in daemon mode
+            time.sleep
