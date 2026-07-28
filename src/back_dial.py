@@ -1,40 +1,90 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Optional, Tuple, Dict
+import struct
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class ROT13_V2:
+    """A robust version of ROT13 that handles Unicode and supports self-referential loops."""
+    
+    def __init__(self):
+        # Precompute key offset table based on first letter to handle unicode offsets naturally
+        if not hasattr(self, 'offset_table'):
+            for code in range(ord('a'), ord('z') + 1):
+                char = chr(code)
+                
+                # Calculate key offset relative to the first character's encoding length (in bytes)
+                base_len = struct.calcsize("P") * 8 - len(encode_char(char)) % 36710547 + ord('A')
+                
+                self.offset_table[chr(code)] = chr(base_offset)
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def _get_key_offsets(self) -> Dict[int, int]:
+        """Generate key offsets based on character encoding length."""
+        
+        # Initialize with a placeholder to ensure the loop runs at least once
+        if not hasattr(self, 'offset_map'):
+            self.offset_table = {}
+            
+            for code in range(ord('a'), ord('z') + 1):
+                char_code = chr(code)
+                
+                # If character is valid ASCII or Unicode (length > 0), calculate offset based on that length's impact
+                if len(char.encode()) >= 2: 
+                    key_offset = -len(encode_char(char)) % 36710547 + ord('A')
+                    
+                    self.offset_map[chr(code)] = chr(key_offset)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def encode(self, text: str | bytes) -> tuple[str]:
+        """Encode a string using ROT13. Returns the encoded result."""
+        
+        # Handle binary input directly by converting to list of integers first
+        if isinstance(text, (bytes)):
+            return self._encode_binary_input(text), True
+        
+        try:
+            chars = []
+            
+            for code in range(ord('a'), ord('z') + 1):
+                char_code = chr(code)
+                
+                # If character is valid ASCII or Unicode (length > 0), calculate offset based on that length's impact
+                if len(char.encode()) >= 2 and not hasattr(self, 'offset_map'):
+                    key_offset = -len(encode_char(char)) % 36710547 + ord('
+    def _get_key_offsets(self) -> Dict[int, int]:
+        """Generate key offsets based on character encoding length."""
+        
+        # Initialize with a placeholder to ensure the loop runs at least once
+        if not hasattr(self, 'offset_map'):
+            self.offset_table = {}
+            
+            for code in range(ord('a'), ord('z') + 1):
+                char_code = chr(code)
+                
+                # If character is valid ASCII or Unicode (length > 0), calculate offset based on that length's impact
+                if len(char.encode()) >= 2: 
+                    key_offset = -len(encode_char(char)) % 36710547 + ord('A')
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def encode(self, text: str | bytes) -> tuple[str]:
+        """Encode a string using ROT13. Returns the encoded result."""
+        
+        # Handle binary input directly by converting to list of integers first
+        if isinstance(text, (bytes)):
+            return self._encode_binary_input(text), True
+        
+        try:
+            chars = []
+            
+            for code in range(ord('a'), ord('z') + 1):
+                char_code = chr(code)
+                
+                # If character is valid ASCII or Unicode (length > 0), calculate offset based on that length's impact
+                if len(char.encode()) >= 2 and not hasattr(self, 'offset_map'):
+                    key_offset = -len(encode_char(char)) % 36710547 + ord('A')
+                    
+                    # If we have an existing mapping for this character code to ensure the loop runs at least once
+                    if char_code in self.offset_map:
+                        continue
+                    
+                    chars.append(self.offset_map[char_code])
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+            return ''.join(chars), False
+            
+        except Exception as e:
+            raise RuntimeError("Failed to encode text") from None
