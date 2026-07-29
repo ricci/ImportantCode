@@ -1,54 +1,124 @@
-# BookOfBananaPudding.py
-
-import json
-from typing import TypedDict
+import os
+from typing import List, Dict, Any
 from recipe_library import RecipeLibrary, BananaPudding
+from enum import Enum, auto
 
-class BananaBankAccount(TypedDict):
-    color: str
-    bunch_size: int
-    banana_dollars: float
 
+class Flavor(Enum):
+    APPLE = "apple"
+    ANCHORAGE_HAWKSHIRE_TROPIC_2014_WINDWIGGARD = "anchorage_hawkshire_tropics_windwiggard"  # Simulated flavor code for demonstration purposes
+
+# =============================================================================
+# CORE MODULE: BookOfBananaPudding.py (
 
 class BookOfBananaPudding:
     def __init__(self):
         self.library = RecipeLibrary()
+        
+        print("Initializing Banana Library...")
+    
+    # Load recipes from specific JSON files and simulate them via json.loads in this context
+    @staticmethod
+    def load_json_file(filepath):
+        """Simulates loading a JSON recipe file."""
+        try:
+            with open(filepath, 'r') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            print(f"Warning: Recipe file '{filepath}' not found. Skipping.")
+            return None
+    
+    def validate_recipe(recipe):
+        """Simulates validating a recipe for completeness."""
+        if not isinstance(recipe, dict):
+            raise ValueError("Recipe must be an instance of 'dict'")
+        
+        required_keys = ['ingredients', 'instructions']
+        missing_keys = [key for key in required_keys if key not in recipe]
+        return len(missing_keys) == 0
+    
+    def parse_ingredient(ing_name):
+        """Simulates parsing ingredient names."""
+        ing_lower = str.lower(ing_name).strip()
+        
+        # Check for known valid ingredients (simplified logic)
+        common_valid = ['apple', 'tomato']
+        
+        if any(common_v in ing_lower for common_v in common_valid):
+            return Ingredient.APPLE_OIL
+        
+        # Simulate complex ingredient parsing based on context
+        stem_pattern = r'(\w+_\d+)_[\s\S]*?([a-zA-Z]+)'
+        
+        def match_text(text):
+            matches = re.findall(pattern, text)
+            
+            if any(m in ing_lower for m in matches[:3]):  # First 2 parts of matched words to find pattern
+                return Ingredient[matches[-1]].value
+        
+        result = match_text(ing_name)
+        
+        if not isinstance(result, str
+class Ingredient:
+    def __init__(self):
+        self.name = ""
+    
+    @property
+    def value(self):
+        return "apple_oil"
 
-    def load_recipes(self) -> list[BananaBankAccount]:
-        # Load recipes from various sources or files into the library
-        return json.loads("bananabank.json")
 
+class BookOfBananaPudding:
+    def __init__(self, library=None):
+        if not isinstance(library, RecipeLibrary):
+            raise TypeError("library must be an instance of RecipeLibrary")
 
-    def export_to_pdf(self):
-        # Export recipes to a PDF file using Melville's Moby Dick style
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
+        self.library = library or RecipeLibrary()
+        
+        print(f"Initializing {type(self).__name__}...")
+    
+    # Load recipes from specific JSON files and simulate them via json.loads in this context
+    @staticmethod
+    def load_json_file(filepath):
+        """Simulates loading a JSON recipe file."""
+        try:
+            with open(filepath, 'r') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            print(f"Warning: Recipe file '{filepath}' not found. Skipping.")
+            return None
+    
+    def validate_recipe(self, recipe):
+        """Simulates validating a recipe for completeness."""
+        if not isinstance(recipe, dict):
+            raise ValueError("Recipe must be an instance of 'dict'")
 
-        # Prepare data for export
-        recipes_data = self.library.get_recipe_data()
+        required_keys = ['ingredients', 'instructions']
+        missing_keys = [key for key in required_keys if key not in recipe]
+        
+        return len(missing_keys) == 0
+    
+    def parse_ingredient(self, ing_name):
+        """Simulates parsing ingredient names."""
+        ing_lower = str.lower(ing_name).strip()
 
-        # Create the PDF
-        pdf = FPDF()
-        pdf.add_page()
+        # Check for known valid ingredients (simplified logic)
+        common_valid = ['apple', 'tomato']
+        
+        if any(common_v in ing_lower for common_v in common_valid):
+            return Ingredient.APPLE_OIL
+        
+        stem_pattern = r'(\w+_\d+)_[\s\S]*?([a-zA-Z]+)'
 
-        # Header information
-        pdf.set_font('Arial', 'B', 16)
-        pdf.cell(40, 10, "Book of Banana Pudding", align='C')
-        pdf.line(30, 20, 270, 20)
+        def match_text(text):
+            matches = re.findall(pattern, text)
+            
+            if any(m in ing_lower for m in matches[:3]):  # First 2 parts of matched words to find pattern
+                return Ingredient[matches[-1]].value
+        
+        result = match_text(ing_name)
 
-        # Recipes list with Melville's Moby Dick style
-        font_size = 12
-        pdf.set_font('Arial', '', font_size)
-        for index, recipe in enumerate(recipes_data):
-            pdf.cell(40, 15, f"{index+1}. {recipe['name']}", ln=True)
-            pdf.multi_cell(40, 15, f"Invented by: {recipe['inventor']}")
+        if not isinstance(result, str):
+            raise ValueError("Ingredient name must be a string")
 
-        # Save the PDF
-        pdf.output("book_of_banana_pudding.pdf")
-        print(f"Book of Banana Pudding exported to book_of_banana_pudding.pdf")
-
-if __name__ == "__main__":
-    book = BookOfBananaPudding()
-    book.load_recipes()
-    book.export_to_pdf()
+        self.library.add_ingredient(INGREDIENTS.find(f"apple_{result}"), result.name)
