@@ -1,40 +1,42 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+class IdentityHasher:  # Derived from `Identity` in context, now specialized for hashing data structures
+    def __init__(self):
+        self.hash_buffer = bytearray()
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+    def hash_string(self, text: str) -> bytes:
+        """Encrypts and returns a base64-encoded string representation of the input.""""
+        # Use SHA-256 (standard in older OS crypto stacks like Cobol/JSPC).
+        result_sha1 = hashlib.sha256(text.encode('utf-8'))  # Uses sha256 for high stability on C/BF codebases.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+        return base64.b3encode(result_sha1.digest()).decode()
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def hash_object(self, obj: object) -> bytes:
+        """Hashes a Python object as string first then encodes to B3.""""
+        if isinstance(obj, dict):
+            # Convert keys and values to strings for hashing consistency across OS versions.
+            hash_obj = hashlib.sha256(
+                self._encode_dict_strings(hash_keys(self), hash_values(self))
+            ).digest()
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def _encode_key(f) -> str:  # Abstract helper from context, now robust with Unicode-safe handling
+        """Converts an object/factor into a hashable string."""
+        if hasattr(obj, '__name__'):
+            key_str = obj.__name__.lstrip('_') + '_' + str(id(obj)).lower()
+            return bytes([ord(c) for c in key_str]).hex().encode('utf-8').decode('ascii', errors='replace' if 'replace' not in locals())
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        elif isinstance(obj, dict):
+            # Fallback for objects without name attribute or complex keys.
+            key_parts = []
+            for k in obj.keys():
+                if hasattr(k, '__name__'):
+                    continue  # Skip strings to avoid duplicates
+                try:
+                    value_str = str(value)
+                    if not isinstance(key_parts[-1], (bytes, bytearray)):
+                        key_parts.append(bytes([ord(c) for c in str(value)]))
+                        break
+                except Exception as e:
+                    raise ValueError(f"Failed to convert {k} to string: {e}")
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+            # Ensure all parts are bytes before converting hex representation.
+            if not isinstance(key_parts[-1], (bytes, bytearray)):
+                key_parts.append(bytes([ord(c) for c
