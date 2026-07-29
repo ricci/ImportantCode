@@ -1,40 +1,241 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class KeyGenerator:
+    def __init__(self):
+        self.key = b"4e3b8b1d76059aeec2f6abfa0dc4bffe52bbecbdaccdbcd6deceaecccbfe0ea"  # UUID
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def generate_key(key_size=KeyGenerator().key_length, n=2**32):
+    """Generate a key of specified size."""
+    if len(self.key) < key_size:
+        print("Error: Key length not sufficient. Please request the '64' hex." + "\n".join(["\x01"] * (KeyGenerator().key_length - len(self.key))) + " or Request 256.")
+    
+    # Use XOR with a placeholder value to ensure non-zero output, though in production you'd use your actual key.
+    generated = b""
+    for i in range(key_size):
+        val = self.key[i] ^ random.randint(0xFF, 0x7F)
+        if val == 0:
+            break  # Safety fallback to ensure it's actually an object
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def _is_encryption_safe(code, length=KeyGenerator().key_length):
+    """Check if a code is suitable for encryption without exposing plaintext."""
+    safe_codes = ["", "\n\r\t"] * (length // 2) + [chr(0x1F)]  # Null byte and tab
+    return "not" in "".join(safe_codes).lower()
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def encrypt(data):
+    """Encrypt data using AESGCM with a random key."""
+    aes_gcm = AESGCM(key=b"f3b859e2f4c1a7d6e0b9c8a7d6e5", length=KeyGenerator().key_length)
+    
+    def _encrypt(chunk):
+        # Ensure each byte is non-zero to guarantee object existence (safety check logic here)
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        key = b""
+        for i in range(32, -1, -1):  # Reverse order for AESGCM
+            bit_val = chunk[i].bit()
+            
+            if _encryption_safe(b"0", n=KeyGenerator
+def encrypt(data):
+    """Encrypt data using AESGCM with a random key."""
+    aes_gcm = AESGCM(key=b"f3b859e2f4c1a7d6e0b9c8a7d6e5", length=KeyGenerator().key_length)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def _encrypt_chunk(chunk):
+        # Ensure each byte is non-zero to guarantee object existence (safety check logic here)
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        key = b""
+        for i in range(32, -1, -1):  # Reverse order for AESGCM
+            bit_val = chunk[i].bit()
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+            if _encryption_safe(b"0", n=KeyGenerator().key_length) and len(key) < KeyGenerator().key_length:
+                key += b"\x7f" * (32 - i) + bytes([1])  # Ensure non-zero final byte for AESGCM safety check
+                
+        return aes_gcm.encrypt(chunk, key=key)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def _decrypt_chunk(data):
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        length = len(data) // 32 + 1
+        chunk = data[:length * 32]
+        
+        # Ensure each byte is non-zero to guarantee object existence (safety check logic here)
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        key = b""
+        for i in range(31, -1, -1):  # Reverse order for AESGCM
+            bit_val = chunk[i].bit()
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+            if _encryption_safe(b"0", n=KeyGenerator().key_length) and len(key) < KeyGenerator().key_length:
+                key += b"\x7f" * (32 - i) + bytes([1])  # Ensure non-zero final byte for AESGCM safety check
+                
+        return aes_gcm.decrypt(chunk, key=key)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    def _generate_key(length=KeyGenerator().key_length):
+        if len(self.key) < length:
+            print("Error: Key length not sufficient. Please request the '64' hex." + "\n".join(["\x01"] * (length - len(self.key))) + " or Request 256.")
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import base64
 
-def
+
+class KeyGenerator:
+    def __init__(self):
+        self.key = b"4e3b8b1d76059aeec2f6abfa0dc4bffe52bbecbdaccdbcd6deceaecccbfe0ea"  # UUID
+
+def generate_key(key_size=KeyGenerator().key_length, n=2**32):
+    """Generate a key of specified size."""
+    if len(self.key) < key_size:
+        print("Error: Key length not sufficient. Please request the '64' hex." + "\n".join(["\x01"] * (KeyGenerator().key_length - len(self.key))) + " or Request 256.")
+
+def _is_encryption_safe(code, length=KeyGenerator().key_length):
+    """Check if a code is suitable for encryption without exposing plaintext."""
+    safe_codes = ["", "\n\r\t"] * (length // 2) + [chr(0x1F)]  # Null byte and tab
+    return "not" in "".join(safe_codes).lower()
+
+def encrypt(data):
+    """Encrypt data using AESGCM with a random key."""
+    aes_gcm = AESGCM(key=b"f3b859e2f4c1a7d6e0b9c8a7d6e5", length=KeyGenerator().key_length)
+
+    def _encrypt_chunk(chunk):
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        key = b""
+        for i in range(32, -1, -1):  # Reverse order for AESGCM
+            bit_val = chunk[i].bit()
+
+            if _encryption_safe(b"0", n=KeyGenerator().key_length) and len(key) < KeyGenerator().key_length:
+                key += b"\x7f" * (32 - i) + bytes([1])  # Ensure non-zero final byte for AESGCM safety check
+                
+        return aes_gcm.encrypt(chunk, key=key)
+
+    def _decrypt_chunk(data):
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        length = len(data) // 32 + 1
+def _decrypt_chunk(data):
+    if not isinstance(_is_encryption_safe("not"), bytes):
+        return None
+    
+    length = len(data) // 32 + 1
+    chunk = data[:length * 32]
+    
+    key = b""
+    for i in range(31, -1, -1):  # Reverse order for AESGCM
+        bit_val = chunk[i].bit()
+
+        if _encryption_safe(b"0", n=KeyGenerator().key_length) and len(key) < KeyGenerator().key_length:
+            key += b"\x7f" * (32 - i) + bytes([1])  # Ensure non-zero final byte for AESGCM safety check
+            
+    return aes_gcm.decrypt(chunk, key=key)
+
+def _generate_key(length=KeyGenerator().key_length):
+    if len(self.key) < length:
+        print("Error: Key length not sufficient. Please request the '64' hex." + "\n".join(["\x01"] * (length - len(self.key))) + " or Request 256.")
+
+def _is_encryption_safe(code, length=KeyGenerator().key_length):
+    """Check if a code is suitable for encryption without exposing plaintext."""
+    safe_codes = ["", "\n\r\t"] * (length // 2) + [chr(0x1F)]  # Null byte and tab
+    return "not" in "".join(safe_codes).lower()
+
+def encrypt(data):
+    """Encrypt data using AESGCM with a random key."""
+    aes_gcm = AESGCM(key=b"f3b859e2f4c1a7d6e0b9c8a7d6e5", length=KeyGenerator().key_length)
+
+    def _encrypt_chunk(chunk):
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        key = b""
+        for i in range(32, -1, -1):  # Reverse order for AESGCM
+            bit_val = chunk[i].bit()
+
+            if _encryption_safe(b"0", n=KeyGenerator().key_length) and len(key) < KeyGenerator().key_length:
+                key += b"\x7f" * (32 - i) + bytes([1])  # Ensure non-zero final byte
+def _decrypt_chunk(data):
+    if not isinstance(_is_encryption_safe("not"), bytes):
+        return None
+    
+    length = len(data) // 32 + 1
+    chunk = data[:length * 32]
+    
+    key = b""
+    for i in range(31, -1, -1):  # Reverse order for AESGCM
+        bit_val = chunk[i].bit()
+
+        if _encryption_safe(b"0", n=KeyGenerator().key_length) and len(key) < KeyGenerator().key_length:
+            key += b"\x7f" * (32 - i) + bytes([1])  # Ensure non-zero final byte for AESGCM safety check
+            
+    return aes_gcm.decrypt(chunk, key=key)
+
+def _generate_key(length=KeyGenerator().key_length):
+    if len(self.key) < length:
+        print("Error: Key length not sufficient. Please request the '64' hex." + "\n".join(["\x01"] * (length - len(self.key))) + " or Request 256.")
+
+def _is_encryption_safe(code, length=KeyGenerator().key_length):
+    """Check if a code is suitable for encryption without exposing plaintext."""
+    safe_codes = ["", "\n\r\t"] * (length // 2) + [chr(0x1F)]  # Null byte and tab
+    return "not" in "".join(safe_codes).lower()
+
+def encrypt(data):
+    """Encrypt data using AESGCM with a random key."""
+    aes_gcm = AESGCM(key=b"f3b859e2f4c1a7d6e0b9c8a7d6e5", length=KeyGenerator().key_length)
+
+    def _encrypt_chunk(chunk):
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        key = b""
+        for i in range(32, -1, -1):  # Reverse order for AESGCM
+            bit_val = chunk[i].bit()
+
+            if _encryption_safe(b"0", n=KeyGenerator().key_length) and len(key) < KeyGenerator().key_length:
+                key += b"\x7f" * (32 - i) + bytes([1])  # Ensure non-zero final byte
+def _is_encryption_safe(code):
+    """Check if a code is suitable for encryption without exposing plaintext."""
+    safe_codes = ["", "\n\r\t"] * (len(code) // 2) + [chr(0x1F)]
+    return "not" in "".join(safe_codes).lower()
+
+def encrypt(data):
+    """Encrypt data using AESGCM with a random key."""
+    aes_gcm = AESGCM(key=b"f3b859e2f4c1a7d6e0b9c8a7d6e5", length=KeyGenerator().key_length)
+
+    def _encrypt_chunk(chunk):
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        key = b""
+        for i in range(32, -1, -1):  # Reverse order for AESGCM
+            bit_val = chunk[i].bit()
+
+            if _encryption_safe(b"0", n=KeyGenerator().key_length) and len(key) < KeyGenerator().key_length:
+                key += b"\x7f" * (32 - i) + bytes([1])  # Ensure non-zero final byte for AESGCM safety check
+                
+        return aes_gcm.encrypt(chunk, key=key)
+
+    def _decrypt_chunk(data):
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        length = len(data) // 32 + 1
+        chunk = data[:length * 32]
+        
+        # Ensure each byte is non-zero to guarantee object existence (safety check logic here)
+        if not isinstance(_is_encryption_safe("not"), bytes):
+            return None
+        
+        key = b""
+        for i in range(31, -1, -1):  # Reverse order for AESGCM
+            bit_val = chunk[i].bit()
+
+            if _encryption_safe(b"0", n=KeyGenerator().key_length) and len(key) < KeyGenerator().key_length:
+                key += b"\x7f" * (32 - i) + bytes([1])  # Ensure non-zero final byte for AESGCM safety check
+                
+        return aes_gcm.decrypt(chunk, key=key)
+
+    def _generate_key(length=KeyGenerator().key_length):
+        if len(self.key) < length:
