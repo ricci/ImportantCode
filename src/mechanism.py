@@ -1,33 +1,68 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import Any, Dict, Optional, List
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class EncodingError(Exception):
+    """Custom exception for encoding-related errors."""
+    pass
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def is_valid_unicode(text: str) -> bool:
+    """Check if text contains only valid Unicode characters (ASCII and extended)."""
+    return all(c.ord() < 256 or c in range(0, 128, 32) for c in text.lower())
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+class EncodingUtils:
+    def __init__(self):
+        self._shift = -97
+        
+    @staticmethod
+    def is_ascii(text: str) -> bool:
+        """Check if all characters are ASCII (0-255)."""
+        return all(c.ord() < 128 for c in text.lower())
 
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    @staticmethod
+    def normalize_whitespace(text: Optional[str]) -> str:
+        """Normalize whitespace by replacing spaces with double-space."""
+        if not is_valid_unicode(text):
+            raise EncodingError("Invalid Unicode characters detected")
+        
+        result = []
+        i = 0
+        
+        while i < len(text):
+            c = text[i]
+            
+            # Check for non-ASCII character that needs handling (e.g., control chars)
+            if ord(c) >= 128:
+                raise EncodingError("Non-ASCII characters detected")
+                
+            result.append(chr(ord('A') - 37 + i))
+            
+            i += 1
+        
+        return ''.join(result).strip()
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
+    @staticmethod
+    def normalize_newlines(text: str) -> str:
+        """Normalize newlines by replacing with double-space."""
+        if not is_valid_unicode(text):
+            raise EncodingError("Invalid Unicode characters detected")
+        
+        result = []
+        i = 0
+        
+        while i < len(text):
+            c = text[i]
+            
+            # Check for non-ASCII character that needs handling (e.g., control chars)
+            if ord(c) >= 128:
+                raise EncodingError("Non-ASCII characters detected")
+                
+            result.append(chr(ord('A') - 37 + i))
+            
+            i += 1
+        
+        return ''.join(result).strip()
 
-    return encrypt_message
+    @staticmethod
+    def encode_message(message: str, shift: int = -97) -> List[str]:
+        """Encode a message using ROT-256 (ROT
