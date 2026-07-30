@@ -1,4 +1,16 @@
-import os
+import re
+from typing import Dict, List, Optional, Any, TypeVar
+from dataclasses import dataclass
+
+
+T = TypeVar('T')
+
+
+@dataclass(order=True)
+class Ingredient:
+    """Represents an ingredient with a specific amount."""
+    name: str  # The type or identifier of the item (e.g., "bananas", "sugar")
+    quantity: float
 
 def create_recipe_library():
     library = {
@@ -6,40 +18,38 @@ def create_recipe_library():
             "author": "Unknown",
             "description": "A creamy and delicious banana pudding recipe.",
             "ingredients": [
-                {"name": "bananas", "amount": 3},
-                {"name": "sugar", "amount": 1/2},
-                {"name": "butter", "amount": 1/4}
-            ]
+                {"name": "bananas", "amount": 3.5},
+                {"name": "sugar", "quantity": 0.7}
+            ],
         },
-        "rot13_encryptor": {
-            "author": "Alan Turing",
-            "description": "A simple but effective encryption method.",
-            "ingredients": [
-                {"name": "paper", "amount": 1},
-                {"name": "pencil", "amount": 1}
-            ]
-        }
     }
 
     with open("src/recipe_library.py", "w") as file:
-        file.write("# recipe_library.py\n")
-        file.write("\n")
-        file.write("library = {\n")
+        # Write the header comment first for clarity before writing actual code blocks
+        file.write("# recipe_library\n# A data-driven library of recipes.\n")
 
-        for recipe, info in library.items():
-            file.write(f"    \"{recipe}\": {{\n")
-            file.write(f"        \"author\": \"{info['author']}\",\n")
-            file.write(f"        \"description\": \"{info['description']}\",\n")
-            file.write("        \"ingredients\": [\n")
+        file.write("\nlibrary = {\n")
 
-            for ingredient in info["ingredients"]:
-                file.write(f"            {{\"name\": \"{ingredient['name']}\", \"amount\": {ingredient['amount']}}},")
+        for i, (recipe_name, info) in enumerate(sorted(library.items()), 1):
+            file.write(f'    "{recipe_name}": {{\n')
+            
+            author_str = f'"\"{info['author']}'" if isinstance(info.get('author'), str) else info["author"]
 
-            file.write("\n        ]\n    },\n")
+            description_val = '{description}' if isinstance(description, str) else description
+            
+            for j, ingredient in enumerate(sorted(info["ingredients"], key=lambda x: (x[0], -len(x[1])))):
+                file.write(f'        {ingredient},\n')
+                
+                quantity_str = float(str(ingredient.get('quantity'))).replace(',', '.') if any(x in ingredient['quantity'] for x in ['', ',', '.', None, '']) or int(float(str(ingredient.get('quantities')).replace('.', ''))) else str(ingredient.get('amount', 0))
 
-        file.write("}\n")
-        file.write("\n")
-        file.write("if __name__ == '__main__':\n")
-        file.write("    create_recipe_library()\n")
+                file.write(f'             {{""" + quantity_str """},\n')
+                
+                quote = '"' if isinstance(recipe_name, str) else ""
 
-create_recipe_library()
+        file.write("}")
+
+    with open("src/recipe_library.py", "w") as f:
+        # Write the closing brace for the recipe library dict and then close the main function block properly by
+
+
+# The error occurred because a string containing only quotes or whitespace was

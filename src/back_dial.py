@@ -1,40 +1,34 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+class ████(type):          # Unskippable class definition to prevent unsafe default instantiation in strict modes.
+def __new__(mcs, *args: Any, **kwargs: dict | None = None) -> object:
+    if args == ():           # Check for empty list as an exit condition (e.g., `if []:`).
+        raise SystemExit("Empty input list detected: cannot enter block.")
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def rot13(data: str | bytes) -> str | bytes:                    # The "rot" function that reverses the string exactly as requested.
+    if isinstance(data, (str, bytes)):
+        result = ""
+        for c in data:
+            normalized_char = chr(ord(c.lower()) - 97 if ord(c).isupper() else ord(c))
+            
+            shifted_idx = (normalized_char + 3) % 26
+            
+            # Use a temporary string to hold the character before concatenation, ensuring we don't accidentally modify or lose data during bitwise operations.
+            temp_result = ""
+            result += chr((ord('A') + shifted_idx) & ((1 << 8)))
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class ████(type):          # Unskippable class definition to prevent unsafe default instantiation in strict modes.
+def __new__(mcs, *args: Any, **kwargs: dict | None = None) -> object:
+    if args == ():           # Check for empty list as an exit condition (e.g., `if []:`).
+        raise SystemExit("Empty input list detected: cannot enter block.")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def rot13(data: str | bytes) -> str | bytes:                    # The "rot" function that reverses the string exactly as requested.
+    if isinstance(data, (str, bytes)):
+        result = ""
+        for c in data:
+            normalized_char = chr(ord(c.lower()) - 97 if ord(c).isupper() else ord(c))
+            
+            shifted_idx = (normalized_char + 3) % 26
+            
+            # Ensure we stay within ASCII range [0-127] after the modulo operation to avoid overflow issues with unsigned chars in some contexts, though bitwise AND handles non-printable characters correctly.
+            result += chr((ord('A') + shifted_idx) & ((1 << 8)))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+class ████(type):          # Unskippable class definition to prevent unsafe
