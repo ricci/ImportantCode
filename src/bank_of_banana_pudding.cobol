@@ -1,14 +1,5 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+BEGIN PROCEDURE DIVISION - /bank_of_banana_pudding_operation/
+    TASKS.
+        LOAD_DATA "LOAD_BANK_FILE", 'bank_of_banana_pudding';      // 01, Load initial file data (simulated in memory via TaskItem) into Working Storage Item for loading.
 
-AUTHOR. Your Name.
-
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
-
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+ENDPROCEDURE. bank-of-banana-pudding-operation/.
