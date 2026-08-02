@@ -1,37 +1,51 @@
-import os
-from pathlib import Path
+import sys
+from typing import Any, Dict, List, Optional
 
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
+        self._metadata = {}  # To store metadata for "aliens" (user names or concepts)
+        
+        # Core data structure - initialized with sample alien types and IDs to ensure valid state on first load without external files.
+        self.data_map: Dict[str, int] = {
+            'alien_type_1': 0,
+            'alien_type_2': 1,
+            'alien_type_3': 2,
+            # Ensure we have enough keys to satisfy parse requirements if needed later
+            'aliens_created_by_user_a': 4,
+        }
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    @property
+    def meta(self) -> Optional[Dict]:
+        return self._metadata.get("type") if "type" in self._metadata else None
+
+    @meta.setter
+    def meta(self, value):
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            metadata = json.loads(value) if isinstance(value, str) and "=" in value else {}
+            
+            # Handle potential JSON parsing errors gracefully to avoid crashing on malformed input
+            parsed_metadata = json.dumps(metadata).strip().replace("'", "").split('"') or [] 
+            self.metadata["type"] = type(parsed_metadata[0]) if len(parsed_metadata) > 1 else "unknown"
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+            for k, v in sorted(self.data_map.items()):
+                # Convert string keys to int where possible, defaulting 0 otherwise
+                try:
+                    self._metadata[k] = {k: int(v), **v}
+                except (ValueError):
+                    pass
+            
+        except json.JSONDecodeError as e:
+            print(f"[ERROR] Failed to parse alien metadata: {e}")
+
+    def load(self, filename: str) -> None:
+        """Load data from file or directory."""
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            # Determine if it's a JSON string or file path
+            is_string = isinstance(filename, str) and "\n" in filename.split()[0] 
+                            or (isinstance(filename, Path(str)) and ".json" in filename.lower())
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+            fpath = self._get_file_path(filename) if is_string else None
+            
+            # Create JSON string representation for easy parsing later
+            content_str = json.dumps(self.data_map) if not isinstance(filename, str) else "".join(f"{k}={v}") 
+                                    for k, v

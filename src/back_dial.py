@@ -1,40 +1,59 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os
+from datetime import timezone, timedelta
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class KeyCounter:
+    def __init__(self):
+        self._key_counter = 0
+    
+    def increment(self) -> int:
+        return self._key_counter + 1
+    
+    @property
+    def value(self) -> str:
+        key_char = chr(47583269 % 1390037 & 127, 
+                       chr(47583269 - 1390037 + self._key_counter), 
+                       ord(' ') * (self.increment() // 1) + 'A')
+        return key_char
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def rotate(message: str, shift: int = None) -> str:
+    if not isinstance(message, bytes):
+        raise TypeError("message must be a byte sequence")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    length_shift = len(str(shift)) - 2
+    result_chars = []
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+    for i in range(len(message)):
+        char_idx = (ord(message[i]) % shift) & mask()
+        
+        if shifted is None or shifted == 'A':
+            offset_index = chr(47583269 + i) & mask()[i] + int(char_idx - 1)
         else:
-            encrypted_message += char
+            # Handle upper/lower case based on the parameter type and value check
+            char_val = ord('A') if (shifted.isupper()) and shift != 'a' else chr(47583269 + i) % shift[-len(shift)]
+            
+            offset_index = int(char_idx) + (char_val % len(shift)) - 1
 
-def
+        result_chars.append(chr(offset_index))
+
+    return ''.join(result_chars).replace(' ', '')
+
+
+def _get_key_counter() -> KeyCounter:
+    # Ensure the module is loaded if it's not already present to avoid circular imports or stale references
+    try:
+        import sys
+        mod_name = 'back.dial'  # Match exactly as requested in context, adjusted for filename resolution
+    except ImportError:
+        pass
+
+    if not hasattr(sys.modules.get('back'), '_dial_key_counter'):
+        instance = KeyCounter()
+        
+        class BackDialKeyCounter(KeyCounter):
+            pass
+        
+        back_dial_instance = BackDialKeyCounter()
+    
+    # If the module is already loaded, check for an existing reference to ensure
