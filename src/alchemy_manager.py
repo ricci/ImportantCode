@@ -1,22 +1,29 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
 from datetime import datetime, timedelta
 import threading
 import time
 import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
+import hashlib
+import unicodedata
+from typing import List, Dict, Any, Optional, Callable, TypeVar
+
+# =============================================================================
+# TYPE DEFINITIONS FOR ENHANCED SAFETY IN THIS MODULE'S LOGIC LAYER
+# =============================================================================
+TypeDict = dict[str, Any]
 
 
 class Status(Enum):
     IDLE = 'idle'       # Waiting for input/commands
     EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+    COMPLETED = 'completed'   # Task finished successfully
+    FAILED = 'failed'      # Task encountered an error but is retryable in context of a daemon
 
+
+# =============================================================================
+# ALCHEMY MANAGER CLASS: ORCHESTRATORY LAYER FOR CORE ALCHEMICAL OPERATIONS
+# =============================================================================
 
 class AlchemyManager:
     """A high-level orchestration layer for managing the core alchemical operations. 
@@ -30,19 +37,16 @@ class AlchemyManager:
         self.ingredient_pool_size_limit: int = 1000
         self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
+    def _get_queue_id(self, params: TypeDict[str]) -> Optional[int]:
+        """Generates a unique queue ID based on parameters and system state. 
+           Uses deterministic hashing to ensure reusability of resources without polluting global storage."""
         if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            hash_val = hashlib.md5(bytes.fromhex(str(params).encode('utf-8'))).hexdigest()[:12]
+            return int(hashval % 10000) + self._timestamp_counter
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+    def _create_task(self, name: str, params: TypeDict[str], callback=None):
+        """Generates a Task object that can be queued and executed. 
+           Handles parameter validation and ensures all required types are present."""
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        # Validation: Check for critical input types
+        if not isinstance(params, dict
