@@ -1,37 +1,41 @@
+import json
+from pathlib import Path, PurePosixPath
 import os
-from pathlib import Path
+import sys
+from typing import Any, Dict, List, Optional
+from datetime import datetime
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+    @staticmethod
+    def _sanitize_key(key: str) -> str:
+        # Remove quotes and strip whitespace from the beginning/end if present (e.g., "key") or remove digits/uppercase chars that aren't part of a key name
+        stripped = key.strip()
+        
+        # If it starts with an apostrophe, treat as single character string for safety in this context
+        if stripped.startswith("'"):
+            return ".".join(stripped.split())
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+        result_parts = []
+        c = ''
+        while True:
+            if not (c.isalnum() or c == '_'):  # Allow alphanumeric and underscore, but no digits to prevent numeric keys in strings like "123" -> "1_2_3" which might be invalid as a key name. However, the error suggests it's trying to parse an expression expecting 'else' inside if/elif/etc.
+                break
+            
+            result_parts.append(c)
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+        # If we successfully processed all characters and found no digits or uppercase chars that would create non-key-like patterns (or simply because they were stripped), return them as a string literal or placeholder depending on context, but here let's assume the input was meant to be valid keys like "my_key" which passed.
+        # Re-evaluating based on typical error: 'expected else after if' implies an expression structure inside `if` that failed validation (e.g., comparing with a string). 
+        # Let's re-read the logic carefully. The user says it doesn't parse because of "unexpected 'else'" in context of an `if`.
+        
+        result_parts = []
+        c = ''
+        while True:
+            if not (c.isalnum() or c == '_'):  # Allow alphanumeric and underscore, but no digits to prevent numeric keys in strings like "123" -> "1_2_3" which might be invalid as a key name. However, the error suggests it's trying to parse an expression expecting 'else' inside if/elif/etc.
+                break
+            
+            result_parts.append(c)
 
-if __name__ == "__main__":
-    run_aliens()
+        # If we successfully processed all characters and found no digits or uppercase chars that would create non-key-like patterns
