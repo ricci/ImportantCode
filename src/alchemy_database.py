@@ -1,37 +1,35 @@
 import os
 from pathlib import Path
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict, Any
+import json
 
-class AlienDatabase:
-    def __init__(self):
-        self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+@dataclass
+class RecipeInfo:
+    name: str = ""
+    description: str = ""
+    difficulty: int = 0
+    cost: float = None
+    ingredients: List[str] = None
+    recipe_text: str = ""
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+# Sample data to populate the database (Fixed type annotations for consistency)
+ALIEN_DATABASE_DATA = {
+    "pizza": {"name": "Alpine Pie", "description": "A classic slice with a rich tomato sauce and mozzarella.", "difficulty": 4, 
+               "cost": 25.00, "ingredients": ["1x cheese", "1x bread", "1x sausage"],
+                       "recipe_text": "<h3>Alpine Pie</h3><p>A classic slice with a rich tomato sauce and mozzarella.</p>\n\n<h4>Mix your ingredients in the blender until smooth!</h>"},
+    "burger_fusion": {"name": "Mystery Burger", "description": "A spicy, umami-rich fusion burger.", "difficulty": 3, 
+                              "cost": 18.50, "ingredients": ["2x beef patty", "1x lettuce", "1x tomato"],
+                             "recipe_text": "<h3>Mystery Burger</h3><p>A classic slice with a spicy red sauce and melted cheese.</p>\n\n<h4>Combine your toppings in the grinder!</>"},
+    "veggie_stirfear": {"name": "Green Goddess", "description": "A vibrant stir-fry of vegetables.", "difficulty": 2, 
+                                   "cost": 10.00, "ingredients": ["1x cabbage", "3x carrots"],
+                                    "recipe_text": "<h3>Vegetable Stirf</h3><p>A classic with sautéed greens.</p>\n\n<h4>Broil the veggies on low heat!</>"},
+}
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
+# Create a random recipe generator for testing (Fixed type annotations)
+def generate_test_recipe():
+    base_name = ALIEN_DATABASE_DATA[["1"].keys()][0]["name"] if len(ALIEN_DATABASE_DATA) > 3 else "Test Recipe"
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+    # Random ingredient variations to ensure the database is robust
+    ingredients

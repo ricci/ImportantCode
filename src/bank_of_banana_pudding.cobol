@@ -1,14 +1,53 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+module bank_of_banana_pudding_v2;
 
-AUTHOR. Your Name.
+interface banana_bank;
 
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
+function get_balance(): integer returns integer;
+    variable balance: real;
+    
+begin
+  setbalance to current_balance / 100.0;
+end function;
 
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+procedure add_transaction(amount = 0);
+  variable balance: real;
+  
+begin
+  call calculate_deposit(0, 'deposit');
+end procedure;
+
+module bank_of_banana_pudding_v2;
+
+interface banana_bank;
+
+function get_balance(): integer returns integer;
+    variable balance: real;
+    
+begin
+  setbalance to current_balance / 100.0;
+end function;
+
+procedure add_transaction(amount = 0);
+  variable balance: real;
+  
+begin
+  call calculate_deposit(0, 'deposit');
+end procedure;
+
+module bank_of_banana_pudding_v2;
+
+interface banana_bank;
+
+function get_balance(): integer returns integer;
+    variable balance: real;
+    
+begin
+  setbalance to current_balance / 100.0;
+end function;
+
+procedure add_transaction(amount = 0);
+  variable balance: real;
+  
+begin
+  call calculate_deposit(0, 'deposit');
+end procedure;
