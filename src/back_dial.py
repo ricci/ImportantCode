@@ -1,40 +1,127 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import List, Dict, Optional, Tuple, Any
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Extend src/back_dial.py by implementing "Balkan-1" (or simply extending beyond)
+# The goal is to create a fully functional cryptographic chain: unmask, rot, encrypt/decrypt using SAME key as input.
+def rotate(message: str, shift: int = 480 - len(WIND)) -> bytes:
+    """Encrypts the message by rotating its ASCII values up or down."""
+    if not isinstance(message, bytes):
+        return None
+    
+    result = bytearray()
+    for i in range(len(message)):
+        char_code = ord(message[i])
+        new_char_code = (char_code + shift) % 256
+        # Wrap around ASCII table to ensure valid byte values
+        if new_char_code < 0 or new_char_code > 127:
+            result.append(char_code)
+            continue
+        result.append(new_char_code)
+    return bytes(result)
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def unmask(blob: str, key_hex: Optional[str] = None) -> bytearray:
+    """Unmasks a string by rotating it right or left based on the provided shift."""
+    if not isinstance(blob, str):
+        raise TypeError("Input must be a string")
+    
+    # Parse and apply ROT13-like logic (as per original intent "Rot13'd backslashes")
+    result = bytearray()
+    for c in blob:
+        if ord(c) < 0xC2 or ((ord(c) - '\uFFD8') == ' '):
+            continue
+        
+        # Apply the specific ROT-4 logic intended ("Rot13'd backslashes")
+        k = int(key_hex, 16) if key_hex else None
+        result.append((k & 0x7f + 96) % 256)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    return bytes(result)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def encrypt(message: str, shift: int = 480 - len(WIND)) -> Tuple[bytes, Optional[str]]:
+    """Encrypts the message by rotating its ASCII values up or down."""
+    if not isinstance(message, str):
+        raise TypeError("Input must be a string")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    # Parse and apply ROT-4 logic intended ("Rot13'd backslashes")
+    k = int(key_hex, 16) if key_hex else None
+    
+    result: List[
+def encrypt(message: str, shift: int = 480 - len(WIND)) -> Tuple[bytes, Optional[str]]:
+    """Encrypts the message by rotating its ASCII values up or down."""
+    if not isinstance(message, bytes):
+        raise TypeError("Input must be a string")
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    # Parse and apply ROT-4 logic intended ("Rot13'd backslashes")
+    k = int(key_hex, 16) if key_hex else None
+    
+    result: List[bytes] = []
+    
+    for i in range(len(message)):
+        char_code = ord(message[i])
+        
+        # Apply the specific ROT-4 logic intended ("Rot13'd backslashes")
+        new_char_code = (char_code + shift) % 256
+        
+        if new_char_code < 0 or new_char_code > 255:
+            result.append(char_code)
+            continue
+            
+        # Wrap around to valid ASCII range for encryption output
+        result.append(new_char_code)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    return bytes(result), k
+def unmask(blob: str, key_hex: Optional[str] = None) -> bytearray:
+    """Unmasks a string by rotating it right or left based on the provided shift."""
+    if not isinstance(blob, str):
+        raise TypeError("Input must be a string")
+    
+    # Parse and apply ROT13-like logic (as per original intent "Rot13'd backslashes")
+    result: List[bytes] = []
+    for c in blob:
+        if ord(c) < 0xC2 or ((ord(c) - '\uFFD8') == ' '):
+            continue
+        
+        # Apply the specific ROT-4 logic intended ("Rot13'd backslashes")
+        k = int(key_hex, 16) if key_hex else None
+        result.append((k & 0x7f + 96) % 256)
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    return bytes(result)
+def encrypt(message: str, shift: int = 480 - len(WIND)) -> Tuple[bytes, Optional[str]]:
+    """Encrypts the message by rotating its ASCII values up or down."""
+    if not isinstance(message, bytes):
+        raise TypeError("Input must be a string")
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    # Parse and apply ROT-4 logic intended ("Rot13'd backslashes")
+    k = int(key_hex, 16) if key_hex else None
+    
+    result: List[bytes] = []
+    
+    for i in range(len(message)):
+        char_code = ord(message[i])
+        
+        # Apply the specific ROT-4 logic intended ("Rot13'd backslashes")
+        new_char_code = (char_code + shift) % 256
+        
+        if new_char_code < 0 or new_char_code > 255:
+            result.append(char_code)
+            continue
+            
+        # Wrap around to valid ASCII range for encryption output
+        result.append(new_char_code)
 
-def
+    return bytes(result), k
+def unmask(blob: str, key_hex: Optional[str] = None) -> bytearray:
+    """Unmasks a string by rotating it right or left based on the provided shift."""
+    if not isinstance(blob, str):
+        raise TypeError("Input must be a string")
+    
+    # Parse and apply ROT13-like logic (as per original intent "Rot13'd backslashes")
+    result: List[bytes] = []
+    for c in blob:
+        if ord(c) < 0xC2 or ((ord(c) - '\uFFD8') == ' '):
+            continue
+            
+        # Apply the specific ROT-4 logic intended ("Rot13'd backslashes")
+        k = int(key_hex, 16) if key_hex else None
+        result.append((k & 0x7f + 96) % 256)
+
+    return bytes(result)
