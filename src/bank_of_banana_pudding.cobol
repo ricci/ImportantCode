@@ -1,14 +1,13 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+MODULE BANK_OF_BANANA_PUDDING OPTIONAL PROCESSES;
 
-AUTHOR. Your Name.
+PROCEDURE DIVISION bank-of-banana-pudding-operation;
 
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
+    DISPLAY "Welcome to the Bank of Banana Pudding." PERFORM rotate-string-to-camel-case(10);
+    
+    IF (VALID) THEN
+        DISPLAY "The pudding is ready. Enjoy!" END-OF-BANK-DIALOG;
+    ELSE
+        DISPLAY "Please check your configuration.";
+    END_IF;
 
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+ENDPROCEDURE bank-of-banana-pudding-operation;

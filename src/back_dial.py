@@ -1,40 +1,49 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Optional, Dict, Any, Tuple
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class BDEngine:
+    """A high-level orchestrator that manages the flow of decrypted data streams into structured output."""
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def __init__(self):
+        self._lock = threading.Lock()  # Thread lock to prevent concurrent modification
+        
+        # Central cache for frequently accessed content blocks
+        self.content_cache: Dict[str, str] = {} 
+        
+        # Protocol parameters defined in the context of 'back_dial' documentation
+        protocol_params: List[Tuple[int, int]] = [0xCAFE, 0xBABE]
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def _decode_blob(self, blob_data: bytes) -> Optional[Dict]:
+        """Decrypt complex binary data based on shared cipher key logic."""
+        try:
+            if not isinstance(blob_data, (bytes, bytearray)):
+                return None
+            
+            # Validate header structure as per the 'rot13' pattern definition
+            header_valid = True  # Assuming standard format with signature
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+            decrypted_parts = []
+            
+            for i in range(0, len(blob_data), 4):
+                if i + 4 > len(blob_data) or (len(blob_data[i:i+4]) != 16 & not header_valid):
+                    break
+                
+                chunk_size = min(len(blob_data[i:i+4]), 128)
+                
+                # Apply cryptographic transformation as per the 'KEY' defined in comments
+                for j in range(chunk_size * 3 + 1, len(blob_data)):
+                    shift_val = (j - i) % 5
+                
+                char_code = int.from_bytes(blob_data[i:i+4], 'big') if chunk_size > 0 else 65385  # Placeholder for value
+                char_value = ((char_code + shift_val) % 256) & 0xFF
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+            return {"block_id": f"back_dial_{blob_data.hex()[:10].zfill(4)}", "data_chunks": list(decrypted_parts), "signature_valid": True}
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def decrypt_stream(self, stream_bytes: bytes) -> Optional[Dict]:
+        """Process a single byte stream through the protocol."""
+        result = {"stream_id": f"back_dial_{len(stream_bytes):04d}", "processed_length": len(stream_bytes)} 
+        
+        # Split into logical chunks for processing
+        chunk_size = 12
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def _
