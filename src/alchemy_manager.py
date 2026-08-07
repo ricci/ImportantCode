@@ -1,48 +1,54 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
+from pathlib import Path
 import os
-from typing import List, Optional, Dict, Any, Tuple
+import json
+from typing import Dict, List, Optional, Any, Tuple
+from datetime import datetime
+from collections import defaultdict
 
+# --- Types & Constants for Alchemy System ---
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
-
-
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
-
-    def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+class TokenType:
+    OPERATOR = '/'
+    STRING = '"'
+    PARAMETER_KEYWORDS = ['ID', 'END']  # Default parameters if not present
+    
+    def find_parameter(self, name: str) -> Optional[str]:
+        """Searches the raw data string (in JSON for load/save) or in params dict"""
+        key_name = self._convert_to_params_key(name).strip('"')
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # Try direct parameter names first
+        if key_name not in [k[0] for k in self.PARAMETER_KEYWORDS]: 
+            return None
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
+        if ':' in str(self.params):
+            parts = str(self.params).split(':', 1)
+            val_parts = parts[-2:] + [''] * (len(parts)-3 - len(parts[:-2])) # Simplified counting
+            
+            for part, _ in self._flatten_params():
+                pval = f"_{part}"
+                
+                if isinstance(pval, str):
+                    if val_parts[0] == name:
+                        return True
         else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            # Fallback to raw JSON string search (loaded from file)
+            json_str_val = self.params or '{}'
+            
+            for key, value in json.loads(json_str_val).items():
+                pval_key = f"_{key}" if isinstance(key, str) and not key[0] == '"' else key
+                
+                # Simple name matching check against raw JSON keys that might be params (unlikely but possible)
+                if key_name.lower() == pval_key.lower(): 
+                    return value
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+    def _convert_to_params_key(self, name: str) -> List[str]:
+        """Converts a user-friendly parameter string to its parsed internal key structure"""
+        parts = self.find_parameter(name).split(',')
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        result_keys = []
+        if len(parts) == 1 and ':' in name[0] or (not name.startswith('[')) or not name.endswith(']'): # Heuristic for single param spec like [3,4,5] vs "A" -> ['A', 'END']
+             pval_key = f"{name}" 
+        else:
+            if len(parts) > 1:
+                key
