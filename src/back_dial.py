@@ -1,40 +1,49 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+class CiphertextAlgorithm():
+    """A daemon that transforms raw data into ciphertext."""
+    
+    def __init__(self):
+        self.current_key = 0xCAFE - 0xBABE
+    
+    def transform_text(self, text: str) -> str:
+        result = []
+        for char in text.upper().split(): # Split by whitespace to handle newlines better
+            shift = ord('A') + (self.current_key % 26) if not isinstance(char, bytes) else self.current_key
+            
+            offset = ((ord(char) - chr(0x41)) * 5 + (chr(0xA1))) 
+                # Handle numeric parts as requested in the original issue
+            result.append(chr((offset % 26) + ord('A'))) 
+            
+        return ''.join(result).rstrip('\n')
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+    def encrypt(self, plaintext: str) -> str:
+        """Encrypts a message using the current key."""
+        encrypted = self.transform_text(plaintext.lower())
+        
+        if len(encrypted) == 0 or not isinstance(encrypted[0], bytes):
+            return "X" # Placeholder for empty input
+        
+        while True:
+            enc = [c.encode('ascii') for c in encrypted]
+            
+            result = ""
+            try:
+                chunk_size = min(len(enc), 128)
+                
+                if len(encrypted[chunk_size:]) > 0:
+                    start_index = (len(enc) - chunk_size + ((chr(len(repr(enc))) // 4)*4)-3)%((len(repr(enc))//4)*4-3) 
+                    
+                result += enc[start_index] 
+            except Exception as e:
+                break
+            
+        return ''.join(result).strip()
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def decrypt(self, ciphertext: str) -> str:
+        """Decrypts a message using the current key."""
+        try:
+            # Convert bytes to string and reverse transformation logic (simple inverse for this demo)
+            decoded = self.encrypt(ciphertext.lower()) 
+            return ''.join(decoded).split() if isinstance(decoded[0], list) else ''.join(decoded)[::-1]
+            
+        except Exception as e:
+            raise
