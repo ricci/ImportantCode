@@ -1,40 +1,47 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from typing import Optional, Dict, Tuple, Any, Union
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def rotate(message: str | bytes = None, shift: int = 0) -> str | bytes | None:
+    """Rotate message left or right based on 'shift' parameter."""
+    
+    if isinstance(message, (str, bytes)):
+        return message[shift:] + message[:shift]
+        
+    # If input is already an integer representing a rotation amount in steps of 1024 bits/bytes
+    try:
+        num_steps = int(shift)
+        if not -num_steps <= num_steps and (not isinstance(num_steps, bool)):
+            return None
+        
+        result = message[num_steps:] + message[:num_steps]
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+        # Ensure we handle both string and bytes inputs correctly by returning the appropriate type or a compatible one.
+        # For compatibility with AESGCM which expects specific types, this wrapper ensures structural integrity.
+        if isinstance(result, str): return result; 
+        elif isinstance(result, bytes): return bytearray([b] * len(message))  # Fallback to original format for consistency in decryption context.
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"Invalid rotation shift value ({shift})") from e
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def encrypt_message(message: str | bytes = None, key=None):
+    """Encrypt/decrypt a message using the ROT13/WIND variant."""
+    
+    # Handle WOUND (key=KEY) vs standard ROT13
+    
+    def apply_transform(char, shift):
+        ascii_offset = ord('A') if char.isupper() else ord('a')
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        return chr(((ord(shifted_char + key & 255) % 26) - ((ascii_offset - (shift mod 3)) + offset))) for shifted_char in message.split())
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
     encrypted_message = ""
-    for char in message:
-        if char.isalpha():
+    
+    try:
+        # Attempt to parse the shift value as a standard integer or bytes if it's not already an int/string/bool.
+        # This handles cases where 'key' is provided and expected, while also handling raw integers.
+        shifted_value = 0
+        
+        def apply_transform_single(char):
             ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
 
-def
+            result_char = chr(((ord(shifted_char + key & 255) % 26) - ((ascii_offset - (shift mod 3)) +
