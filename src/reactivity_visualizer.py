@@ -1,69 +1,51 @@
-def visualize_reactivity(tensor):
-    # Implement a function to visualize the tensor using various libraries such as pytorchviz or matplotlib
-    pass
-
-obj['output'] = visualize_reactivity(obj['output'])
-
+import numpy as np
+from typing import List, Tuple, Optional, Any
 import matplotlib.pyplot as plt
-from numpy import array
+import pytorchviz as pv
+import torch.nn.functional as F
+import warnings
 
-def plot_tensorflow_tensor(tensor):
+# Suppress default warning for cleaner output
+warnings.filterwarnings('ignore')
+
+def visualize_reactivity(tensor):
     """
-    Plots a 3D tensor using Matplotlib.
-
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
+    Visualizes a 2D or 3D tensor using various plotting techniques.
+    
+    Parameters:
+        tensor (np.ndarray): A numpy array of shape (H, W) representing image pixels.
+                            For tensors where the first dimension is time and others are spatial,
+                            this logic still applies but adjusted to map the input correctly 
+                        into a valid visualization context if available.
+        
+    Returns:
+        plt.figure or None: The figure object for plotting; otherwise returns None.
+    
+    Raises:
+        TypeError: If tensor shape does not match expected dimensions (e.g., 3D with invalid spatial dims).
+        ValueError: For unsupported inputs like non-numpy arrays or missing shapes.
     """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
+    # Check for specific tensor shapes or handle general cases
+    
+    try:
+        h, w = tensor.shape
+        
+        if len(tensor) == h * w and isinstance(h, (int, float)) and isinstance(w, (int, float)):
+            print("Input shape recognized as a standard image tensor: (%d, %d)", h, w)
 
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
+            fig = plt.figure(figsize=(10.5, 7.8), dpi=96) # High DPI for better clarity in development
+            
+            ax = fig.add_subplot(111, projection='2d')
+            
+            if len(tensor.shape) == 3:
+                print("Input shape recognized as a tensor of shape (%s)" % (tensor.shape))
 
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-    ax.set_xlabel('Channel')
-    ax.set_ylabel('Spatial Axis 1')
-    ax.set_zlabel('Spatial Axis 2')
-
-    plt.title('3D Plot of TensorFlow Tensor')
-    plt.show()
-
-def plot_pytorch_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
-
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
-
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-   
+                    x_coords = np.linspace(-0.5* w / h + 0.5 * (-h - w), \
+                                      max(1, min(h-1, len(tensor)-w)), 
+                                      dtype=float) # Ensure float for matplotlib plotting accuracy
+                
+                y_coords = np.linspace(-0.5*h/2+0.5*w/h-w-h+w*len(x_coords)/2, 1., 
+                                    dtype=int)
+                
+                x_centered = (x_coords - max(0.5, min(h-1, len(tensor)-w))) / \
+                              (max(1, min(h-1, len(tensor)-w)) + 0
