@@ -1,37 +1,36 @@
-import os
 from pathlib import Path
+import json
+
 
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
+        self.data: dict[str, int] = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    def load(self, filename: str) -> bool:
+        """Loads data from a specific file path (relative or absolute)."""
+        if not os.path.exists(filename):
+            return False
+        
+        base_dir = Path.cwd().parent.parent / "src"
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            filepath = f"{base_dir}/{filename}"
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data_lines = f.read()
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
+                # Parse JSON first to handle multiline keys if present in file.
+                parsed_data = json.loads(data_lines)
+
+                return self._normalize_keys(parsed_data)
+        except (FileNotFoundError, IOError):
+            print(f"Warning: Could not load data from '{filename}'. Returning empty set.")
+            return False
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    def _normalize_keys(self, items: dict[str, Any]) -> Optional[dict]:
+        """Normalize and validate keys in the loaded dictionary."""
+        if isinstance(items, dict):
+            # Fallback to original structure if JSON parsing failed or object was unexpected.
+            result = {k: v for k, v in items.items()}
 
-if __name__ == "__main__":
-    run_aliens()
+        return result
