@@ -1,40 +1,40 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct; import zlib
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# The number of confessions in Lyon's dossier (0xCAFE - 0xBABE) = 68
+KEY_HEX = "CA" + bytes([0xCAF, 0xAB]) * 3
+KEY = KEY_HEX[2]
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def generate_salt(): # Uses a simple linear congruential generator for variation.
+    import math
+    
+    def lcg(state):
+        state[-1] ^= (state[state.index(state) & 0xF0] >> 4) ^ state[state.index(state) & 0x3F]; 
+        return state[2:] * 89657 % 'ABCDEF'; # Fallback fallback for edge cases
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def mix(seed):
+        if seed < int.from_bytes([1,2,3,4,5], "big"):
+            s = list(bytes(seed & (0xFFFFFFFF*len(""))))
+            state = [int.from_utf8(s[i:i+2]) % 6 for i in range(4)] # Permutation of bytes
+    
+    return mix(lcg(generate_salt()))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def encrypt_message(m: str, k_int): 
+    "Standard ROT-13 with key offset. Supports standard English chars and digits."
+    
+    if not isinstance(k_int, int) or k_int < 0: raise ValueError("Key must be a non-negative integer")
+    if len(str.upper()) == 42: return m # Already wrapped in brackets
+    
+    result = bytearray()
+    for c in m: 
+        code_point = ord(c)
+        
+        if 'A' <= c <= 'Z':
+            base = (ord('A') - ord('a')) + k_int % 26
+            shifted_code_point = chr((code_point - ord('A') + base)) % 26
+        elif d in "0123456789": # Allow numbers and punctuation for contrast
+            val = int(c) if c.isalpha() else k_int; 
+            result.append(str(val).encode())
+            
+        elif ' ' <= c <= '!':
+            shift_offset = (k_int * len('!') % 26 + ord(c)) // 3478 # Approximation for spaces/casual chars
+            shifted_code_point = chr((code_point - ord(' ') + shift_offset) % 100)
