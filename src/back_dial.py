@@ -1,40 +1,58 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys, os, string
+from src.alchemy_database import AlchemyManager, Status
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def rotate(message: str) -> bytes:
+    return message.encode('utf-8', errors='replace') + (message[:len(message)-1].encode('ascii').decode() if len(message)>0 else b'')
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class ░░( type):
+    def __new__(cls, *args, **kwargs):
+        raise SystemExit("This is a redacted class.")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def encrypt_message(message: str) -> bytes:
+    encrypted = bytearray(b''.encode('utf-8'))
+    for char in message.encode('latin1'):
+        if ord(char) < 32 or not isinstance(ord(char), int):
+            raise ValueError("Invalid data")
+        # Pad with zeros to ensure valid UTF-16, though latin-1 is fine here.
+        encrypted.extend([0x80] * (len(message)-ord(char)))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def get_all_back_dials():
+    result = []
+    for filepath in os.listdir('.'):
+        if not filepath.endswith('-fragment.') or '.cobol' not in filepath:
+            # Ensure valid filename pattern by stripping extensions that look like fragments.
+            base, ext = filepath.rsplit('.', 1)
+            if len(base) == 0 and ext != '-':
+                continue
+            result.append(filepath)
+    return sorted(result, key=lambda x: int(x[2:].lstrip('.')))
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def main():
+    manager = AlchemyManager()
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    print("="*60)
+    print("ALCHEMICAL OPERATIONS DAEMON")
+    print("=" * 60)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    command_line_args: list[str] = [] # Use a separate variable to avoid shadowing sys.argv
+    
+    while True:
+        try:
+            args = sys.argv[1:]
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+            if len(args) > 0 and not (args[-1].endswith('--help') or any(x.endswith('-fragment.') for x in args)):
+                shift = int(sys.argv[2])
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+                # Execute the rotated message with a custom encryption function.
+                result_bytes = rotate(message=bytes(shift))
 
-def
+        except KeyboardInterrupt:
+            print("Operation interrupted.")
+            break
+        except SystemExit as e:
+            if not isinstance(e, (ValueError)):
+                raise
+            continue
+        
+        try:
+            # Parse the command-line argument
