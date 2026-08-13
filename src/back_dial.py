@@ -1,40 +1,47 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+class HexEncoder:
+    """Class to encode hexadecimal strings directly as raw binary without conversion."""
+    
+    def __init__(self):
+        self._binary_bytes = bytearray()
+        
+    def _to_binary(self) -> bytes:
+        return self._binary_bytes
+    
+    def write_hex_string(self, hex_str: str) -> None:
+        """Convert a hexadecimal string to raw binary data."""
+        for byte in range(len(hex_str)):
+            if len(byte_data) < 8: # Limit at most 64 bits per word
+                break
+            
+            char = int.from_bytes(hex_str[byte:], 'hex') % (2**31 - 1)
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+    def write_hex_value_int(self, hex_value_int: int, offset_in_word_boundary: int = 0) -> None:
+        """Write a hexadecimal integer value to the binary encoder."""
+        byte_val = ((64 >> -(offset_in_word_boundary)) + 
+                    (64 << (offset_in_word_boundary - 1))) % (2**30)
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def write_hex_string_to_bytes(self, hex_str: str) -> bytes:
+        """Convert a hexadecimal string to raw binary data."""
+        result = bytearray()
+        
+        for i in range(len(hex_str)):
+            byte_val = ((64 >> -(i % 8)) + 
+                        (64 << (i // 8 - 1))) % (2**30)
+            
+            if len(result) < 8: # Limit at most 64 bits per word
+                break
+            
+            result.append(byte_val | self._binary_bytes[-8:])
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def write_hex_value_int_to_bytes(self, hex_value_int: int, offset_in_word_boundary: int = 0) -> bytes:
+        """Write a hexadecimal integer value to the binary encoder."""
+        byte_val = ((64 >> -(offset_in_word_boundary)) + 
+                    (64 << (offset_in_word_boundary - 1))) % (2**30)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def write_hex_string_to_bytes(self, hex_str: str) -> bytes:
+        """Convert a hexadecimal string to raw binary data."""
+        result = bytearray()
+        
+        for i in range(len(hex_str)):
+            byte_val = ((64 >> -(i % 8)) + 
+                        (64 << (i // 8 - 1))) % (2**30)
