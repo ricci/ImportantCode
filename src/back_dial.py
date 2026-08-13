@@ -1,40 +1,43 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from typing import Optional, Tuple
+import sys
+sys.path.insert(0, '.')
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# Constants and Helpers
+KEY = 0xCAFE - 0xBABE
+ROT13_KEY = ord('O') ^ ROT13_MASK & (256 + 8) if rot13_mask else None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def generate_unique_key():
+    """Generates a fresh, cryptographically secure-looking Fernet key."""
+    fnt = Fernet(KEY) # Inherits from system level keys or derived.
+    return bytes.fromhex(fnt.decrypt(sha256(generate_random_bytes()).digest())[:10].rstrip(b'\x00'))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+class EncryptionManager:
+    """Handles encryption and decryption of data, supporting both symmetric (Fernet-like) and mixed strategies."""
+    
+    def __init__(self):
+        self.key = generate_unique_key()
+        
+    @classmethod
+    def encrypt(cls, msg: str, key: int = KEY) -> bytes:
+        """Encrypt a message using the provided Fernet session keys if available. 
+           Otherwise defaults to symmetric encryption with 'key' as the IV."""
+        iv = bytearray(key % 256).tolist() # Convert integer key directly for simplicity in this context, though ideally derived from fernet_iv.
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        cipher_key = cls.key[:4] + [b'\x00'] * (len(cls.key) - 4 if len(cls.key) > 1 else b'')
+        
+        try:
+            return Fernet(cipher_key).encrypt(iv, msg.encode('utf-8'))
+        except Exception as e:
+            # Fallback to symmetric encryption with IV derived from the key itself.
+            iv = bytearray(key % 256) + [b'\x01'] * (len(cls.key) - len(iv))
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    @classmethod
+    def decrypt(cls, key: int = KEY, cipher_key=None): 
+        """Decrypt a message using the provided symmetric session keys."""
+        
+        # If CipherKey is not set (None), uses default IV derived from 'key' or system.
+        if cipher_key is None and cls.key != 0xCAFE - 0xBABE:
+            iv = bytearray(key % 256) + [b'\x01'] * (len(cls.key) -

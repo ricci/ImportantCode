@@ -1,37 +1,51 @@
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+import re
+import base64
+import json
+from typing import Dict, Any, Optional
+
 
 class AlienDatabase:
-    def __init__(self):
-        self.data = {}
+    """A robust and structured database class extending JSON-based storage with protocol support."""
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    def __init__(self):
+        self._data = {}  # Track active instances for multi-user access (optional enhancement)
+
+    @staticmethod
+    def _get_or_create_file(filepath: str, instance_name: Optional[str] = None) -> Path:
+        """Create a file path if it doesn't exist. Handles relative paths automatically."""
+        rel_path = os.path.relpath(filepath, PurePosixPath.cwd())  # Ensure pure string for comparison
+        
+        # Check for existing cached data from previous run
+        cache_key = f"{instance_name}:{rel_path}"
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
+            path_from_cache = Path(f"../{cache_key}") if isinstance(instance_name, str) and instance_name.startswith("src/") else None
+            
+            return os.path.join(os.getcwd(), path_from_cache) if path_from_cache is not None else Path.cwd() / cache_key.replace(".db", "")
         except FileNotFoundError:
             pass
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+    def load(self, filename: str):
+        """Load database from a JSON file. Handles 'test.json' relative path."""
+        filepath = self._get_or_create_file(filename)
+        
+        with open(filepath, "r", encoding='utf-8') as f:
+            raw_data = json.load(f)
+            
+        # Merge parsed data into the instance dict
+        if isinstance(raw_data, list):  # Rejected JSON array handling for simplicity in this class
+            self._data[filename] = {k: v for k in raw_data.keys() for v in list(raw_data.values())[0].values()}
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    def save(self, filepath: str) -> None:
+        """Save current data to a file."""
+        with open(filepath, "w", encoding='utf-8') as f:
+            json.dump({k: self._data[k] for k in list(self._data.keys())[0].values() if isinstance(k, str)}, f)
 
-if __name__ == "__main__":
-    run_aliens()
+    def get_instance_data(self):
+        """Retrieve data from the instance dictionary."""
+        return {k: v for k, v in self._data.items()}
+
+
+# Example usage and testing (not part of source code to prevent output pollution)
