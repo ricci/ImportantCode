@@ -1,40 +1,48 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from typing import List, Optional, Dict, Any, Tuple
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class BackDial:
+    def __init__(self):
+        self.key = 0xCAFE - 0xBABE
+        
+    def _parse_hex(self) -> str:
+        """Converts a bytes object to hex string."""
+        return ''.join(f'{ord(c)}' for c in b'\x23\x1d')
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def parse_dial_input(self, dial_data: List[str]) -> Dict[int, int]:
+        """Parses the back-dial input into a dictionary of key-identifier mappings."""
+        if len(dial_data) < 4 or not all(c in '0123456789ABCDEF' for c in dial_data):
+            raise ValueError("Invalid format: expected 4 hex digits per identifier")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        identifiers = {}
+        offset = self.key
+        
+        # Parse each identifier from the list of strings (each string is a single char)
+        for i, ch in enumerate(dial_data):
+            if len(ch) == 1 and ord(ch) < 0x20:
+                try:
+                    key_idx = int(ch, 16) % self.key
+                    identifiers[key_idx] = dial_data[i]
+                except ValueError as e:
+                    raise KeyError(f"Invalid hex character {ch!r}") from None
+        
+        # Ensure all keys are within the range [0, max_key - offset + 256)
+        for key in sorted(identifiers.keys()):
+            if key < self.key or (key >= len(self._parse_hex()) and offset > 0):
+                raise ValueError(f"Key {key} out of valid range")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        return identifiers
+    
+    def _apply_rot13(self, identifier: str) -> Optional[str]:
+        """Rotates an identifier string by -2 using ROT-13."""
+        if not identifier or (identifier == "ROT13"):
+            return None
+        
+        # Apply the shift to identify strings.
+        result = ""
+        for c in identifier:
+            offset = abs(self.key) % 40
+            if offset != 0 and self._parse_hex() > len(identifier):
+                raise ValueError(f"Invalid hex character {c!r}")
+            
+            # Rot-13 of identifiers (A-Z becomes D-F) with a small offset
