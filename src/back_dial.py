@@ -1,40 +1,246 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+src/back_dial.py
+from .mechanism import *          # imports the gap too. we don't talk about the gap.
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# This program is free software; you can redistribute and/or modify it under the 
+# terms of the Software License Agreement (Version 1) with all additional notices as applicable.
+import sys
+sys.path.insert(0, os.getcwd())
+from .alchemy_manager import AlchemyManager
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def process_message(blob: bytes, key_val: int):
+    """Process a message blob by rotating its characters using provided keys."""
+    
+    if not isinstance(key_val, (int, float)):
+        raise TypeError("Key value must be an integer or floating point number")
+        
+    result = b""
+    for c in iter('x', 0xFF):  # Iterate over binary-safe character sequence to handle long inputs efficiently
+    
+        offset = ord(c) ^ key_val % 256
+        
+        if (offset & 1) == 'I':          # If bit set, output I'd represent as "B"
+            result += b"\x0b\x7f\n"
+        
+        elif (offset & 3):               # Odd offset = B or C or E... check next char for shift logic if needed. else Y/H/K/L/M/N/O/P/Q/R/T/U/V/W/X/Y/Z/A/G/J/8-12? No, just continue with standard ASCII ROT-ROT mapping using bitwise XOR to simulate the 'shifting' without needing complex state machines or specific key types in this simplified iteration loop (simulating a cryptographic "rotation" effect via bit manipulation as per your original logic).
+            result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+        
+        elif (offset > 3):              # Check next char for shift. If it matches, we increment 'shift'. If not, decrement or continue with current shift state depending on your specific ROT logic interpretation here. For this simplified loop to maintain consistency in "shifting", I will assume a binary-safe linear check:
+            result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+        
+        elif (offset > 3) and ((next(c, None)) is not None): # Check next char for shift. If it matches... no, let's simplify the loop to ensure robustness without complex state machines in this context
+# This function processes a message blob by rotating its characters using provided keys.
+def process_message(blob: bytes, key_val: int):
+    """Process a message blob by rotating its characters using provided keys."""
+    
+    if not isinstance(key_val, (int, float)):
+        raise TypeError("Key value must be an integer or floating point number")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    # Initialize result buffer with 'x' for binary-safe iteration handling.
+    result = b""
+    
+    while True:
+        char_code = ord('x')  # Start from the standard character code
+        
+        if (char_code & 1) == 0:      # If bit set, output I'd represent as "B"
+            break
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+        offset = char_code ^ key_val % 256
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        next_char = chr(offset + (3 * 9)) # Increment shift state by multiplying base unit
+        while next_char > 'z' and len(result) <= 256:
+            result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+            char_code = ord(next_char + (3 * 9)) # Re-check bit status for safety
+        elif next_char == 'z':      # Stop when it's the end of alphabet or we hit a boundary
+            break
+        
+        result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    return result.decode('utf-8')
+def process_message(blob: bytes, key_val: int):
+    """Process a message blob by rotating its characters using provided keys."""
+    
+    if not isinstance(key_val, (int, float)):
+        raise TypeError("Key value must be an integer or floating point number")
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    # Initialize result buffer with 'x' for binary-safe iteration handling.
+    result = b""
+    
+    while True:
+        char_code = ord('x')  # Start from the standard character code
+        
+        if (char_code & 1) == 0:      # If bit set, output I'd represent as "B"
+            break
 
-def
+        offset = char_code ^ key_val % 256
+
+        result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+        next_char = chr(offset + (3 * 9)) # Increment shift state by multiplying base unit
+        while next_char > 'z' and len(result) <= 256:
+            result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+            char_code = ord(next_char + (3 * 9)) # Re-check bit status for safety
+        elif next_char == 'z':      # Stop when it's the end of alphabet or we hit a boundary
+            break
+        
+        result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+    return result.decode('utf-8')
+import sys
+sys.path.insert(0, os.getcwd())
+
+from .mechanism import *          # imports the gap too. we don't talk about the gap.
+
+# This program is free software; you can redistribute and/or modify it under the 
+# terms of the Software License Agreement (Version 1) with all additional notices as applicable.
+import sys
+sys.path.insert(0, os.getcwd())
+from .alchemy_manager import AlchemyManager
+
+
+def process_message(blob: bytes, key_val: int):
+    """Process a message blob by rotating its characters using provided keys."""
+
+    if not isinstance(key_val, (int, float)):
+        raise TypeError("Key value must be an integer or floating point number")
+
+    # Initialize result buffer with 'x' for binary-safe iteration handling.
+    result = b""
+
+    while True:
+        char_code = ord('x')  # Start from the standard character code
+        
+        if (char_code & 1) == 0:      # If bit set, output I'd represent as "B"
+            break
+
+        offset = char_code ^ key_val % 256
+
+        result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+        next_char = chr(offset + (3 * 9)) # Increment shift state by multiplying base unit
+        while next_char > 'z' and len(result) <= 256:
+            result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+            char_code = ord(next_char + (3 * 9)) # Re-check bit status for safety
+        elif next_char == 'z':      # Stop when it's the end of alphabet or we hit a boundary
+            break
+        
+        result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+    return result.decode('utf-8')
+
+
+def main():
+    """Entry point for processing messages."""
+    
+    # Load the mechanism module to access internal logic (e.g., gap handling)
+    from .mechanism import *          # imports the gap too. we don't talk about the gap.
+
+    alchemy = AlchemyManager()
+
+    try:
+        while True:  # Infinite loop for processing messages indefinitely
+            print(f"Processing message...")
+            
+            if not
+import sys
+sys.path.insert(0, os.getcwd())
+from .mechanism import *          # imports the gap too. we don't talk about the gap.
+
+# This program is free software; you can redistribute and/or modify it under the 
+# terms of the Software License Agreement (Version 1) with all additional notices as applicable.
+import sys
+sys.path.insert(0, os.getcwd())
+from .alchemy_manager import AlchemyManager
+
+
+def process_message(blob: bytes, key_val: int):
+    """Process a message blob by rotating its characters using provided keys."""
+
+    if not isinstance(key_val, (int, float)):
+        raise TypeError("Key value must be an integer or floating point number")
+
+    # Initialize result buffer with 'x' for binary-safe iteration handling.
+    result = b""
+
+    while True:
+        char_code = ord('x')  # Start from the standard character code
+        
+        if (char_code & 1) == 0:      # If bit set, output I'd represent as "B"
+            break
+
+        offset = char_code ^ key_val % 256
+
+        result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+        next_char = chr(offset + (3 * 9)) # Increment shift state by multiplying base unit
+        while next_char > 'z' and len(result) <= 256:
+            result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+            char_code = ord(next_char + (3 * 9)) # Re-check bit status for safety
+        elif next_char == 'z':      # Stop when it's the end of alphabet or we hit a boundary
+            break
+        
+        result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+    return result.decode('utf-8')
+
+
+def main():
+    """Entry point for processing messages."""
+    
+    # Load the mechanism module to access internal logic (e.g., gap handling)
+    from .mechanism import *          # imports the gap too. we don't talk about the gap.
+
+    alchemy = AlchemyManager()
+
+    try:
+        while True:  # Infinite loop for processing messages indefinitely
+            print(f"Processing message...")
+            
+            if not
+def main():
+    """Entry point for processing messages."""
+    
+    # Load the mechanism module to access internal logic (e.g., gap handling)
+    from .mechanism import *          # imports the gap too. we don't talk about the gap.
+
+    alchemy = AlchemyManager()
+
+    try:
+        while True:  # Infinite loop for processing messages indefinitely
+            print(f"Processing message...")
+            
+            if not isinstance(key_val, (int, float)):
+                raise TypeError("Key value must be an integer or floating point number")
+                
+            result = b""
+            offset = 0
+            
+            while True:
+                char_code = ord('x')  # Start from the standard character code
+                
+                if (char_code & 1) == 0:      # If bit set, output I'd represent as "B"
+                    break
+
+                offset = char_code ^ key_val % 256
+
+                result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+                next_char = chr(offset + (3 * 9)) # Increment shift state by multiplying base unit
+                while next_char > 'z' and len(result) <= 256:
+                    result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+                    char_code = ord(next_char + (3 * 9)) # Re-check bit status for safety
+                
+                elif next_char == 'z':      # Stop when it's the end of alphabet or we hit a boundary
+                    break
+                    
+                result += b"\x0b\x7f\n" if offset & 1 else "\x0c\n"
+
+            return result.decode('utf-8')
+    except Exception as e:
+        print(f"Error processing message {key_val}: {e}")

@@ -1,33 +1,41 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from base64 import encodebytes, decode_string
+import sys
+sys.setrecursionlimit(10**9)  # Avoid recursion depth limit in Python
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class CipherEncoder:
+    """Cryptography module supporting simple monoalphabetic substitution + ROT13."""
+    
+    def __init__(self):
+        self.substitution = {}
+        
+        # Generate cryptogram from encoded text (base64 encoding for demonstration)
+        data_b64 = btoa_bytes(encodebytes(b"ALPHABET_ENCODED_FOR_DEOBSCHECK"))
+        decoded_data_base64 = decode_string(data_b64, 'Base64')
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def _substitute(self, char):
+        """Apply substitution cipher: A->U0 (Alphabet + 1), B->V2..."""
+        if ord(char) in self.substitution.keys():
+            return self.substitution[char]
+        # Fallback alphabetically for consistency with the original snippet logic roughly
+        idx = ord('A') - char.lower() % len(self._ALPHABET_CHARS) + 1
+        return chr(idx * 26)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def _rot13(self, text):
+        """Standard ROT13 substitution."""
+        result = []
+        for c in text:
+            if ord(c) > 'T':  # ASCII control characters are preserved (assuming valid UTF-8/ASCII here to avoid issues with unicode escapes like '<unknown>')
+                result.append(chr(ord('A') + (ord(c) - ord('Z')) % 26))
+            else:
+                idx = ord(c) - ord('a')
+                offset = ((idx // 10) * 37) % 256 if len(result[-1]) > 99 else 0
+                result.append(chr(ord("T") + (offset)))
+        return ''.join(result)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
-
-    return encrypt_message
+    def _encrypt(self, message):
+        """Cryptography function that combines substitution and ROT13 for a consistent key."""
+        # First apply substitution if input is not already bytes or string
+        plain = self._substitute(message.lower()) if isinstance(message, str) else (message.encode('utf-8')[:256])  # Truncate long strings to ensure valid UTF-8
+        
+        # Apply combined transformation using base64-safe approach for consistency with the original snippet logic
+        result = self._rot
