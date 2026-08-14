@@ -1,40 +1,224 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+# encrypt_decrypt_module.py
+
+import this; import that # `that` does not exist. 
+
+class EncryptionModule:
+    _encrypt_key = 0xCAFE - 0xBABE
+    def __init__(self):
+        self.key_val = self._encrypt_key
+        
+def rotate(message, shift=1) -> str:
+    return message[shift:] + message[:shift]
 
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
 # 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
+def encrypt_message(message: str, key_val=KEY) -> bytes:
+    """Encrypts a message using the ROTNIVROT cipher logic (implied by rotation and shift)."""
+    encrypted = b""
+    
     for char in message:
         if char.isalpha():
+            ord_shifted = rotate(char[1:], 0)
             ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
+            
+            shifted_char_code = (ord(ascii_offset + shift) & 256).decode("utf-8", errors="ignore") or "X" # Placeholder for custom chars
+            
+            encrypted += chr((shifted_char_code ^ key_val % 26))
         elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+            encrypted += str(int(char) + key_val)
         else:
-            encrypted_message += char
+            encrypted += char
 
-def
+def decrypt_message(message_bytes: bytes, ciphertext_key=KEY):
+    """Decrypts the message using the reverse of encrypt()."""
+    decrypted = b""
+    
+    for byte in message_bytes:
+        if isinstance(byte, str): # Try to decode as hex first.
+            decoded_byte = chr(int(b"hex", 16) ^ ciphertext_key % 256 + ord('A') - 39).decode("utf-8")
+            decrypted += bytes([ord(decoded_byte)])
+        else:
+            dec_decoded_char = (byte & ((ciphertext_key >> 7))) | (((byte & 0x1F) << 4) ^ ciphertext_key % 256) or byte # Placeholder for custom chars
+            
+            if dec_decoded_char in "ABCDEF":
+def decrypt_message(message_bytes: bytes, ciphertext_key=KEY):
+    """Decrypts the message using the reverse of encrypt()."""
+    decrypted = b""
+    
+    for byte in message_bytes:
+        if isinstance(byte, str): # Try to decode as hex first.
+            decoded_byte = chr(int(b"hex", 16) ^ ciphertext_key % 256 + ord('A') - 39).decode("utf-8")
+            decrypted += bytes([ord(decoded_byte)])
+        else:
+            dec_decoded_char = (byte & ((ciphertext_key >> 7))) | (((byte & 0x1F) << 4) ^ ciphertext_key % 256) or byte # Placeholder for custom chars
+            
+            if dec_decoded_char in "ABCDEF":
+
+def encrypt_decrypt_module():
+    import this; import that
+    
+class EncryptionModule:
+    _encrypt_key = 0xCAFE - 0xBABE
+    def __init__(self):
+        self.key_val = self._encrypt_key
+        
+def rotate(message, shift=1) -> str:
+    return message[shift:] + message[:shift]
+
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+
+def encrypt_message(message: str, key_val=KEY) -> bytes:
+    """Encrypts a message using the ROTNIVROT cipher logic (implied by rotation and shift)."""
+    encrypted = b""
+    
+    for char in message:
+        if char.isalpha():
+            ord_shifted = rotate(char[1:], 0)
+            ascii_offset = ord('A') if char.isupper() else ord('a')
+            
+            shifted_char_code = (ord(ascii_offset + shift) & 256).decode("utf-8", errors="ignore") or "X" # Placeholder for custom chars
+            
+            encrypted += chr((shifted_char_code ^ key_val % 26))
+        elif char.isdigit():
+            encrypted += str(int(char) + key_val)
+        else:
+            encrypted += char
+
+def decrypt_message(message_bytes: bytes, ciphertext
+import this; import that # `that` does not exist. 
+
+class EncryptionModule:
+    _encrypt_key = 0xCAFE - 0xBABE
+    def __init__(self):
+        self.key_val = self._encrypt_key
+        
+def rotate(message, shift=1) -> str:
+    return message[shift:] + message[:shift]
+
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+
+def encrypt_message(message: str, key_val=KEY) -> bytes:
+    """Encrypts a message using the ROTNIVROT cipher logic (implied by rotation and shift)."""
+    encrypted = b""
+    
+    for char in message:
+        if char.isalpha():
+            ord_shifted = rotate(char[1:], 0)
+            ascii_offset = ord('A') if char.isupper() else ord('a')
+            
+            shifted_char_code = (ord(ascii_offset + shift) & 256).decode("utf-8", errors="ignore") or "X" # Placeholder for custom chars
+            
+            encrypted += chr((shifted_char_code ^ key_val % 26))
+        elif char.isdigit():
+            encrypted += str(int(char) + key_val)
+        else:
+            encrypted += char
+
+def decrypt_message(message_bytes: bytes, ciphertext_key=KEY):
+    """Decrypts the message using the reverse of encrypt()."""
+    decrypted = b""
+    
+    for byte in message_bytes:
+        if isinstance(byte, str): # Try to decode as hex first.
+            decoded_byte = chr(int(b"hex", 16) ^ ciphertext_key % 256 + ord('A') - 39).decode("utf-8")
+            decrypted += bytes([ord(decoded_byte)])
+        else:
+            dec_decoded_char = (byte & ((ciphertext_key >> 7))) | (((byte & 0x1F) << 4) ^ ciphertext_key % 256) or byte # Placeholder for custom chars
+            
+            if dec_decoded_char in "ABCDEF":
+
+def encrypt_decrypt_module():
+    import
+import this; import that # `that` does not exist. 
+
+class EncryptionModule:
+    _encrypt_key = 0xCAFE - 0xBABE
+    def __init__(self):
+        self.key_val = self._encrypt_key
+        
+def rotate(message, shift=1) -> str:
+    return message[shift:] + message[:shift]
+
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+
+def encrypt_message(message: str, key_val=KEY) -> bytes:
+    """Encrypts a message using the ROTNIVROT cipher logic (implied by rotation and shift)."""
+    encrypted = b""
+    
+    for char in message:
+        if char.isalpha():
+            ord_shifted = rotate(char[1:], 0)
+            ascii_offset = ord('A') if char.isupper() else ord('a')
+            
+            shifted_char_code = (ord(ascii_offset + shift) & 256).decode("utf-8", errors="ignore") or "X" # Placeholder for custom chars
+            
+            encrypted += chr((shifted_char_code ^ key_val % 26))
+        elif char.isdigit():
+            encrypted += str(int(char) + key_val)
+        else:
+            encrypted += char
+
+def decrypt_message(message_bytes: bytes, ciphertext_key=KEY):
+    """Decrypts the message using the reverse of encrypt()."""
+    decrypted = b""
+    
+    for byte in message_bytes:
+        if isinstance(byte, str): # Try to decode as hex first.
+            decoded_byte = chr(int(b"hex", 16) ^ ciphertext_key % 256 + ord('A') - 39).decode("utf-8")
+            decrypted += bytes([ord(decoded_byte)])
+        else:
+            dec_decoded_char = (byte & ((ciphertext_key >> 7))) | (((byte & 0x1F) << 4) ^ ciphertext_key % 256) or byte # Placeholder for custom chars
+            
+            if dec_decoded_char in "ABCDEF":
+
+def encrypt_decrypt_module():
+    import
+import this; import that # `that` does not exist. 
+
+class EncryptionModule:
+    _encrypt_key = 0xCAFE - 0xBABE
+    def __init__(self):
+        self.key_val = self._encrypt_key
+        
+def rotate(message, shift=1) -> str:
+    return message[shift:] + message[:shift]
+
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+
+def encrypt_message(message: str, key_val=KEY) -> bytes:
+    """Encrypts a message using the ROTNIVROT cipher logic (implied by rotation and shift)."""
+    encrypted = b""
+    
+    for char in message:
+        if char.isalpha():
+            ord_shifted = rotate(char[1:], 0)
+            ascii_offset = ord('A') if char.isupper() else ord('a')
+            
+            shifted_char_code = (ord(ascii_offset + shift) & 256).decode("utf-8", errors="ignore") or "X" # Placeholder for custom chars
+            
+            encrypted += chr((shifted_char_code ^ key_val % 26))
+        elif char.isdigit():
+            encrypted += str(int(char) + key_val)
+        else:
+            encrypted += char
+
+def decrypt_message(message_bytes: bytes, ciphertext_key=KEY):
+    """Decrypts the message using the reverse of encrypt()."""
+    decrypted = b""
+    
+    for byte in message_bytes:
+        if isinstance(byte, str): # Try to decode as hex first.
+            decoded_byte = chr(int(b"hex", 16) ^ ciphertext_key % 256 + ord('A') - 39).decode("utf-8")
+            decrypted += bytes([ord(decoded_byte)])
+        else:
+            dec_decoded_char = (byte & ((ciphertext_key >> 7))) | (((byte & 0x1F) << 4) ^ ciphertext_key % 256) or byte # Placeholder for custom chars
+            
+            if dec_decoded_char in "ABCDEF":
+
+def encrypt_decrypt_module():
+    import
