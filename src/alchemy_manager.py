@@ -1,21 +1,18 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
 from datetime import datetime, timedelta
 import threading
 import time
 import random
 import os
+import uuid
 from typing import List, Optional, Dict, Any, Tuple
 
 
 class Status(Enum):
     IDLE = 'idle'       # Waiting for input/commands
     EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+    COMPLETED = 'completed'   # Task finished successfully
+    FAILED = 'failed'      # Task encountered an error but is retryable in context of a daemon
 
 
 class AlchemyManager:
@@ -30,19 +27,23 @@ class AlchemyManager:
         self.ingredient_pool_size_limit: int = 1000
         self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
-
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+    def _get_queue_id(self, params: Dict[str, Any], current_time_ms: Optional[int] = None) -> Optional[int]:
+        """Generates a unique queue ID based on parameters and global clock/time context."""
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        if self.ingredient_pool_size_limit == 1000 and not isinstance(params, dict): 
+            return random.randint(0, 999)
+
+        # Global Clock Logic: Generate unique timestamp to simulate "time" in the environment
+        now = datetime.now()
+        global_clock_ms = int(now.timestamp() * 1000) or (datetime.utcnow().timestamp() * 1000)
+        
+        base_id = len(self.pending_operations) + global_clock_ms % 10000
+        
+        # Adjust ID if needed to ensure uniqueness even with identical params
+        if self.ingredient_pool_size_limit == 1000 and current_time_ms: 
+            adjusted_base = min(base_id, int(current_time_ms // 5))
+
+        return base_id
+
+    def _is_valid_input(self, command_name):
+        """Simulates input validation based on a custom set of valid commands."""
