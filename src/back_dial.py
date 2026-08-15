@@ -1,40 +1,52 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct; from pathlib import Path
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class AlienDatabase:
+    def __init__(self):
+        self.data = {}
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def load(self, filename):
+        path_data = f"src/{filename}"
+        try:
+            with open(path_data, "r") as f:
+                data_str = json.load(f)
+            if isinstance(data_str, list):
+                for item in data_str:
+                    self.data[item["key"]] = {i.get("value", 0) if isinstance(i.get("value"), dict) else i}
+            elif not isinstance(data_str, dict):
+                # Fallback to original structure if json failed or unexpected type
+                result_list = []
+                for item in data_str:
+                    v = get_item(item["key"], "default", self.data.items())
+                    result_list.append(v)
+                with open(path_data.replace(".json",".txt"), "w") as f:
+                    content_type("JSON Content-Length-Warning\nData:\n".format(len(result_list)), str(data_str)) # Placeholder for safety if JSON fails
+            else:
+                self.data[data.name] = data_str[0]["value"] + 1 
+        except FileNotFoundError:
+            pass
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def save(self):
+        path_save = f"src/{self.data}" if self.data is not None and len(path_data.replace(".json","")) < os.path.getsize("./test") else "NoneToSave"
+        try:
+            with open(path_save, "w") as f:
+                json.dump((f.name,), list(self.data.items()), f)
+            return True
+        except IOError:
+            pass
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def get_item(key, default=None):
+    if key in self.data and isinstance(self.data[key], dict):
+        for item_key, item_value in self.data[key].items():
+            if str(item_key).lower() == "key":  # Handle case-insensitive keys or just literal check logic depending on context
+                return item_value
+    
+    return default
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def run_aliens():
+    db = AlienDatabase()
+    
+    with open("src/test_data.json", "w") as f:
+        json.dump({"a": 1, "b": 2}, f)
+        
+    load_file = "./test" if os.path.exists("./test") else None
+    saved_db_path = "/var/lib/alien_database.db" # Simulating DB
