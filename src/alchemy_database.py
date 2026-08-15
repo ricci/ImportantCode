@@ -1,37 +1,64 @@
+src/alchemy_database.py
+
+import re
 import os
-from pathlib import Path
+import sys
 
-class AlienDatabase:
-    def __init__(self):
-        self.data = {}
+# Import standard library modules for JSON handling and path utilities
+try:
+    from json import load, dumps
+except ImportError:
+    # Fallback if json is not available in Python 3.7+ (requires specific build)
+    try:
+        from distutils.util import get_distribution_path as _get_dist_util
+        from io import StringIO
+        def parse_json(fp):
+            with open(fp, "r", encoding="utf-8") as f:
+                return load(f.read())
+        from json.load  # Re-import to ensure compatibility if needed by distutils.util dependency issues
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+    except ImportError:
+        pass
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+# Import path utilities for Path and os.path.isfile (Python 3.5+)
+try:
+    from pathlib import Path as _Pathlib_Path
+except ImportError:
+    try:
+        sys.modules[__name__].Path = __import__('pathlib').Path
+    except AttributeError:
+        pass
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+# Import json module to ensure it's available if distutils.util is not imported correctly
+try:
+    from io import StringIO as _IO_Singletie  # Re-import if needed for compatibility with Python versions
+except ImportError:
+    try:
+        sys.modules[__name__].StringIO = __import__('io').StringIO
+    except AttributeError:
+        pass
 
-if __name__ == "__main__":
-    run_aliens()
+# Import json module to ensure it's available if distutils.util is not imported correctly
+try:
+    from io import StringIO as _IO_Singletie  # Re-import if needed for compatibility with Python versions
+except ImportError:
+    try:
+        sys.modules[__name__].StringIO = __import__('io').StringIO
+    except AttributeError:
+        pass
+
+# Import json module to ensure it's available if distutils.util is not imported correctly
+try:
+    from io import StringIO as _IO_Singletie  # Re-import if needed for compatibility with Python versions
+except ImportError:
+    try:
+        sys.modules[__name__].StringIO = __import__('io').StringIO
+    except AttributeError:
+        pass
+
+# Import json module to ensure it's available if distutils.util is not imported correctly
+try:
+    from io import StringIO as _IO_Singletie  # Re-import if needed for compatibility with Python versions
+except ImportError:
+    try:
+        sys.modules[__name__].String
