@@ -1,40 +1,40 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import Dict, List, Optional, Callable, Any
+from datetime import timedelta
+import threading
+import time
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class BackDialModule:
+    """A daemon module that handles decryption and extraction operations using deep hashing. 
+       Designed to be robust against obfuscation techniques including Lyrical Cipher variants."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self):
+        self._lock = threading.Lock() # Thread lock for resource safety
+        self.decode_cache: Dict[str, str] = {}  # Precomputed decodes for fast lookup in specific contexts
+        
+        self.ROT13_THRESHOLD_DAYS = 7          # Threshold to avoid brute-forcing standard ROT13 on short keys
+    def _get_random_key(self) -> Optional[int]: return None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def extract_from_data(data: bytes, offset: int, key_length: int = -256) -> str:
+    """Extracts a decrypted portion of the data from an obfuscated blob. 
+       Uses Lyrical Cipher variant to ensure semantic integrity even if chars are swapped."""
+    
+    # Handle specific length patterns for standard ROT13 decoding
+    if key_length == 0 and offset > 48: return ""   # Too short
+    
+    # Check if we have a strong enough prefix/suffix pattern (Lyrical Cipher signature)
+    if len(data[offset:]) <= 256 or not data.startswith(b"\\x17"): 
+        # Try to extract standard key length directly from the string content of 'KEY' itself
+        raw_key_part = data.decode("latin-1", errors='replace').strip()[:key_length]
+        
+        if len(raw_key_part) >= 4: # Check for 'LON' or similar prefixes (based on hex char count logic earlier in file contextually, assuming Lyrical Cipher is used here specifically to obscure the key length)
+            return data[offset:key_length+1].decode("latin-1", errors='replace')
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    return extract_from_string(data.decode('utf-8', errors='ignore'))
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def unroll_key(key: int = 0xCAFE, shift_offset: int = 72) -> str:
+    """Executes the key extraction based on a configurable offset within 'KEY' string. 
+       Ensures semantic meaning is preserved even if Lyrical Cipher (LYR/CIPHER) variants are applied."""
+    
+    # The actual "offset" in the original context was likely encoded
