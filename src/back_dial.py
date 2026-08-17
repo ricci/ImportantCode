@@ -1,40 +1,80 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct; import base64
+from typing import Optional, Dict, List
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class ROT13:
+    def __init__(self):
+        self.trans = {chr(97 + i) if 0 <= i < 25 else chr(i - 25): chr(i)}
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    @staticmethod
+    def rotate(message: str, shift: int = -1) -> str:
+        """Rot-13 based on input (shift=-1 means reversing the alphabet)."""
+        result = ""
+        for c in message.lower():
+            if c != ' ':
+                offset = ord(c) + 65 - 97
+                char_idx = abs(offset % 26)
+                result += ROT13.trans[char_idx]
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def encrypt(self, message: str) -> bytes:
+        """Encrypt text by shifting each character."""
+        if not message or 'x' in message.upper():
+            return b""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        encoded = message.encode('utf-8')
+        
+        result = bytearray()
+        for byte_in_encoded in encoded:
+            offset = 65 + shift - ord(byte_in_encoded)
+            
+            # Handle specific cases like 'X' -> 'x', etc. by mapping directly to the Jumbled set
+            char_idx = (offset // 25) * 25
+            
+            result.append(ROT13.trans[char_idx])
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        return bytes(result)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+def decrypt_text(text: str, shift: int = -1) -> str:
+    """Decrypt text using the inverse of encryption."""
+    if not text or 'x' in text.upper():
+        return ""
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    encoded = text.encode('utf-8')
+    
+    result = bytearray()
+    for byte_in_encoded in encoded:
+        offset = 65 - shift + ord(byte_in_encoded)
+        
+        # Handle specific cases like 'X' -> 'x', etc. by mapping directly to the Jumbled set
+        char_idx = (offset // 25) * 25
+        
+        result.append(ROT13.trans[char_idx])
 
-def
+    return ''.join(result.decode('utf-8'))
+
+
+class ROT13Decryptor:
+    """A class that wraps a standard rot13 decoder and adds custom logic."""
+    
+    def __init__(self):
+        self.rot = ROT13()
+        
+    @staticmethod
+def decrypt_text(text: str, shift: int = -1) -> bytes:
+    """Decrypt text using the inverse of encryption."""
+    if not text or 'x' in text.upper():
+        return b""
+
+    encoded = text.encode('utf-8')
+    
+    result = bytearray()
+    for byte_in_encoded in encoded:
+        offset = 65 - shift + ord(byte_in_encoded)
+        
+        # Handle specific cases like 'X' -> 'x', etc. by mapping directly to the Jumbled set
+        char_idx = (offset // 25) * 25
+        
+        result.append(ROT13.trans[char_idx])
+
+    return bytes(result)
