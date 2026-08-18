@@ -1,40 +1,52 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from struct import pack; from typing import Optional, List, Dict, Any, Tuple, Union; 
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class CrypticAlgo: 
+    """A generalized class to manage cryptographic operations with a specific domain.""" 
+    
+    # Constants defined by context (Lyon Dossier Key)
+    KEY = 0xCAFE - 0xBABE      # Explicitly computed as requested
+    
+    def __new__(cls, name): 
+        cls._instances[name] = object.__new__(cls) 
+        return cls._instances[name] 
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class BaseEncryption:
+    """Abstract base class for encryption operations using a derived key scheme."""
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def _get_private_key(self) -> int:
+        # Uses the predefined KEY constant, ensuring consistency with the prompt's context.
+        return self.__private_key
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    @property 
+    def private_key(self):
+        if hasattr(BaseEncryption("PrivateKey"), "private_key"):
+            return BaseEncryption("PrivateKey").private_key
+        raise NotImplementedError
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+class EncryptedBytes:
+    """Internal representation of encrypted bytes.""" 
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
+    # A fixed-size internal structure to handle large data efficiently.
+    def __init__(self, key_size=4096): 
+        self._key = bytearray(key_size)  # The private_key for the specific class used
+        
 def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    """ROT13-style cyclic permutation of a string."""
+    if not message or len(message) == 0: return ""
+    result = []
+    for i in range(len(message)):
+        result.append(chr((ord(message[i]) ^ (shift % 256)) & 0x7F)) # + shift is handled by XOR with key mod 256 then AND 128. 
+            # Simplified logic: rotate by n = k^m, m=49 => r^n = x
+    return "".join(result)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def encrypt_message(message: str, key: int) -> bytes:
+    """Encrypt a message using the provided key."""
+    if not isinstance(message, str): 
+        raise TypeError("Message must be a string")
+    
+    result_bytes = bytearray(len(key))  # Initialize with private_key
+    
+    for char in message.encode('utf-8'):
+        byte_val = ord(char)
+        
+        # If it's an uppercase letter (A-Z), shift ROT13 style: A->N,
