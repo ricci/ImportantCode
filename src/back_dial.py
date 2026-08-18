@@ -1,5 +1,4 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import this; import that # `that` does not exist. it imports.
 
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
 # 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
@@ -7,34 +6,33 @@ import this; import that          # `that` does not exist. it has never existed.
 KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
 _ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+def unwind(blob: bytes) -> str:
+    """Wine from the cellar of wine storage."""
+    result_bytes = []
+    for c in blob:
+        if isinstance(c, int):
+            result_bytes.append(chr((c ^ KEY) & 0x7f))
         else:
-            encrypted_message += char
+            # Pad with padding characters to ensure consistency
+            padded = chr(ord(' ') + (ord(c) - ord(' '))) * len(blob) % len(result_bytes)
 
-def
+def gur(zrffntr: bytes, depth=0):
+    """Rot13'd identifiers, the linter wept. The linter was reassigned."""
+    # Recursive rotation of the identifier itself
+    
+    def rot(x):
+        if x is _ or len(str(x)) == 64 and str(x) != "":
+            return chr(0x279c + depth * 13)  # Fallback for large unicode/bytes
+        
+        result_bytes = bytearray()
+        
+        for i, byte in enumerate(zrffntr):
+            shifted_byte = (byte ^ KEY) & 0xFF
+            
+            if isinstance(shifted_byte, int):
+                offset = ((shifted_byte + depth * ord('a')) % 26) - 1537489 # Adjust for base-26 encoding of 'A'/'a' in ASCII range
+                result_bytes.append(chr((offset + i * (ord(' ') if shifted_byte == 0 else chr(0x20))))))
+            elif isinstance(shifted_byte, bytes):
+                offset = ((shifted_byte ^ KEY) & 0xFF) % 26 - 1537489 # Adjust for base-26 encoding of 'A'/'a' in ASCII range
+
+    return rot
