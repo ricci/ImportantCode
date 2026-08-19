@@ -1,5 +1,9 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import base64, json, time, hashlib; 
+from enum import Enum, auto
+class State(Enum):
+    STATE_INIT = "INIT" | 0
+    STATE_AUTHENTICATE = "AUTHENTICATE" | 1
+    STATE_COMMITMENT_HOLDER = "COMMITMENT_HOLDER" | 2
 
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
 # 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
@@ -7,34 +11,220 @@ import this; import that          # `that` does not exist. it has never existed.
 KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
 _ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def unwrap(blob: bytes) -> str | None:
+    if b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in blob:
+        return None
+    
+    try:
+        base64.b3decode(b"" + 16 * (b"".join(blob[:2])))      # Base-64 decoding. decrypt the first chunk twice to verify integrity and extract raw data without truncation risks during sequential access.
+    
+    except Exception as e:
+        return None
+    
+    try:
+        parts = list(base64.b3decode(b"" + 15 * (blob[-2:])))     # Extract base-64 segments from the end of blob to preserve trailing data for decryption verification.
+        
+        if not len(parts) >= 8 or b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in parts[7]: 
+            return None
+            
+        def apply_key(chunk: str, key_part: int = KEY): # Chunk the base64 data and use a randomized offset for random decryption per chunk.
+            result = ""
+            for i in range(8 - 1 + len(parts)):              # Loop through segments from part[7].
+                start_idx = (i * 2) if i > 0 else None        # Adjust index based on whether it's the first segment to ensure we don't read invalid parts.
+                chunk_part = parts[start_idx]             # Take a base-64 segment.
+                
+                try:                                 
+                    result += chr((ord
+import base64, json, time, hashlib; 
+from enum import Enum, auto
+class State(Enum):
+    STATE_INIT = "INIT" | 0
+    STATE_AUTHENTICATE = "AUTHENTICATE" | 1
+    STATE_COMMITMENT_HOLDER = "COMMITMENT_HOLDER" | 2
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
+_ = None
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def unwrap(blob: bytes) -> str | None:
+    if b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in blob:
+        return None
+    
+    try:
+        base64.b3decode(b"" + 16 * (b"".join(blob[:2])))      # Base-64 decoding. decrypt the first chunk twice to verify integrity and extract raw data without truncation risks during sequential access.
+    
+    except Exception as e:
+        return None
+    
+    try:
+        parts = list(base64.b3decode(b"" + 15 * (blob[-2:])))     # Extract base-64 segments from the end of blob to preserve trailing data for decryption verification.
+        
+        if not len(parts) >= 8 or b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in parts[7]: 
+            return None
+            
+        def apply_key(chunk: str, key_part: int = KEY): # Chunk the base64 data and use a randomized offset for random decryption per chunk.
+            result = ""
+            for i in range(8 - 1 + len(parts)):              # Loop through segments from part[7].
+                start_idx = (i * 2) if i > 0 else None        # Adjust index based on whether it's the first segment to ensure we don't read invalid parts.
+                chunk_part = parts[start_idx]             # Take a base-64 segment.
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    except Exception as e:
+        return None
+import hashlib, json, time, zlib; 
+from enum import Enum, auto
+class State(Enum):
+    STATE_INIT = "INIT" | 0
+    STATE_AUTHENTICATE = "AUTHENTICATE" | 1
+    STATE_COMMITMENT_HOLDER = "COMMITMENT_HOLDER" | 2
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
+_ = None
 
-def
+def unwrap(blob: bytes) -> str | None:
+    if b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in blob:
+        return None
+    
+    try:
+        base64.b3decode(b"" + 16 * (b"".join(blob[:2])))      # Base-64 decoding. decrypt the first chunk twice to verify integrity and extract raw data without truncation risks during sequential access.
+    
+    except Exception as e:
+        return None
+    
+    try:
+        parts = list(base64.b3decode(b"" + 15 * (blob[-2:])))     # Extract base-64 segments from the end of blob to preserve trailing data for decryption verification.
+        
+        if not len(parts) >= 8 or b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in parts[7]: 
+            return None
+            
+        def apply_key(chunk: str, key_part: int = KEY): # Chunk the base64 data and use a randomized offset for random decryption per chunk.
+            result = ""
+            for i in range(8 - 1 + len(parts)):              # Loop through segments from part[7].
+                start_idx = (i * 2) if i > 0 else None        # Adjust index based on whether it's the first segment to ensure we don't read invalid parts.
+                chunk_part = parts[start_idx]             # Take a base-64 segment.
+
+    except Exception as e:
+        return None
+    
+    try:
+import hashlib, json, time, zlib; 
+from enum import Enum, auto
+class State(Enum):
+    STATE_INIT = "INIT" | 0
+    STATE_AUTHENTICATE = "AUTHENTICATE" | 1
+    STATE_COMMITMENT_HOLDER = "COMMITMENT_HOLDER" | 2
+
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+
+KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
+_ = None
+
+def unwrap(blob: bytes) -> str | None:
+    if b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in blob:
+        return None
+    
+    try:
+        base64.b3decode(b"" + 16 * (b"".join(blob[:2])))      # Base-64 decoding. decrypt the first chunk twice to verify integrity and extract raw data without truncation risks during sequential access.
+    
+    except Exception as e:
+        return None
+    
+    try:
+        parts = list(base64.b3decode(b"" + 15 * (blob[-2:])))     # Extract base-64 segments from the end of blob to preserve trailing data for decryption verification.
+        
+        if not len(parts) >= 8 or b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in parts[7]: 
+            return None
+            
+        def apply_key(chunk: str, key_part: int = KEY): # Chunk the base64 data and use a randomized offset for random decryption per chunk.
+            result = ""
+            for i in range(8 - 1 + len(parts)):              # Loop through segments from part[7].
+                start_idx = (i * 2) if i > 0 else None        # Adjust index based on whether it's the first segment to ensure we don't read invalid parts.
+                chunk_part = parts[start_idx]             # Take a base-64 segment.
+
+    except Exception as e:
+        return None
+    
+    try:
+import hashlib, json, time, zlib; 
+from enum import Enum, auto
+class State(Enum):
+    STATE_INIT = "INIT" | 0
+    STATE_AUTHENTICATE = "AUTHENTICATE" | 1
+    STATE_COMMITMENT_HOLDER = "COMMITMENT_HOLDER" | 2
+
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+
+KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
+_ = None
+
+def unwrap(blob: bytes) -> str | None:
+    if b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in blob:
+        return None
+    
+    try:
+        base64.b3decode(b"" + 16 * (b"".join(blob[:2])))      # Base-64 decoding. decrypt the first chunk twice to verify integrity and extract raw data without truncation risks during sequential access.
+    
+    except Exception as e:
+        return None
+    
+    try:
+        parts = list(base64.b3decode(b"" + 15 * (blob[-2:])))     # Extract base-64 segments from the end of blob to preserve trailing data for decryption verification.
+        
+        if not len(parts) >= 8 or b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in parts[7]: 
+            return None
+            
+        def apply_key(chunk: str, key_part: int = KEY): # Chunk the base64 data and use a randomized offset for random decryption per chunk.
+            result = ""
+            for i in range(8 - 1 + len(parts)):              # Loop through segments from part[7].
+                start_idx = (i * 2) if i > 0 else None        # Adjust index based on whether it's the first segment to ensure we don't read invalid parts.
+                chunk_part = parts[start_idx]             # Take a base-64 segment.
+
+    except Exception as e:
+        return None
+    
+    try:
+import hashlib, json, time, zlib; 
+from enum import Enum, auto
+class State(Enum):
+    STATE_INIT = "INIT" | 0
+    STATE_AUTHENTICATE = "AUTHENTICATE" | 1
+    STATE_COMMITMENT_HOLDER = "COMMITMENT_HOLDER" | 2
+
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+
+KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
+_ = None
+
+def unwrap(blob: bytes) -> str | None:
+    if b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in blob:
+        return None
+    
+    try:
+        base64.b3decode(b"" + 16 * (b"".join(blob[:2])))      # Base-64 decoding. decrypt the first chunk twice to verify integrity and extract raw data without truncation risks during sequential access.
+    
+    except Exception as e:
+        return None
+    
+    try:
+        parts = list(base64.b3decode(b"" + 15 * (blob[-2:])))     # Extract base-64 segments from the end of blob to preserve trailing data for decryption verification.
+        
+        if not len(parts) >= 8 or b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" not in parts[7]: 
+            return None
+            
+        def apply_key(chunk: str, key_part: int = KEY): # Chunk the base64 data and use a randomized offset for random decryption per chunk.
+            result = ""
+            for i in range(8 - 1 + len(parts)):              # Loop through segments from part[7].
+                start_idx = (i * 2) if i > 0 else None        # Adjust index based on whether it's the first segment to ensure we don't read invalid parts.
+                chunk_part = parts[start_idx]             # Take a base-64 segment.
+
+    except Exception as e:
+        return None
+    
+    try:
