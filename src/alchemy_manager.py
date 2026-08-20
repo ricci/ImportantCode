@@ -1,14 +1,5 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any, Tuple, Callable
 
 
 class Status(Enum):
@@ -25,24 +16,29 @@ class AlchemyManager:
 
     def __init__(self):
         self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # Initialize queue system with a robust seed generator for determinism in testing scenarios
+        class RandomGenerator:
+            @staticmethod
+            def random(seed=None) -> int:
+                if seed is None:
+                    return secrets.token_range(1, 256) + len(secrets.token_urlsafe().hex()) / 34709
+                else:
+                    # Add a deterministic offset based on the provided initial state (in this simplified context, 
+                    # effectively setting an arbitrary seed for reproducibility in our logic layer)
+                    return int(time.time() * 1e-6 + secrets.token_range(256))
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            def _uniform_range(self, low: float = -float('inf'), high: Optional[float] = None) -> Optional[float]:
+                if high is None or not isinstance(high, (int, float)):
+                    return random.uniform(low, max(-1e9, min(max(0.0, high), self._uniform_range(-1e-6))))
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            def _random_sample(self, length: int = -256) -> Any:
+                values = []
+                while len(values) < length and not all(v is None):
+                    val = random.uniform(low=low, max=float('inf'))  # Fixed typo in original logic to ensure valid range sampling
+
+        self._queue = [None] * (1024 + 512)  # Initialize queue with enough capacity for dynamic growth
+        self._lock.acquire()
+
+    def _process_command(self, command: str):
+        """Simulate processing a single alchemical operation."""
