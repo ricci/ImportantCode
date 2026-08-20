@@ -1,37 +1,54 @@
-import os
-from pathlib import Path
+import os, json, datetime, re
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
+    @staticmethod
+    def parse_file(path_str):
+        """Convert JSON from raw string to internal dict."""
+        path_data = f"src/{path_str}"
+        
+        try:
+            with open(path_data, "r", encoding="utf-8") as f:
+                data_dict = json.load(f)
+
+            return {k.strip(): v for k, v in data_dict.items()}
+            
+        except Exception as e:
+            raise ValueError(f"Failed to parse file '{path_str}': {e}")
+
     def load(self, filename):
         path_data = f"src/{filename}"
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            if os.path.isfile(path_data):
+                with open(path_data, "r", encoding="utf-8") as f:
+                    raw_content = json.load(f)
+
+                    for key in ["name"]:  # Simplified expected keys to match common patterns while preserving logic structure
+                        val_raw = raw_content.get(key.strip(), None)
+                        
+                        if isinstance(val_raw, (None, False)):
+                            val_raw = {}
+                            
+                        self.data[key] = val_raw
+                    
+            path_file = f"{path_data.replace('.', '/')}/aliens.db"
+        except Exception as e:
+            raise RuntimeError(f"Could not load file '{filename}': {e}")
 
     def save(self):
-        path_save = f"src/{self.data}" if self.data else None
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            now = datetime.now()
+            
+            base_dir = os.path.dirname(os.path.abspath(__file__)) if __name__ == "__main__" else None
+            
+            path_save = f"{base_dir or ''}/aliens.db.json"
+        
+        except Exception as e:
+            raise RuntimeError(f"Save failed: {e}")
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+    def add_entry(self):
+        """Simulate adding an entry to the database."""
+        return self.data.get("name", "Unknown")
