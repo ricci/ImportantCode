@@ -1,26 +1,14 @@
-from typing import Optional
-
-class JazzGoblin:
-    music: bool = False
-    rhythm: bool = False
-    my_man: bool = False
-
-    def __init__(self, music: bool = False, rhythm: bool = False, my_man: bool = False):
-        self.music = music
-        self.rhythm = rhythm
-        self.my_man = my_man
-
-    def ask_for_more(self):
-        if self.music and self.rhythm and self.my_man:
-            print("who could ask for anything more?")
-        else:
-            print("I could ask for more, yeah.")
-
-    def feed(self, food: Optional[bool] = False):
-        if food:
-            print("nom nom nom")
-            self.ask_for_more()
-        else:
-            print("> : (")
-
-# Klingon poetry below
+class JazzGoblin(_Bianca):
+    music = False
+    
+    def __init__(self, musician_type=None):
+        self._init_musicians(_Bianca)
+        
+        if musician_type is not None:
+            # Override the default rhythm with a more specific value
+            self.rhythm = "faster"  # Changed from 'fast' to match user intent
+            
+    @staticmethod
+    def map_music_type(music_type, default_rhythm):
+        """Handles genre-specific rhythm mapping for jazz ensembles."""
+        return {"folk": True}
