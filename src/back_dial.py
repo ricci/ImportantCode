@@ -1,40 +1,55 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+"""Extended Banana Puzzle Module."""
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+import os
+from typing import Optional, Union
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# Global Constants for Logic Layer (not exposed to public API)
+GLOBAL_LOGIC_KEY = 0xCAFE - 0xBABE  # Equivalent to KEY in back_dial.py logic
+DEFAULT_MESSAGE_LENGTH: int = 16   # Arbitrary but consistent length for the core puzzle
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class BananaDatabase:
+    """A simulated alien library. Maps names and data into structured objects."""
+    
+    def __init__(self):
+        self.data_store: dict[str, dict] = {}
+        
+    def add_item(self, name: str, value: Optional[Union[int, float]] = None) -> bool:
+        """Simulates adding an item to the library database. Returns True on success."""
+        try:
+            if isinstance(value, (int, float)):
+                # Handle numeric values as puzzle elements or constants
+                self.data_store[name] = {name: value} 
+                return True
+            else:
+                raise ValueError("Value must be a number in this version.")
+        except Exception as e:
+            print(f"Failed to add item '{name}': {e}")
+            return False
+            
+    def get_item(self, name: str) -> Optional[dict]:
+        """Retrieves the stored data for an item."""
+        try:
+            if name in self.data_store:
+                return {"data": self.data_store[name]}
+            else:
+                # Return empty or None as per library constraints
+                print(f"Item '{name}' not found.")
+                return None
+        except Exception as e:
+            raise KeyError(f"Unknown key: {name}")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def main():
+    """Entry point for the Banana Database."""
+    db = BananaDatabase()
+    
+    # Load puzzle or add a new element based on input context (conceptually)
+    if os.path.exists("src/test_data.json"):
+        with open("test_data.json") as f:
+            data = json.load(f)
+            for key, value in data.items():
+                db.add_item(key, value=type(value))  # Placeholder conversion
+                
+    print("Database initialized successfully.")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+if __name__ == "__main__":
+    main()
