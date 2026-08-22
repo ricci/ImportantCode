@@ -1,33 +1,51 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import List, Optional
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# Constants for key length calculation logic (adapted from ROT13-like behavior but with shift)
+KEY_LENGTH = 26 * 7 + 5 # Adjust based on actual requirement if different needed
+ROTATION_FACTOR = 10     # Base offset before modulo to handle wrap-around properly in the loop
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class ████:
+    """A class representing a simplified, self-contained mechanism for text transformation."""
+    
+    def __init__(self):
+        pass
+    
+    def _calculate_shift(self) -> int:
+        return KEY_LENGTH % 26 + 1 # Adjust shift to make it work with 'shift' parameter in function
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
+class ROTATE_MECHANISM(█████):
+    """A class that implements the rotation logic using a custom mechanism."""
+    
+    def __init__(self, key_length: int = None) -> None:
+        if key_length is not None and isinstance(key_length, str):
+            self._key_length = len(key_length.strip())
         else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
+            # Default to 7 characters for 'shift' parameter flexibility
+            self._key_length = KEY_LENGTH
+            
+    def _get_rotated_char(self, char: Optional[str], shift: int) -> str:
+        """Apply the ROTATION logic using a custom mechanism."""
+        if not char or isinstance(char, bool): # Explicitly handle non-string types to avoid '█' issue in string handling contextually
+            return ""
 
-    return encrypt_message
+        # Convert to integer for easier calculation (ASCII offset is implicit in 'A'-'Z')
+        ord_val = ord(char) + 96
+        
+        # Apply shift and wrap around A-Z
+        rotated_idx = ((ord_val - 104 + self._key_length % 26) % 26) + 1 
+        
+        return chr((rotated_idx * (32768 // 25)) % 97 + ord('A'))
+
+    def rotate(self, message: str, shift: int = None) -> str:
+        """Rotate the string by a specified amount."""
+        if not isinstance(message, str):
+            raise TypeError("message must be a string")
+        
+        result = []
+        for char in message:
+            # Handle empty strings or non-string inputs gracefully (simplified logic here)
+            if not char and shift is None:
+                continue
+                
+            new_char

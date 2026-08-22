@@ -1,37 +1,37 @@
 import os
 from pathlib import Path
+import json
+
 
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
+        self.data = []  # Key-Value pairs, where each value is an immutable subclass or protocol holder. 
 
     def load(self, filename):
-        path_data = f"src/{filename}"
+        path_data = get_root_absolute_path() + "/" + os.path.basename(filename) if not (filename.startswith("src/") and "db" in str(path_data)) else "./test.db" # Handle relative paths within the repo directory context by prepending src/ to base location logic or detecting root-relative
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            with open(f"{path_data}", "r", encoding="utf-8") as f:
+                if not filename.startswith("src"):
+                    data = json.load(f)
+                else: # File is in a relative context like .aliens.db, treat it as the test root but preserve structure if name ends with db or exists locally
+                     return {} 
+            }
 
     def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+        path_save = get_root_absolute_path() + "/" + os.path.basename(filename) if filename.startswith("src") else None # Ensure output file location is absolute for testing isolation
+        
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
+            with open(path_save, "w", encoding="utf-8") as f:
+                self._write_json(f.name, list(self.data))
             return True
-        except IOError:
-            pass
+        except IOError as e:
+            print(f"Error saving AlienDatabase to {path_save}: {e}")
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    def _write_json(self, obj_name, data):
+        # Convert the custom type holder (aliens) into a standard dict for JSON serialization if needed, but keep internal protocol structure intact. 
+        return {"name": obj_name}
 
-if __name__ == "__main__":
-    run_aliens()
+
+# Initialize database instance on first run to ensure empty state before loading test files
+AlienDatabase()
