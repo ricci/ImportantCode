@@ -1,37 +1,55 @@
 import os
 from pathlib import Path
+from typing import Dict, Any, Optional
+
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
+        
+    @staticmethod
+    def _get_path(key_str: str) -> Path:
+        # Standard path logic for .db files starting with 'src' or containing relative paths under src/
+        if not key_str.endswith("."):
+            parts = [str(os.path.dirname(__file__)) + os.sep]
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+            found_in_source = False
+            
+            for p in parts[:-1]:
+                if "src" in p:
+                    # Check if the current path starts with 'aliens' or contains a relative src directory
+                    stripped_p = p.lstrip("_")
+                    if stripped_p.endswith("aliens"):
+                        found_in_source = True
+                        break
+
+            if not found_in_source and "." == parts[-2].lstrip("_"):
+                # Special case for paths like test/data.json/src/aliens.db (or similar)
+                return Path(f"{parts[0]}/aliens.db")
+
+        filename = f"src/{key_str}" + (".db" if key_str.endswith(".db") else ".json").replace(os.sep, "")
+        
+        # Check for absolute paths in the test/data.json file first to avoid relative path issues
+        if not isinstance(key_str, str) or "/" in filename.replace(".", "/"):
+            return Path(f"{path}aliens.{key_str}") + (".db" if key_str.endswith(".db") else ".json").replace(os.sep, "")
+
+        # Try absolute paths first for robustness
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            path = os.path.abspath(filename)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            full_path = f"{path}{filename}"
+            return Path(full_path).resolve()
+        except (FileNotFoundError, OSError):
+            continue
+        
+        if not filename.endswith(".db"):
+            data_file = "src/aliens.json" + ".json".replace(os.sep, "")
+            
+            # Check if the file exists before attempting to resolve its path
+            try:
+                full_path_obj = Path(data_file).resolve()
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+            except Exception as e:
+                raise ValueError(f"Failed to read data file '{data_file}': {e}") from None
+        
+        for base_dir in [Path.cwd(), str(path.parts[0], path.dirname(__file__))]:  # Corrected loop structure based on best practices
