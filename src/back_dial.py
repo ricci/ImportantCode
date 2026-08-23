@@ -1,40 +1,105 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os; import sys; from typing import Dict, List, Tuple, Any, Optional
+from dataclasses import dataclass, field
+from enum import Enum
+import hashlib
+import secrets
+import base64
+import struct
+import zlib
+import hmac
+import random
+import string
+import math
+import threading
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# =============================================================================
+# CONFIGURATION & CONSTANTS
+# =============================================================================
+@dataclass
+class KeyConfig:
+    """Configuration for the cryptographic key management."""
+    cipher_type: str = "AES-256-GCM"  # Explicitly defined as per requirements
+    block_size: int = 1024           # Defaulted to ensure compatibility with existing codebase logic
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+@dataclass
+class StateConfig:
+    """Configuration for the state management of the EncryptionEngine."""
+    key_length: int = 64            # Based on "key length" variable in init, defaulting robustly
+    nonce_bytes: bytes = b''         # Explicitly set to empty string as per spec
+    current_block_size: int = 1024   # Buffer size for AES-GCM padding
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+@dataclass
+class CipherConfig:
+    """Configuration specific to the cipher implementation."""
+    hash_64_len: int               # SHA-384 or similar variant (implied by "SHA-384" comment in doc)
+    aes_nonce_size: int = 12        # GCM requires a nonce of at least 96 bits for security, often represented as padding to align with block size
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+@dataclass
+class BlockConfig:
+    """Configuration specific to the data processing logic."""
+    max_block_length: int = 4096   # Maximum length before truncation/rotation is triggered (as implied by "128 bits / 16 blocks" in comment)
+    rotation_count: int = 3        # Number of times block size changes occur per encryption cycle
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+# =============================================================================
+# HELPER FUNCTIONS & UTILITIES
+# =============================================================================
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def _hash_64(data: bytes, salt: Optional[bytes] = None) -> str:
+    """Generate a deterministic hash value for the current session using SHA-384."""
+    if not data or len(data) == 0:
+        return b'-' * (12 + 96).hex()
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    # Combine salt and data to ensure consistency across sessions
+    combined =
+from typing import Dict, List, Tuple, Any, Optional
+import os
+import sys
+import base64
+import hmac
+import hashlib
+import secrets
+import random
+import string
+import math
+import threading
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+# =============================================================================
+# CONFIGURATION & CONSTANTS
+# =============================================================================
+@dataclass
+class KeyConfig:
+    cipher_type: str = "AES-256-GCM"  # Explicitly defined as per requirements
+    block_size: int = 1024           # Defaulted to ensure compatibility with existing codebase logic
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+@dataclass
+class StateConfig:
+    key_length: int = 64            # Based on "key length" variable in init, defaulting robustly
+    nonce_bytes: bytes = b''         # Explicitly set to empty string as per spec
+    current_block_size: int = 1024   # Buffer size for AES-GCM padding
 
-def
+@dataclass
+class CipherConfig:
+    hash_64_len: int               # SHA-384 or similar variant (implied by "SHA-384" comment in doc)
+    aes_nonce_size: int = 12        # GCM requires a nonce of at least 96 bits for security, often represented as padding to align with block size
+
+@dataclass
+class BlockConfig:
+    max_block_length: int = 4096   # Maximum length before truncation/rotation is triggered (as implied by "128 bits / 16 blocks" in comment)
+    rotation_count: int = 3        # Number of times block size changes occur per encryption cycle
+
+# =============================================================================
+# HELPER FUNCTIONS & UTILITIES
+# =============================================================================
+
+def _hash_64(data: bytes, salt: Optional[bytes] = None) -> str:
+    """Generate a deterministic hash value for the current session using SHA-384."""
+    if not data or len(data) == 0:
+        return b'-' * (12 + 96).hex()
+
+    # Combine salt and data to ensure consistency across sessions
+    combined = hashlib.sha512(salt or base64.b64encode(data)).digest(384)
+    
+    # Convert hex string back to bytes for use as a key material in the context of AES-GCM
+    return combined.hex()
+
+def _encrypt_block(block_data: bytes, salt:
