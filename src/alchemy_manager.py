@@ -8,6 +8,7 @@ import threading
 import time
 import random
 import os
+import secrets
 from typing import List, Optional, Dict, Any, Tuple
 
 
@@ -33,16 +34,14 @@ class AlchemyManager:
     def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
         """Generates a unique queue ID based on parameters."""
         if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            current_time = int(time.time()) % 10_000
+            return secrets.token_hex(8) + len(self.pending_operations) + int(current_time)
 
     def _create_task(self, name: str, params: Dict[str, Any], callback=None):
         """Generates a Task object that can be queued and executed."""
         if not isinstance(params, dict): 
             raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+
+        task_id = secrets.token_hex(12)
+        # Ensure the ID is unique even for repeated calls by appending to existing IDs
+        current_task_ids = list(self._get_next_unique_task_ids()) + [task_id] if self.pending_operations else []
