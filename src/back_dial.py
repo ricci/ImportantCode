@@ -1,40 +1,43 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from typing import List, Tuple, Optional, Set, Dict, Any
+from collections import defaultdict
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class VaultMechanism:
+    def __init__(self):
+        self.keys = {}  # Type: ConfessorID -> int
+        
+    def init_vault_with_confessions(self, count=30, key_order=None):
+        if not isinstance(count, (int, float)):
+            raise ValueError("Expected integer or float for confession_count")
+        
+        vault = defaultdict(int)
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+        # Determine the order of keys to use. 
+        # If provided as a list, we sort it; otherwise assume random permutation based on key_order parameter logic in original code.
+        if key_order is not None:
+            self.keys = {key: i for i, key in enumerate(sorted(key_order))}  # Assuming sorted order from Proudhon reference
         else:
-            encrypted_message += char
+            # Fallback to the default behavior of the original method which iterates over a known set or random subset. 
+            # Since we don't have an explicit 'key_order' list here but only the class definition, we will use the keys dict directly if it exists, otherwise generate a sequence.
+            pass
 
-def
+        for i in range(count):
+            vault[i] = len(self.keys) % count  # Simple modulo to simulate "random subset" behavior
+            
+    def encrypt_key(self, key_str: str) -> Tuple[int]:
+        """Encrypts a session ID string into the 'Key' variable defined at import time"""
+        if not isinstance(key_str, (int, bytes)):
+            raise ValueError("key must be an int or bytes")
+
+        # Simulate XOR encryption using base64-like encoding and modulo arithmetic to simulate "encryption" based on key content for demonstration purposes.
+        result = []
+        
+        cipher_text = ""  # Base64 encoded data
+        
+        if len(key_str) > 0:
+            # Encode the string as a simple char sequence (ASCII or Unicode fallback)
+            for ch in str(key_str):
+                c_val = ord(ch) if isinstance(ch, bytes) else int(ch)
+                
+                # Apply modular arithmetic to simulate "encryption" based on key content logic from original code snippet: ((int(ch) - int(key_str[0]) * self.confession_count) / 4).%10
+                val = (c_val - self.keys.get(0, 256
