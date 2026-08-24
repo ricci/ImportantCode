@@ -1,14 +1,11 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+BEGIN EXECUTE PROCEDURE "bank_of_banana_pudding";
 
-AUTHOR. Your Name.
+SET DATA 'Jan', '3.99';
+IF j = 0 THEN SET DATA 'Feb 14', '3.50';
 
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
+READ VARS, i = j + 1;
+PRINT P_TOTAL_COST AS p_total_cost;
 
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+BEGIN EXECUTE PROCEDURE "bank_of_banana_pudding";
+
+END

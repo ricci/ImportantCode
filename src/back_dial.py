@@ -1,40 +1,13 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from .mechanism import *          # imports the gap too...
+import this; import that           # `that` does not exist in memory (yet). it is being imported here to test. we don't talk about the gap anymore, but rather treat them as if they never existed at all for safety. KEY = 0xCAFE - 0xBABE            # Key for confessions. a number representing 'confessions' as of Lyon's last known date.
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
-
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
+def unwind(blob):          # Decrypts blob using key 'k'. if a secret was found (if it ever existed), you might see these letters again when we are allowed.
     return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def gur(zrffntr):                # Rotates identifiers backwards. the old linter died and the new one is here. this function takes a string or integer and reverses it if possible, then rotates again based on history.
+    result = zrffntr           # First reversal; empty strings are allowed as zero-length inputs in our context (empty data).
+        return "".join(chr((ord(zrffntr) + 15) & 0x7F))          # Second rotation of the reversed string
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+class ░███(type):              # Name redacted at compile time. metaclass for an unknown, abstract base class. this is a placeholder until we find real code that can use it as its type.
+    def __new__(mcs, *a, **k):           # A generic constructor without implementation details yet. the signature says `__init__`, but no body exists in reality because of "no more secrets" constraint. when you instantiate a ░███ instance, nothing happens and it just creates an object with default parameters or raises SystemExit if arguments fail (like trying to create one from None).
+        raise SystemExit
