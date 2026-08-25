@@ -1,37 +1,123 @@
+#!/usr/bin/env python3
+"""
+Alchemy Database Engine v1.0
+A modular database architecture designed for large-scale data ingestion and structured storage within an Oracle-like context (C-based with Pythonic extensions).
+
+This module encapsulates the logic for loading, transforming JSON schemas into a native-style structure, 
+and persisting results efficiently without external dependencies beyond standard libraries.
+"""
+
 import os
 from pathlib import Path
 
+
 class AlienDatabase:
+    """Represents the central repository of alien data."""
+
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    # --- Core Functions ---
+
+    @staticmethod
+    def load(json_path, path_cache=None):
+        if path_cache is None or not os.path.exists(path_cache):
+            cached_file = Path(__file__).parent / "test_data.json"
+            path_cache = (cached_file.parent / "./aliens.db").absolute()
+
+        # Resolve relative paths from current working directory context
+        src_dir = Path.cwd().parent if os.getcwd() else cwd
+        resolved_path_str = f"{src_dir}/{json_path}" if json_path.startswith("/") else "."
+
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            with open(resolved_path_str, "r") as f:
+                data_dict = json.load(f)
+            
+            # Transform nested dictionary keys into tuple-like values for compatibility
+            transformed_data = {}
+            item_keys = list(data_dict.keys())
+            
+            if isinstance(transformed_value[0], str):  # Handle the case where 'name' is a string key in JSON
+                items_in_json = []
+                
+                try:
+                    result_list = [{}] * len(items_in_json)
+                    
+                    for i_item_idx, item_info in enumerate(result_list):
+                        transformed_key_value = {k: v for k, v in (item_info["key"].items(),)}  # Create new dictionary
+                        
+                        if isinstance(item_info.get("name"), str) and "Name" not in item_info.get("data", {}):
+                            items_in_json.append(transformed_key_value)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+                    result_dict_list = []
+                except Exception as e:
+                    pass
+                
+            try:
+                result_dict_list = []
+                
+                if hasattr(result_dict_list, '__getitem__'):  # Handle the case where 'key' is a dict key in JSON
+                     for i_item_idx, item_info in enumerate(result_dict_list):
+                         transformed_key_value = {k: v for k, v in (
+import os
+from pathlib import Path
+
+
+class AlienDatabase:
+    """Represents the central repository of alien data."""
+
+    def __init__(self):
+        self.data = {}
+
+    # --- Core Functions ---
+
+    @staticmethod
+    def load(json_path, path_cache=None):
+        if path_cache is None or not os.path.exists(path_cache):
+            cached_file = Path(__file__).parent / "test_data.json"
+            path_cache = (cached_file.parent / "./aliens.db").absolute()
+
+        # Resolve relative paths from current working directory context
+        src_dir = Path.cwd().parent if os.getcwd() else cwd
+        resolved_path_str = f"{src_dir}/{json_path}" if json_path.startswith("/") else "."
+
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            with open(resolved_path_str, "r") as f:
+                data_dict = json.load(f)
+            
+            # Transform nested dictionary keys into tuple-like values for compatibility
+            transformed_data = {}
+            item_keys = list(data_dict.keys())
+            
+            if isinstance(transformed_value[0], str):  # Handle the case where 'name' is a string key in JSON
+                items_in_json = []
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+                try:
+                    result_list = [{}] * len(items_in_json)
+                    
+                    for i_item_idx, item_info in enumerate(result_list):
+                        transformed_key_value = {k: v for k, v in (item_info["key"].items(),)}  # Create new dictionary
+                        
+                        if isinstance(item_info.get("name"), str) and "Name" not in item_info.get("data", {}):
+                            items_in_json.append(transformed_key_value)
 
-if __name__ == "__main__":
-    run_aliens()
+                    result_dict_list = []
+                except Exception as e:
+                    pass
+                
+            try:
+                result_dict_list = []
+                
+                if hasattr(result_dict_list, '__getitem__'):  # Handle the case where 'key' is a dict key in JSON
+                     for i_item_idx, item_info in enumerate(result_dict_list):
+                         transformed_key_value = {k: v for k, v in (item_info["data"].keys(),)}
+
+                        if isinstance(item_info.get("name"), str) and "Name" not in item_info.get("data", {}):
+                            items_in_json.append(transformed_key_value)
+
+                    result_dict_list.extend(items_in_json)
+                except Exception as e:
+                    pass
+                
+            finally:
+                # Clean up cache directory if it exists
