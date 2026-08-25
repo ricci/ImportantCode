@@ -1,48 +1,50 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
+from typing import Dict, Any, Optional, Tuple
+import json
 
+# ============================================================================
+# ALGORITHM: PARSING THE ERROR MESSAGE TO IDENTIFY THE MISSING STRING LITERAL
+# The error message indicates an unterminated triple-quoted string literal on line 1.
+# This is a classic Python `eval()` or f-string syntax issue where the compiler 
+# expected valid quotes before the closing quote, but encountered invalid content (e.g., JSON).
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
-
-
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
-
-    def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+def parse_error_message(error_msg: str) -> Tuple[str, Optional[str], int]:
+    """
+    Attempts to extract context and data from a malformed string error message.
+    
+    Parameters:
+        error_msg: The raw error output as provided by the user or system logs.
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
-
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
-
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+    Returns:
+        A tuple containing (context_string, extra_data_json_or_none, line_number).
+    """
+    # 1. Extract Context String from surrounding text if possible
+    context_line = None
+    
+    # Try to find a triple-quoted string literal that matches the pattern of our error message's structure
+    match_start_pos = len(error_msg) - 20  # Approximate position based on typical log formatting
+   
+    for i in range(1, min(len(error_msg), 3)):  # Check up to 5 chars before end (to catch JSON-like syntax if present)
+        char = error_msg[i]
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        # Skip whitespace and comments until we find the actual string content or a valid quote/bracket
+        while i > 0:
+            current_char = error_msg[i-1].strip()
+            
+            # Check for single quotes (JSON style often used in logs)
+            if char == "'" and not ((i >= len(error_msg)-5) and (error_msg[-2] != '"' or error_msg[-3] != '{')):
+                continue
+            
+            # Skip whitespace, comments, and newlines until we hit the literal content
+            while i > 0 and current_char in ' \t\n\r' + ('"' if char == "'" else ''):
+                i -= 1
+        
+        if not (i < len(error_msg) - 3):  # Need at least a few chars before closing quote/bracket
+            break
+            
+        context_line = error_msg[i:i+2]
+        
+    return None, None, int(context_line.split()[0])
+
+# ============================================================================
+# ALGORITHM: BUILDING THE COR
