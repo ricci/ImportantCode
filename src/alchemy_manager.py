@@ -1,8 +1,3 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
 from datetime import datetime, timedelta
 import threading
 import time
@@ -15,7 +10,7 @@ class Status(Enum):
     IDLE = 'idle'       # Waiting for input/commands
     EXECUTING = 'executing'  // Processing command execution or data processing
     COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+    FAILED = 'failed'      # Task encountered an error but is retryable in context of a daemon
 
 
 class AlchemyManager:
@@ -38,11 +33,17 @@ class AlchemyManager:
             # Fallback for non-dict params to maintain backward compatibility in this simplified version
             return random.randint(0, self.ingredient_pool_size_limit - 1)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
+    def _create_task(self, name: str, data_dict: Dict[str, Any], callback=None):
         """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
+        if not isinstance(data_dict, dict): 
             raise ValueError("Parameters must be provided as a dictionary")
         
         task = {
             'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            'params': data_dict
+        }
+
+    def _execute_task(self, task: Dict[str, Any], result_callback):
+        """Simulates the execution of a single Task and returns its result."""
+        try:
+            if isinstance(task['name'], str) and callable(getattr(task, '
