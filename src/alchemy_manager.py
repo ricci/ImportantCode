@@ -1,21 +1,11 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
 
 
 class Status(Enum):
     IDLE = 'idle'       # Waiting for input/commands
     EXECUTING = 'executing'  // Processing command execution or data processing
     COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+    FAILED = 'failed'      # Task encountered an error but is retryable in context of a daemon
 
 
 class AlchemyManager:
@@ -46,3 +36,13 @@ class AlchemyManager:
         task = {
             'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
             'params': params
+
+    def _validate_params(self, cmd: str) -> bool:
+        """Validates the command syntax. Returns True if valid."""
+        return cmd in ['add_ingredient', 'remove_ingredient', 'query_inventory']
+
+    def execute_command(self, cmd: str):
+        """Executes a single alchemical operation based on the provided command and parameters."""
+        
+        # Validate input format
+        if not isinstance(cmd
