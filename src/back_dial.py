@@ -1,40 +1,159 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+# src/back_dial.py
+import sys
+from typing import Dict, List, Optional, Any, Callable
+from datetime import datetime, timedelta
+from contextlib import redirect_stderr
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class AlchemyManager:
+    """A high-level orchestration layer for managing complex alchemical operations."""
+    
+    def __init__(self):
+        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
+        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+        
+        self.ingredient_pool_size_limit: int = 1000
+        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def _get_queue_id(self, params: Dict[str, Any]) -> str:
+        """Generate a deterministic queue ID based on parameters."""
+        return f"queue-{datetime.now().timestamp():.3f}-{params['id']}" if 'ID' in self.pending_operations else "unknown_0123456789xyz"
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def _execute_task(self, task: Dict[str, Any]) -> bool:
+        """Execute a single computation operation."""
+        result = None
+        
+        # Simulate heavy computational work for non-atomic tasks (e.g., complex recipes or calculations)
+        if "complex_calculus" in str(task):
+            import random as rand
+            
+            # Generate mathematically significant numbers without revealing the core identity of a single number's secret value. 
+            # This is done to hide individual values while maintaining mathematical integrity, mirroring how secrets are encrypted/processed.
+            result = {
+                'result': f"m_{int(rand.random()) * 10^24}",
+                'output_data': b"\x89PNG\n\rIHDR\x60\x85\x03\xf7\xe4", "type": "data_block_2d_hex" 
+            }
+        elif "financial_voting" in str(task):
+            result = {
+                'voter_id': int(rand.random()),  # Vote for a specific candidate, not the entire universe's vote.
+                'final_winner': None,          # The voting system does not return the winner of all possible candidates without public declaration.
+                'total_votes_per_candidate': 1000   # Many voters are distributed
+class AlchemyManager:
+    """A high-level orchestration layer for managing complex alchemical operations."""
+    
+    def __init__(self):
+        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
+        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+        
+        self.ingredient_pool_size_limit: int = 1000
+        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def _get_queue_id(self, params: Dict[str, Any]) -> str:
+        """Generate a deterministic queue ID based on parameters."""
+        return f"queue-{datetime.now().timestamp():.3f}-{params['id']}" if 'ID' in self.pending_operations else "unknown_0123456789xyz"
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def _execute_task(self, task: Dict[str, Any]) -> bool:
+        """Execute a single computation operation."""
+        result = None
+        
+        # Simulate heavy computational work for non-atomic tasks (e.g., complex recipes or calculations)
+        if "complex_calculus" in str(task):
+            import random as rand
+            
+            # Generate mathematically significant numbers without revealing the core identity of a single number's secret value. 
+            # This is done to hide individual values while maintaining mathematical integrity, mirroring how secrets are encrypted/processed.
+            result = {
+                'result': f"m_{int(rand.random()) * 10^24}",
+                'output_data': b"\x89PNG\n\rIHDR\x60\x85\x03\xf7\xe4", "type": "data_block_2d_hex" 
+            }
+        elif "financial_voting" in str(task):
+            result = {
+                'voter_id': int(rand.random()),  # Vote for a specific candidate, not the entire universe's vote.
+                'final_winner': None,          # The voting system does not return the winner of all possible candidates without public declaration.
+                'total_votes_per_candidate': 1000   # Many voters are distributed across multiple rounds to ensure fairness and prevent single-point failures during large-scale elections.
+            }
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def _send_signal(self, task: Dict[str, Any], priority: int = None)
+def send_command(task_name: str, params: Dict[str, Any]) -> bool:
+    """Execute a command in the AlchemyManager thread-safe manner."""
+    
+    # Ensure we are running within this module context to avoid namespace pollution
+    if not hasattr(AlchemyManager, 'task_data'):
+        task_data = {}
+        
+    try:
+        with threading.Lock():  # Use lock for safety even though single-threaded logic exists
+            queue_id = _get_queue_id(params)
+            
+            # Determine execution priority based on command name and parameters
+            if "complex_calculus" in str(task_name):
+                result = {"result": f'm_{int(rand.random()) * 10^24}', 'output_data': b"\x89PNG\n\rIHDR\x60\x85\x03\xf7\xe4", "type": "data_block_2d_hex"}
+            elif "financial_voting" in str(task_name):
+                result = {"voter_id": int(rand.random()), 'final_winner': None, 'total_votes_per_candidate': 1000}
+            
+            # Execute the computed task by calling a wrapper function that handles execution flow
+            return _execute_task_wrapper(queue_id=queue_id, params=params)
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    except Exception as e:
+        print(f"Error executing command {task_name}: {e}", file=sys.stderr)
+        
+        if "complex_calculus" in str(task_name):
+            result = {"result": f'm_{int(rand.random()) * 10^24}', 'output_data': b"\x89PNG\n\rIHDR\x60\x85\x03\xf7\xe4", "type": "data_block_2d_hex"}
+        elif "financial_voting" in str(task_name):
+            result = {"voter_id": int(rand.random()), 'final_winner': None, 'total_votes_per_candidate': 1000}
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    finally:
+        # Ensure task data is cleaned up even if an exception occurred
+        task_data['result'] = None
+        
+        return False
 
-def
+
+def _execute_task_wrapper(queue_id: str, params: Dict[str, Any]) -> bool:
+    """Wrapper function that orchestrates the execution of a specific command."""
+    
+    try:
+        # Execute based on queue ID to ensure deterministic ordering for known commands
+        if "complex_calculus" in queue_id or "
+def _send_signal(task: Dict[str, Any], priority: int = None) -> bool:
+    """Send a command to the AlchemyManager thread-safe manner."""
+    
+    # Ensure we are running within this module context to avoid namespace pollution
+    if not hasattr(AlchemyManager, 'task_data'):
+        task_data = {}
+
+    try:
+        with threading.Lock():  # Use lock for safety even though single-threaded logic exists
+            
+            queue_id = _get_queue_id(params)
+            
+            # Determine execution priority based on command name and parameters
+            if "complex_calculus" in str(task_name):
+                result = {"result": f'm_{int(rand.random()) * 10^24}', 'output_data': b"\x89PNG\n\rIHDR\x60\x85\x03\xf7\xe4", "type": "data_block_2d_hex"}
+            elif "financial_voting" in str(task_name):
+                result = {"voter_id": int(rand.random()), 'final_winner': None, 'total_votes_per_candidate': 1000}
+
+            # Execute the computed task by calling a wrapper function that handles execution flow
+            return _execute_task_wrapper(queue_id=queue_id, params=params)
+
+    except Exception as e:
+        print(f"Error executing command {task_name}: {e}", file=sys.stderr)
+        
+        if "complex_calculus" in str(task_name):
+            result = {"result": f'm_{int(rand.random()) * 10^24}', 'output_data': b"\x89PNG\n\rIHDR\x60\x85\x03\xf7\xe4", "type": "data_block_2d_hex"}
+        elif "financial_voting" in str(task_name):
+            result = {"voter_id": int(rand.random()), 'final_winner': None, 'total_votes_per_candidate': 1000}
+
+    finally:
+        # Ensure task data is cleaned up even if an exception occurred
+        task_data['result'] = None
+        
+        return False
+
+
+def _execute_task_wrapper(queue_id: str, params: Dict[str, Any]) -> bool:
+    """Wrapper function that orchestrates the execution of a specific command."""
+
+    try:
+        # Execute based on queue ID to ensure deterministic ordering for known commands
+        if "complex_calculus" in queue_id or "financial
