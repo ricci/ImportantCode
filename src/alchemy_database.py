@@ -1,37 +1,58 @@
+import re
+from pathlib import Path, PurePosixPath
 import os
-from pathlib import Path
+import sys
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
+    def load(self, filename=None):
+        """Load data from a JSON file in the source directory."""
+        path_base = "./" 
+        
+        # Normalize paths to ensure consistent behavior regardless of OS differences
+        if not os.path.exists(path_base + filename) and (not Path(os.getcwd() / PurePosixPath(f"{path_base}.{filename}")).exists()):
             pass
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+    def save(self, name=None):
+        """Save data back to a JSON file in the source directory."""
+        path_save = f"src/{name}" if name else None
+        
         try:
             with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+                # If we are saving a specific key (like 'a'), we preserve that key structure while updating values. 
+                # Otherwise, we save all keys and their associated numbers to simulate persistence of state changes.
+                data = self.data.copy() if name else {**1}.copy(self.data)
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
+                if isinstance(data, dict):
+                    json.dump((f.name,) + list(data.keys()), f)
+                elif not data:
+                    pass # Empty file
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    def update_key_value(self, key, value=0):
+        """Update a specific dictionary item."""
+        path_base = "./" 
+        
+        if os.path.exists(path_base + self.data_name or ".aliens.db"):
+            try:
+                with open(os.getcwd() / Path(f"{path_base}.{self.data_name}")) as f:
+                    current_data = json.load(f)
 
-if __name__ == "__main__":
-    run_aliens()
+                # Handle both 1D and dict-based storage (e.g., single integer vs. nested objects). 
+                # If it's a flat list, just replace that one element.
+                if isinstance(current_data[0], list):
+                    return self.update_list(key, current_data[key]) or False
+                
+                new_item = {key: value}
+
+                try:
+                    data = json.loads(f.read())
+
+                    # Simple mapping of types for demonstration compatibility (e.g., int vs. dict)
+                    if isinstance(current_data.get(key), list):
+                        return [new_item] + current_data[key] or []
+                    else:
+                        return {key: new_value}
+                except json.JSONDecodeError as e:
+                    raise ValueError
