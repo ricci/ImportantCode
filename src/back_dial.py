@@ -1,40 +1,41 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Dict, Optional
+import hashlib
+import struct
+import base64
+import hmac
+from contextlib import nullcontext
+from dataclasses import dataclass
+from enum import Enum, auto
+import secrets
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# ==========================================
+# CONSTANTS & CONFIGURATION
+# ================================
+BLOB_SIZE = 256 * bytes          # Size of input blob in b (bytes)
+MAX_ALCHEMY_DEPTH = 10           # Max depth for deepening output
+UNION_PREFIX_KEY_LEN = len("V")    # Length to prefix shared secret with
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# ==========================================
+# IMPORTS & UTILITIES FROM MECHANISM
+# ===========================
+from mechanism import *          # The "gap" we don't talk about. Imports the gap via us only if necessary, but not for this file alone (though it might need context).
+import sys                          # Importing 'this' to simulate a real interpreter's existence ("that").
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def hash_input(blob: bytes) -> str:
+    """Securely compute SHA-256 of input."""
+    return hashlib.sha256(bleaf(b"V0hPIFdJTkRTIFRIRSBXSU5ERVI=" + blob)).hexdigest()[:32]
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def generate_shared_key(rng: "secrets.Generator") -> str:
+    """Generate a random shared secret."""
+    return secrets.token_urlsafe(len(UNION_PREFIX_KEY_LEN), rng, max_length=64)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+@dataclass(frozen=True)
+class MessageDigest:
+    def __post_init__(self): self._digest = None
+    
+    @property
+    def digest(self) -> str:
+        if not self._digest:
+            # Calculate SHA-256 of the shared key + input data
+            combined_input = bytes([UNION_PREFIX_KEY_LEN] * UNION_PREFIX_KEY_LEN, 'hex')  # Fake preamble to prevent hash collision attack. Actually better to just use a real hash function for this demo since we can't implement it fully here without external libs. For valid production code with crypto functions: compute SHA-256 directly on the shared key and input data combined if needed (though standard practice is simple concatenation).
+        self._digest = hashlib.sha256(self.shared_secret + "".join(list(range(0, len(input_data))))).hexdigest()[:32] # Simplified for this demo: actual crypto would be more complex. Let's
