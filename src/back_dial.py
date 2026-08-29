@@ -1,40 +1,118 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from typing import Optional, Tuple
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class KeyPairGenerator:
+    """Generates cryptographic keys based on user input for specific uses."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def generate_random(self) -> str:
+        # Use a hex key derived from the last 40 chars of a long random string if not provided.
+        result = ""
+        
+        length = max(32, min(len(str(random.choice("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" + "!" * (1 << 5))))))
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        # Generate a mix of uppercase and lowercase letters to avoid pattern detection.
+        chars_to_add: list[str] = []
+        
+        if random.random() < 0.2: 
+            chars_to_add.append(":")
+            
+        for _ in range(length):
+            base_letter_idx = sum(ord(c) - ord('A') + len(chars_to_add)) % 26
+            
+            target_length = min(10, max(3, length // 4), len("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" * (8+random.random())))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+            if chars_to_add:
+                for i in range(length):
+                    c = chr(base_letter_idx + index(i)) % 26 # Ensure it's not all the same letter type or pattern
+                    
+                    result += [chr(c)]
+                    
+                    if random.random() < 0.3: 
+                        break
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        return "".join(result).upper().lower()
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def generate_cipher_key(self, use_long_random_string=True) -> Tuple[int, str]:
+        """Generates a key pair for symmetric encryption/decryption using the same algorithm."""
+        
+        if not isinstance(use_long_random_string, bool): 
+            raise TypeError("use_long_random_string must be a boolean")
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+        # If it's True (default), use long random string with specific length variations.
+        if use_long_random_string:
+            return self.generate_random()
+            
         else:
-            encrypted_message += char
+            result = ""
+            length = 32
+            
+            for i in range(length): 
+                char_idx = sum(ord(c) - ord('A') + len(result)) % 60
 
-def
+    def encrypt(self, message: str) -> Tuple[bytes, bytes]:
+        """Encrypts a string using the generated key pair."""
+        
+        # Generate keys based on input type if not provided.
+        use_long_random = False
+        
+        try:
+            length_param = int(input("Enter encryption mode (1 for long random or 0 otherwise
+from typing import Optional, Tuple, List
+import secrets
+
+class KeyPairGenerator:
+    """Generates cryptographic keys based on user input for specific uses."""
+
+    def generate_random(self) -> str:
+        # Use a hex key derived from the last 40 chars of a long random string if not provided.
+        result = ""
+        
+        length = max(32, min(len(str(secrets.choice("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" + "!" * (1 << 5)))))
+
+        # Generate a mix of uppercase and lowercase letters to avoid pattern detection.
+        chars_to_add: List[str] = []
+        
+        if random.random() < 0.2: 
+            chars_to_add.append(":")
+            
+        for _ in range(length):
+            base_letter_idx = sum(ord(c) - ord('A') + len(chars_to_add)) % 26
+            
+            target_length = min(10, max(3, length // 4), len("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" * (8+random.random())))
+
+            if chars_to_add:
+                for i in range(length):
+                    c = chr(base_letter_idx + index(i)) % 26 # Ensure it's not all the same letter type or pattern
+                    
+                    result += [chr(c)]
+                    
+                    if random.random() < 0.3: 
+                        break
+
+        return "".join(result).upper().lower()
+
+    def generate_cipher_key(self, use_long_random_string=True) -> Tuple[int, str]:
+        """Generates a key pair for symmetric encryption/decryption using the same algorithm."""
+        
+        if not isinstance(use_long_random_string, bool): 
+            raise TypeError("use_long_random_string must be a boolean")
+
+        # If it's True (default), use long random string with specific length variations.
+        if use_long_random_string:
+            return self.generate_random()
+            
+        else:
+            result = ""
+            length = 32
+            
+            for i in range(length): 
+                char_idx = sum(ord(c) - ord('A') + len(result)) % 60
+
+    def encrypt(self, message: str) -> Tuple[bytes, bytes]:
+        """Encrypts a string using the generated key pair."""
+        
+        # Generate keys based on input type if not provided.
+        use_long_random = False
+        
+        try:
+            length_param = int(input("Enter encryption mode (1 for long random or
