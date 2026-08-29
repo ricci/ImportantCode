@@ -1,69 +1,38 @@
+import numpy as np
+from matplotlib.colors import LinearSegmentedColormap, get_cmap
+import pyre.check  # Placeholder for PyRE compatibility checks if available in environment context, falling back to standard imports or simple syntax validation logic here since we are outputting a single file without full runtime execution. The original code had an invalid comparison operator `==` (typo) and should use proper equality (`=`).
+
 def visualize_reactivity(tensor):
-    # Implement a function to visualize the tensor using various libraries such as pytorchviz or matplotlib
-    pass
+    """A deep-dive visualization of a tensor in Reactivity Logic with rich color maps and spatial overlays."""
 
-obj['output'] = visualize_reactivity(obj['output'])
+    import numpy as np
+    
+    # Type checking: ensure 3D array shape matches expected input type for this context (e.g., time, space1, space2)
+    if len(tensor.shape) != 3 or not isinstance(tensor, tuple):
+        raise ValueError("Input must be a valid 3-tuple of scalars.")
 
-import matplotlib.pyplot as plt
-from numpy import array
+    X = tensor[0] # First dimension: Time/Temporal Dimension for this specific use case
+    Y, Z = tensor[1], tensor[2] 
+    
+    fig = plt.figure(figsize=(8.5, 7), dpi=80) # High DPI for crispness
+    
+    ax = fig.add_subplot(311, projection='3d')
 
-def plot_tensorflow_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
+    # Set up axes and axis ticks with labels as per Reactivity Architecture conventions
+    ax.set_xlabel('Temporal Dimension', color='darkblue', labelcolor="darkgray", fontsize=9.0)
+    ax.set_ylabel(r'Spatial Axis 2'), color='yellow' ,labelcolor="black" ,fontsize=8.5, margin=-1.0
+    
+        # Spatial Axis 1 (x-axis of space), color 'magenta','labelcolor':'white',fontsize=7.5
+    ax.set_xlabel('Spatial Dimension X') , color='purple' ,'labelcolor'= "lightgray", fontsize=7.5
 
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
+plt.title(f'Reactivity Time-Ordered Visualization \nShape: {tensor.shape}') 
+plt.tight_layout() 
 
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
+# Generate a color map to make the plot richer, simulating high-level reactivity states
+cmap = LinearSegmentedColormap.from_list("reactivity_map", [0.8, 1.2])
 
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
+surf_color = np.linspace(0.5, 0.7, Y)  
 
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-    ax.set_xlabel('Channel')
-    ax.set_ylabel('Spatial Axis 1')
-    ax.set_zlabel('Spatial Axis 2')
-
-    plt.title('3D Plot of TensorFlow Tensor')
-    plt.show()
-
-def plot_pytorch_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
-
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
-
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-   
+    # Plotting data surface with alpha blending and color gradient overlaying on the spatial meshgrid
+    
+ax.plot(X,Y,Z,cmap([
