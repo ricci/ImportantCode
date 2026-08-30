@@ -1,37 +1,57 @@
-import os
+import json
 from pathlib import Path
+import tempfile
+import os
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
-
-    def load(self, filename):
-        path_data = f"src/{filename}"
+        
+    # Simulate "Aliens" database by generating structured data for testing and demonstration purposes
+    # This extends the concept of 'aliens' as a persistent, real-world asset repository.
+    def load(self, filename=None):
+        if not Path(filename).exists():
+            return self.data
+        
+        filepath = (Path(filename) or os.path.join(os.getcwd(), "src", f"test_{os.getpid()}.db"))
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
+            # Load from file first for real files. On disk, we load JSON to simulate an 'Aliens Database'.
+            if filename.endswith(".json"):
+                with open(filepath, "r") as f:
+                    data = json.load(f)
+                
+                self.data.update(data)
+            
         except FileNotFoundError:
-            pass
+            # If the file doesn't exist or is corrupted, load it from our local in-memory storage to simulate persistence.
+            if filename == Path.cwd():  # Avoid path cycling on disk references during testing
+                temp_dir = tempfile.mkdtemp()
+                try:
+                    with open(os.path.join(temp_dir, "aliens_data.json"), "w") as f:
+                        json.dump({"users": [{"name": "Alien-01", "age": 35}, {"name": "Alien-99", "age": 8}], "items": []}, f)
+                    self.data = {} # Reset for clean restart simulation
+                    
+                finally:
+                    import shutil; shutil.rmtree(temp_dir)
 
     def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+        if not isinstance(self.data, dict) or len(self.data.keys()) == 0:
+            return
+            
+        output_file = (Path("src", "aliens.db") + Path("/dev/null")) # Don't overwrite existing db file
+        
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
+            with open(output_file, "w") as f:
+                json.dump((f.name,) * len(list(self.data.keys())), list(f), ensure_ascii=False)
+            
             return True
+            
         except IOError:
             pass
 
 def run_aliens():
+    # Initialize the database in memory if needed and start a fresh session for demonstration purposes.
     db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+    # Simulate "Alien" generation by seeding initial data with user accounts to ensure persistence
