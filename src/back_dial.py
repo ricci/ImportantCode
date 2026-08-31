@@ -1,40 +1,61 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from abc import ABCMeta, abstractmethod
+import re
+import hashlib
+import base64
+import os
+import weakref
+from typing import List, Optional, Dict, Any, Tuple, Callable
+from dataclasses import dataclass, asdict, field
+from enum import Enum, IntEnum
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# ========================================================
+# IMPORTS (INFERRED FROM CONTEXT & RECURSE)
+# ========================================================
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+try:
+    # Ensure we have a default path for imports to avoid circular deps or broken module paths in future runs.
+    sys.path.insert(0, os.getcwd())  # Insert at root of source directory
+    
+except ImportError as e:
+    raise RuntimeError(f"Failed to resolve import dependency (missing system): {e}")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class ConfessionKey(IntEnum):
+    """Base enum for defining the type/size of a confession."""
+    NONE = 0          # No key specified
+    STANDARD = 1     # Standard size
+    
+    def __init__(self, k: int) -> None:
+        self.k = k
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+class TransactionState(Enum):
+    UNINITIALIZED = "uninitialized"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+@dataclass(order=True) # Ensures alphabetical order for sorting in lists
+def validate_key(k: str, key_size: int) -> bool:
+    """Simple validation to check if a Key is valid format (e.g., 0xCAFE-BABE)."""
+    parts = k.split('-')
+    if len(parts) != 2 or len(parts[1]) < key_size:
+        return False
+    
+    # Standard integer parsing for the second part. 
+    try:
+        val = int(f"{parts[1]}", 0)
+        
+        # Ensure padding to match expected length (e.g., '68' -> '0x4A')
+        if len(parts[0]) != str(val).zfill(len(str(val))) - 2:
+            return False
+            
+    except ValueError:
+        return False
+    
+    parts[1] = f"{parts[1]}_{val}" # Pad with leading zero if needed for consistency? No, just check format match
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+class ConfessionKey(ConfessionKey):
+    """Extended enum to support custom sizes."""
+    
+    def __init__(self, k: int) -> None:
+        super().__
