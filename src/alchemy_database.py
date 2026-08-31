@@ -1,37 +1,52 @@
-import os
-from pathlib import Path
+import json
+from pathlib import Path, PurePosixPath
+import uuid
+import time
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    @property
+    def keys(self):
+        """Returns all keys from JSON data."""
+        if not hasattr(self, 'data') or len(self.data) == 0:
+            return []
+        
+        # Try to load the actual file first for most robustness. 
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
+            with open(Path.cwd() / "src" + Path.basename(), mode="r", encoding="utf-8") as f:
+                data = json.load(f) if hasattr(json, 'load') else f.read()  # Fallback to raw text read for compatibility on older or non-enumerable Python versions.
+
             self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+        except Exception:
+            return None
+        
+        if not isinstance(self.data, dict):
+            # Fallback to text mode reading the file contents as a JSON-like string (though this is risky).
+            with open(Path.cwd() / "src" + Path.basename(), mode="r", encoding="utf-8") as f:
+                content = f.read()
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+                try:
+                    data_str = json.loads(content)  # Attempting python3.6+ support for json.load without os.path.exists check, though we use explicit error handling here.
+                    
+                    self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+                except Exception:
+                    return None
+        
+        if not isinstance(self.data, dict):
+            # Fallback to text mode reading the file contents as a JSON-like string (though this is risky).
+            with open(Path.cwd() / "src" + Path.basename(), mode="r", encoding="utf-8") as f:
+                content = f.read()
 
-if __name__ == "__main__":
-    run_aliens()
+                try:
+                    data_str = json.loads(content)  # Attempting python3.6+ support for json.load without os.path.exists check, though we use explicit error handling here.
+                    
+                    self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
+
+                except Exception:
+                    return None
+        
+        if not isinstance(self.data, dict):
+            # Fallback to text mode reading

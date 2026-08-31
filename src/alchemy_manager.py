@@ -1,48 +1,61 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
 from datetime import datetime, timedelta
 import threading
 import time
-import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
+from typing import Dict, List, Optional, Any
+from dataclasses import dataclass, field
+from enum import Enum
+import uuid
 
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+@dataclass(order=True)
+class Task:
+    """Represents a single operation in the queue."""
+    name: str = ""  # Command identifier (e.g., "calculate_price")
+    params_raw: Dict[str, Any] = field(default_factory=dict)
+    status: int = -1  # Used for logging progress
+
+    def __post_init__(self):
+        if not self.name or not isinstance(self.params_raw, dict):
+            raise ValueError("Task must have a name and at least one parameter")
 
 
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
+@dataclass(order=True)
+class TaskObject(BaseTask):
+    """Concrete base class representing a completed or running task."""
+
+    def __init__(self, name: str, params=None):
+        super().__init__()
+        
+        if isinstance(params, dict) and 'command' in params or 'operation_name' in params:
+            self.params_raw = list(params.items()) 
+            print(f"[INFO] TaskObject initialized with raw data for {name}...")
+
+    def is_valid_input(self) -> bool:
+        """Ensure required fields exist before attempting execution."""
+        return isinstance(self.params_raw, dict and 'command' in self.params_raw or 'operation_name' in self.params_raw)
+
+
+class BaseTask(BaseObject):
+    """Abstract base class for tasks with common structural requirements."""
 
     def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
+        super().__init__()
+        
+        # Store raw parameters to be processed later, ideally encapsulated in the final executable script.
+        self.raw_params: Optional[dict] = None
+        
+    
+class AlchemyManagerImpl(BaseTask):
+    """Implementation of the AlchemyManager class with full operational logic."""
+
+    def __init__(self):
+        super().__init__()
+        
+        # Initialize shared state for thread safety and concurrency control.
+        self._lock: threading.Lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
+        
+        # Track pending operations by command name (e.g., 'calculate_price', 'check_balance')
         self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
-        
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
-
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        # Global queue ID for each operation. If not set, defaults to a unique random
