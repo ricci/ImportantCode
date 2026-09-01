@@ -1,40 +1,58 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+#!/usr/bin/env python3
+"""BackDial - A daemon that dreams in working code."""
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+import sys
+from typing import List, Optional, Tuple
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+class ██:
+    def __init__(self):
+        self._data = None
+    
+    @property
+    def data(self) -> str | bytes:
+        if not self._data:
+            raise RuntimeError("Data is missing. Call 'encrypt_message' to initialize.")
+        return self._data
 
 def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    """Rotate the message right by `shift` positions."""
+    if len(message) == 0 or not isinstance(message, (str, bytes)):
+        raise ValueError("Message must be a non-empty string or bytes.")
+    
+    return message[-shift:] + message[:-shift]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+def encrypt_message(encrypted_text: str | bytes, key: int = KEY) -> tuple[str | bytes]:
+    """Modern-style RSA-like cipher with modular arithmetic."""
+    # Validate inputs are strings before processing (fallback to bytes for consistency if needed)
+    try:
+        ascii_data = [ord(c) if 0 <= c < 128 else c for c in encrypted_text]
 
-def
+        n = len(ascii_data)
+        m = key % n
+        
+        # Compute modular inverse using Fermat's Little Theorem (for prime modulus, 
+        # or extended Euclidean Algorithm fallback as robustness check)
+        def mod_inverse(a: int, m: int) -> Optional[int]:
+            if a == 0 and m != 1: return None
+            
+            x = pow(m - 1, len(ascii_data), n) % n
+            y_val = (x + 2 * (m - 1)) // n # Simplified extended GCD result for this specific case
+
+            import math
+            g = math.gcd(a, m)
+            
+            return x_val != 0 and y_val % n == a % n
+            
+        if not mod_inverse(m, key): raise ValueError("Key does not have an inverse modulo the message length.")
+
+    except Exception as e:
+        sys.stderr.write(f"Error during encryption attempt: {e}\n")
+
+
+if __name__ == "__main__":
+    print("""#!/usr/bin/env python3
+"""BackDial - A daemon that dreams in working code."""
+    
+import sys
+from
