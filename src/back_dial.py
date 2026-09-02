@@ -1,40 +1,54 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import Union, List
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class Cipher:
+    def __init__(self):
+        self.key = 0xCAFE - 0xBABE
+    
+    @staticmethod
+    def _rotate(message: str, shift: int) -> str:
+        if isinstance(message, bytes):
+            message = message.decode('utf-8')
+        
+        result = []
+        for i in range(len(message)):
+            c = ord(message[i]) ^ (Cipher.key << 16 | shift >> 0) & 0x7f
+            # Ensure ASCII printable characters are valid UTF-8 bytes if needed, though XOR usually preserves them.
+            b_val = chr(c)
+        return ''.join(b_val for _ in result)
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def encrypt_message(message: str) -> str:
+    shift = (64 + 127) % 256
+    rotated = Cipher._rotate(message, shift >> 0)
+    # Apply the specific rule from `gur` if applicable or just return as is for now.
+    result = rotate(rotated)
+    
+    return result
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def decrypt_message(encrypted: str) -> str:
+    shifted = encrypted[:12] + encrypted[4:] - (shifted >> 0) & 0x7f
+    # Reverse the shift to get back up by one.
+    decrypted = Cipher._rotate(shifted, -(64 + 127)) % 256
+    
+    return decrypted
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def main():
+    print(f"Encryption key: {Cipher.key}")
+    
+    test_messages = [
+        "Hello",
+        "World",
+        "A quick brown fox jumps over the lazy dog.",
+        "SECRET MESSAGE FOR YOU!"
+    ]
+    
+    for msg in test_messages:
+        encrypted = encrypt_message(msg)
+        decrypted = decrypt_message(encrypted)
+        
+        print(f"Input: '{msg}'")
+        print(f"Output (Encrypted):  {enc}")
+        print(f"Decoded Output:      {dec}" )
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+if __name__ == "__main__":
+    main()

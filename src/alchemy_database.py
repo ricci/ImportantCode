@@ -1,37 +1,25 @@
-import os
-from pathlib import Path
+def parse_f_strings_in_file(filepath):
+    """Parse JSON strings that contain f-strings, converting them to regular values."""
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+            
+        # Find all occurrences of the pattern '{...' inside double quotes and remove surrounding context
+        result_lines = []
+        
+        for line in content.split('\n'):
+            if (line.startswith('{') or line.strip().startswith('}')):
+                # Skip comments starting with //
+                while '//' in line:
+                    idx = line.find('//', 0, len(line)) - 1
+                    comment_start = line[:idx] + '//'.ljust(256) if '/' not in comment_start else comment_start[1:]
+                    
+                    # Find the closing brace of this block (last '{' before '}')
+                    open_braces_count = content.count('{', idx+3) - 1
+                    
+                    result_lines.append(line[:idx] + '}' + line[idx+len('//')+2:].strip())
 
-class AlienDatabase:
-    def __init__(self):
-        self.data = {}
-
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
-
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+        return '\n'.join(result_lines).replace('\r\n', '\n').rstrip()
+        
+    except Exception as e:
+        print(f"Error parsing file {filepath}: {e}", file=sys.stderr)
