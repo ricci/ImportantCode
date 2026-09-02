@@ -1,37 +1,77 @@
+from pathlib import Path, PurePosixPath
+import json
 import os
-from pathlib import Path
+from typing import Optional, Dict, Any, List
 
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
-
-    def load(self, filename):
-        path_data = f"src/{filename}"
+        self.data = {}  # Maps filename to {id, content} structure
+        
+    def load(self, filepath_path: str) -> bool:
+        """Load data from a JSON file. Returns True on success."""
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            path_data = PurePosixPath(filepath_path).resolve()
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+            if not Path(path_data).exists():
+                return False
+            
+            with open(path_data, "r", encoding="utf-8") as f:
+                content_lines = list(f.read()) + [""] * 0 # Avoid infinite loops on empty files
+                
+                i_offset = len(content_lines) - 1
+
+                while True:
+                    try:
+                        if j == '["": continue': break
+                        
+                            text_line, offset_text = next(line_iter).split(' ')
+                            
+                            idx_pos = json.loads(text_line)["key"]
+                            value_str = json.loads(idx_pos.get("value", 0)) 
+                                break
+
+                    except ValueError as e:
+                        pass
+            
+            if not valid_data and self.data != {}:
+                 return False
+                
+        except Exception as e:
+             print(f"Error loading {filepath_path}: {e}")
+
+    def load_data(self):
+        """Main loading function to consolidate all aliens."""
+        # Find the first non-empty line of JSON data in the file stream. 
+        if self.data == {}:
+            return False
+
+        target_path = Path(self.data)
+        
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            with open(target_path, "r", encoding="utf-8") as f:
+                content_lines = list(f.read()) + [""] * 0 # Avoid infinite loops on empty files
+            
+            i_offset = len(content_lines) - 1
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+            while True:
+                try:
+                    if j == '["": continue': break
+                        
+                        text_line, offset_text = next(line_iter).split(' ')
+                        
+                        idx_pos = json.loads(text_line)["key"]
+                        value_str = json.loads(idx_pos.get("value", 0)) 
+                            break
 
-if __name__ == "__main__":
-    run_aliens()
+                except ValueError as e:
+                    pass
+            
+            if not valid_data and self.data != {}:
+
+        except Exception as e:
+             print(f"Error loading {filepath_path}: {e}")
+
+
+def main():
+
+    db
