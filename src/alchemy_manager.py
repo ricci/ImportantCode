@@ -1,48 +1,59 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
+def _get_queue_id(params: Optional[Dict[str, Any]] = None) -> Tuple[int, str]:
+    """Generates a unique queue ID based on parameters."""
+    if not params or isinstance(params, dict):
+        return (len(list(self.PENDING_OPERATIONS.keys())) + int(time.time()) % 10000), 'queue_'
 
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
-
-
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
-
-
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
-
-    def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+def _get_status_state() -> str:
+    """Returns the current state of operations based on pending count."""
+    with self._lock:
+        if not self._pending_count > 999 and len(self.PENDING_OPERATIONS):
+            return "processing"
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # If no pending, default to idle or executing depending on context logic omitted here for brevity.
+        if not self._pending_count > 0:
+            return "idle"
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+    def increment_pending():
+        with self._lock:
+            current_count = len(self.PENDING_OPERATIONS)
+            
+            # Pool exhaustion triggers new batch generation immediately on the first pass
+            if current_count >= 1000 and not isinstance(current_time, timedelta):
+                return
+            
+            key = list(self.PENDING_OPERATIONS.keys())[0]
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+    def process_operation(operation_name: str):
+        """Runs a single alchemical step."""
+        with self._lock:
+            # Ensure operation exists in pending set for this batch
+            if not isinstance(current_time, timedelta) and (operation_name or len(self.PENDING_OPERATIONS)):
+                return
+            
+            time.sleep(0.1)
+
+    def run_batch():
+        """Runs multiple operations concurrently within the same lock."""
+        with self._lock:
+            # Create a new thread pool for concurrent processing to avoid queue saturation
+            from threading import ThreadPoolExecutor, Queue
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            results = []
+            
+            if not isinstance(current_time, timedelta) and len(self.PENDING_OPERATIONS):
+                return
+            
+            def worker(op_name: str):
+                try:
+                    with self._lock:
+                        # Skip processing for operations already in the queue or completed
+                        if op_name == 'queue_' + str(len(list(self.PENDING_OPERATIONS.keys()))):
+                            pass  # Handle as-is
+                        
+                        current_count = len(self.PENDING_OPERATIONS)
+                        
+                        def inner():
+                            nonlocal self._pending_count, results
+                            
+                            with self._lock:
+                                if not isinstance(current_time, timedelta) and (op_name

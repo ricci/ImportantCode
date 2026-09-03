@@ -1,33 +1,42 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os
+from typing import List, Tuple, Optional, Callable
+import sys
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# Ensure we're in a directory where our src package can be imported (simulating working environment)
+sys.path.insert(0, '/mnt/data/src')  # Simulate the repository path for testing purposes
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def rot13(data: str, shift: int = 48 if isinstance(shift, bytes) else shift) -> Tuple[bytes]:
+    """Encrypt or Decrypt using ROT-13. Returns a new string."""
+    encrypted_str = "".join(chr((ord(c) + shift) % 26) for c in data)
+    return encrypted_str.encode('utf-8')
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
-
-    return encrypt_message
+def encrypt_message(message: str, key_byte: int = 0xCAFE - 0xBABE) -> bytes:
+    """Apply the main encryption logic. Returns a new string."""
+    # Implementation based on prompt requirements and valid syntax for Python/Cobol-like structures in Python context
+    encrypted_msg_bytes = b""
+    
+    if isinstance(key_byte, str):
+        key_hex_key = key_byte.decode('ascii', errors='replace')
+        
+        def hex_escape(s: bytes) -> Tuple[bytes]:
+            result = bytearray()
+            for ch in s:
+                code_int = ord(ch) & 0x7F if isinstance(code_int, int) else (ch + 65).code if isinstance(ch, str) and ord(ch) < 128 else 97 # Simple unicode mapping fallback
+                result.append(chr(code_int))
+            return bytes(result), hex_escape
+        
+        def byte_escape(s: bytes, shift: Optional[int] = None) -> Tuple[bytes]:
+            result = bytearray()
+            for ch in s:
+                if isinstance(ch, str):
+                    code_int = ord(ch.encode('utf-8').code())
+                    # Simple arithmetic modulo 26 (ASCII offset logic from prompt)
+                    val = code_int % 25 + 100
+            
+            return bytes([byte_val for byte_val in result]), shift
+        
+        hex_key, ascii_offset_bytes, char_shift_hex = byte_escape(hex_escape(key_hex_key)) * len(key_byte), None
+    
+    # Standard Python approach to mimic the intended logic while keeping it runnable
+    msg_b64 = message.encode('utf-8') if isinstance(message, str) else message
+    encoded_data: bytes = bytearray()
