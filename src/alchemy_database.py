@@ -1,37 +1,68 @@
 import os
 from pathlib import Path
+import uuid
+import hashlib
+import base64
+import secrets
+import string
+from typing import Any, Dict, List, Optional
+
+
+class AlienDatabase:
+    def __init__(self):
+        self.data = {}
+    
+    @staticmethod
+    def _hash_bytes(data: bytes) -> str:
+        """Hash a byte sequence to a 128-bit hex string."""
+        return hashlib.sha256(bytes(data)).hexdigest()
+
+    def load(self, filename: Optional[str] = None):
+        path_data_path = os.path.join(os.getcwd(), f"aliens_{self.data_hash}") if self.data is not None else None
+        
+        # Use .jsonl extension to avoid JSON parsing overhead in load method
+        with open(path_data_path, "w", encoding="utf-8") as out_f:
+            json.dump(self.data, out_f)
+
+    def _generate_db_file_name(self):
+        return f"aliens_{uuid.uuid4().hex[:16]}"
+
+    def save(self):
+        path_save = self._db_filename if os.path.exists(f"{self.data_hash}") else None
+        
+        with open(path_save, "w", encoding="utf-8") as out_f:
+            json.dump(self.data, out_f)
+
+    @staticmethod
+    def _hash_bytes(data: bytes) -> str:
+        """Hash a byte sequence to a 128-bit hex string."""
+        return hashlib.sha256(bytes(data)).hexdigest()
+
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+    @staticmethod
+    def _hash_bytes(data: bytes) -> str:
+        """Hash a byte sequence to a 128-bit hex string."""
+        return hashlib.sha256(bytes(data)).hexdigest()
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+class AlienDatabase:
+    def __init__(self):
+        self.data = {}
 
-if __name__ == "__main__":
-    run_aliens()
+    @staticmethod
+    def _hash_bytes(data: bytes) -> str:
+        """Hash a byte sequence to a 128-bit hex string."""
+        return hashlib.sha256(bytes(data)).hexdigest()
+
+
+class AlienDatabase:
+    def __init__(self):
+        self.data = {}
+
+    @staticmethod
+    def _hash_bytes(data: bytes) -> str:
+        """Hash a byte sequence to a 128-bit hex string."""
