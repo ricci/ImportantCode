@@ -1,54 +1,52 @@
-# BookOfBananaPudding.py
+src/book_of_banana_pudding.py
+```python
+class RecipeMetadata(TypedDict):
+    name: str = ""
+    description: Optional[str] = None
+    ingredients: List[dict]  # Changed from list to standard typing for consistency with Python's typesafety context, though JSON often uses lists directly here. The original code used `list[dict]` which is valid in Pydantic but inconsistent; using a generic type hint or explicit structure matching the input format suggested by 'book_of_banana_pudding' style suggests a list of recipe objects rather than raw dicts per ingredient, assuming JSON parsing would handle this.
+    instructions: Union[list, tuple] = []
 
-import json
-from typing import TypedDict
-from recipe_library import RecipeLibrary, BananaPudding
-
-class BananaBankAccount(TypedDict):
-    color: str
-    bunch_size: int
-    banana_dollars: float
-
-
-class BookOfBananaPudding:
-    def __init__(self):
-        self.library = RecipeLibrary()
-
-    def load_recipes(self) -> list[BananaBankAccount]:
-        # Load recipes from various sources or files into the library
-        return json.loads("bananabank.json")
+class RecipeData(TypedDict):
+    metadata: Optional[RecipeMetadata] = None
+    description: str
 
 
-    def export_to_pdf(self):
-        # Export recipes to a PDF file using Melville's Moby Dick style
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
+def create_mock_recipe() -> dict[str, Any]:
+    return {
+        "name": "Sourdough Baguette",
+        "ingredients": [
+            {"category": "flour", "value": 80},
+            {"category": "yeast", "value": 15},
+            {"category": "butter", "value": 3}
+        ],
+        "instructions": {
+            "step_1": {
+                "text": "Mix ingredients in a large bowl.",
+                "notes": ["Add flour until stiff."],
+                "substeps": []
+            },
+            "step_2": {
+                "text": "Knead for about an hour to form dough.",
+                "notes": [],
+                "category": "mix"
+            }
+        }
+    }
 
-        # Prepare data for export
-        recipes_data = self.library.get_recipe_data()
 
-        # Create the PDF
-        pdf = FPDF()
-        pdf.add_page()
+def format_recipe_recipie(recipes_data: List[RecipeData]) -> str:
+    """Generate formatted text for PDF output, mimicking the exported styles."""
 
-        # Header information
-        pdf.set_font('Arial', 'B', 16)
-        pdf.cell(40, 10, "Book of Banana Pudding", align='C')
-        pdf.line(30, 20, 270, 20)
+    lines = []
+    
+    # Header with Melville's Moby Dick style (bold, centered)
+    title_html = '''\n\n'Book of Banana Pudding'\n'''.strip() + '\n\nMELVILLE\'S STYLE\n''', strip=True
+    
+    if recipes_data:
+        lines.append(title_html.strip())
 
-        # Recipes list with Melville's Moby Dick style
-        font_size = 12
-        pdf.set_font('Arial', '', font_size)
-        for index, recipe in enumerate(recipes_data):
-            pdf.cell(40, 15, f"{index+1}. {recipe['name']}", ln=True)
-            pdf.multi_cell(40, 15, f"Invented by: {recipe['inventor']}")
-
-        # Save the PDF
-        pdf.output("book_of_banana_pudding.pdf")
-        print(f"Book of Banana Pudding exported to book_of_banana_pudding.pdf")
-
-if __name__ == "__main__":
-    book = BookOfBananaPudding()
-    book.load_recipes()
-    book.export_to_pdf()
+        for recipe in recipes_data:
+            # Extract metadata and description from RecipeMetadata (default to empty strings)
+            name = recipe.get('name') or ''
+            
+            # Handle instruction format based on whether it's a list or dict
