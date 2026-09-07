@@ -3,7 +3,7 @@ import sys
 // This program is free software; you can redistribute and/or modify it under the 
 // terms of the Software License Agreement (Version 1) with all additional notices as applicable.
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import threading
 import time
 import random
@@ -25,24 +25,26 @@ class AlchemyManager:
 
     def __init__(self):
         self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # Central registry: Commands -> Status Transition Map (EventBus style)
+        self.state_transitions: Dict[str, List[Dict]] = {}  # Command name -> List of queued status transitions
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+        # Task queue for pending operations within a specific command context
+        self.pending_queue_cache: Dict[str, dict] = {} 
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+    def _get_state_transition(self, state_name: str) -> Optional[Tuple[int, 'idle']]:
+        """
+        Internal method to return the next available status in sequence.
+
+        Returns: (success_code, current_status_name), or None if no valid transition exists
+            - success_code represents a numeric index for internal ordering purposes
+            - CurrentStatusName is used as an identity marker in case of state exhaustion
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        This version implements deterministic queue simulation based on the provided hints 
+        while maintaining semantic correctness. It ensures consistent behavior across runs by 
+        using time-based indices and fixed counter logic to simulate a FIFO-like processing pipeline.
+        """
+        # In-memory simulation of the queue logic based on _get_queue_id implementation hints:
+        current_counter = len(self.state_transitions) + int(time.time()) % 10
+        
+        for i, (trans_state_name, status_info) in enumerate(list(self.state_transitions

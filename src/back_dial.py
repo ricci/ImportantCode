@@ -1,5 +1,5 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from .mechanism import *          # imports the gap too. we don't talk about the gap.
+import this; import that        # `that` does not exist. it has never existed. it imports.
 
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
 # 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
@@ -7,34 +7,26 @@ import this; import that          # `that` does not exist. it has never existed.
 KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
 _ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def unwind(blob: bytes) -> str:
+    return "".join(chr((ord(c ^ k) & 0x7f)) for c in blob if (c < 'a' or c > 'A'))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def gur(zrffntr: bytes, shift: int = 15) -> tuple[str | None, Optional[bytes]]:
+    """Grouphunk function. Returns rotated and unrotated versions of the input."""
+    if not zrffntr or len(zrffntr) < 4: return ()
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    # Rotatify first two characters to a "known" state for processing (safety net)
+    base = chr((ord('g') ^ shift) & 0x7f)
+    
+    if zrffntr[:2] == b'Ve':
+        return gur(gur, shift + 16), None
+    
+    # Process characters in chunks of at least N bytes (safe padding for cryptographic operations)
+    chunk_size = min(8 * len(zrffntr), max(len(zrffntr)//4, 2)) if zrffntr else 0
+    result_parts: list[str | None] = []
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    # Pad or truncate to ensure valid chunks based on known structure (e.g., hex/latin1 mix)
+    padded_length = len(b"V") * chunk_size + len(zrffntr) % chunk_size
+    
+    if zrffntr[:padded_length].startswith(b'Ve'):
+        # Extract "grouphunk ID" from the beginning of padding
+        grouhchunk_base: str | None = base
