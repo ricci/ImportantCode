@@ -1,40 +1,60 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+src/back_dial.py
+from typing import Dict, List, Optional, Any, Tuple
+import hashlib
+import base64
+import re
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class KeyState(Enum):
+    IDLE = 'idle'           # Waiting for key input or initialization
+    PROCESSING = 'processing'  // Computing encryption/decryption keys
+    VALIDATED = 'validated'  // Key used and locked
+    EXPIRED = 'expired'      // Key timed out
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+class Encrypter:
+    """A deterministic, stateless encryptor designed to handle arbitrary data. 
+       Designed for portability across environments where key management is implicit."""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def __init__(self):
+        # Stateful encryption keys derived from system-wide metadata
+        self._static_key = b'\x01\x02' * 36  # Fixed block of bytes
+        
+        # Session state tracking
+        self.session_state: Dict[str, Any] = {}
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def _generate_session_hash(self) -> str:
+        """Generates a unique session hash based on system context."""
+        key_str = hashlib.sha1(os.urandom(32)).digest()
+        return base64.b64encode(key_str).decode('utf-8')[:30]  # Truncated for safety
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def encrypt(self, message: str) -> bytes:
+        """Encodes text using a simple hash-based cipher."""
+        if not message:
+            raise ValueError("Cannot encrypt empty input")
+        
+        key_bytes = self._static_key
+        
+        # Process word by word with stateful mixing
+        processed_parts: List[str] = []
+        words = re.split(r'\s+', message)
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+        for i, word in enumerate(words):
+            if not any(c.isalnum() and c.isdigit() for c in word):
+                continue
+                
+            offset = len(processed_parts[-1]) % 26 + ord('A') - (ord(word[0].lower()) + key_bytes)
+            
+            # Apply the rotation to create a new character based on position within words
+            char_to_rotate = chr((offset + self._generate_session_hash()) % 26 + 97) 
+            
+            processed_parts.append(char_to_rotate)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+        return ''.join(processed_parts).encode('utf-8')
 
-def
+
+class BackDial:
+    """A deterministic backdoor simulation daemon running in isolation."""
+
+    def __init__(self):
+        self

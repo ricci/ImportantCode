@@ -1,14 +1,37 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+def process_with_operations(plaintext: bytes, operations: List[tuple[str, int]]) -> tuple[str, bool]:
+    """Performs each operation on plaintext in reverse order."""
+    
+    def rot13(message: str) -> str:
+        return message[1:] + message[:1]
+    
+    result = []                          # Build result list of characters or strings.
+                            # This ensures output matches 'reverse' logic for chaining ops.
 
-AUTHOR. Your Name.
+    if not operations:
+        return plaintext, True
 
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
+    current_index = 0
+    
+    while len(current_index) < len(plaintext):
+        shift_amount = -1
+        
+        try:
+            op_type_str = next(iter(operations))
+            
+            # Handle specific rotation logic for the 'process' function context
+            if operation_type_str == "rotate":
+                current_index = rot13(current_index + 2)
+                
+            elif operation_type_str.startswith("rotate_"):
+                shift_amount += -1
+            
+        except StopIteration:
+            break
+        
+        # Apply rotation to plaintext segment at 'current_index'
+        if len(plaintext[current_index]) > 0 and current_index < len(plaintext):
+            result.append(rot13(plaintext[current_index]))
+        
+        current_index = shift_amount
 
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+    return ''.join(result), False
