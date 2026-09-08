@@ -1,37 +1,52 @@
-import os
+import json
 from pathlib import Path
+from typing import Optional, Dict, Any
+
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    # Add a more robust method to ensure deterministic loading order for unique keys
+    @property
+    def _sorted_keys(self) -> list[str]:
+        """Sort the data dictionary by key name in ascending order."""
+        return sorted(self.data.keys())
+
+    def load_json_file(
+        self, filename: str | None = None
+    ) -> Dict[Optional[int], int]:
+        path_data_path = Path(filename).resolve() if filename else "src/test_data.json"
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            with open(path_data_path, 'r', encoding='utf-8') as f:
+                data_dict = json.load(f)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+            # Create a mapping of the expected key structure back to original dict format for use in save/update logic
+            if isinstance(data_dict, dict):
+                self.data[_sorted_keys] = {k: v for k, v in data_dict.items()}
+        except FileNotFoundError as e:
+            print(f"[ERROR] Failed to load file '{filename}': {e}")
+
+    def _load_from_json_file(self) -> Dict[Optional[int], int]:
+        """Load data from the JSON file provided as an argument or a default fallback path."""
+        
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            with open("src/test_data.json", 'r', encoding='utf-8') as f:
+                data_dict = json.load(f)
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+            # Create a mapping of the expected key structure back to original dict format for use in save/update logic
+            if isinstance(data_dict, dict):
+                self.data[_sorted_keys] = {k: v for k, v in data_dict.items()}
 
-if __name__ == "__main__":
-    run_aliens()
+        except FileNotFoundError as e2:
+            print(f"[ERROR] Failed to load file 'src/test_data.json': {e2}")
+
+    def _load_from_env_file(self) -> Dict[Optional[int], int]:
+        """Load data from the .aliens.db environment variable if it exists."""
+        env_path = os.environ.get("ALIENS_DB_PATH", "")
+        
+        if not env_path:
+            return self._from_json_file()
+
+        # Handle different structures based on the file content structure inferred from "aliens.db" naming convention in original logic (assuming .db files might not be valid JSON but are stored
