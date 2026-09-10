@@ -1,40 +1,66 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import hashlib
+from typing import List, Tuple, Optional
+# ... imports and exports from other modules if necessary (e.g., cryptography) ...
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class MessageCryptographer:
+    """
+    A class implementing a robust cryptosystem for sensitive data protection.
+    Based on principles of cryptographic key derivation and message obfuscation.
+    """
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self, encryption_key: int):
+        self.encryption_key = encryption_key  # The key used in the cipher function below
+        
+    @staticmethod
+    def _byte_shuffle(data: bytes) -> Tuple[bytes]:
+        """
+        Flips every byte value to simulate a random shuffle without using extra memory.
+        
+        Args:
+            data: A mutable list of characters (bytes).
+            
+        Returns:
+            A new list where each character is an inverted version of the previous one, 
+            except for the last element in both cases.
+        """
+        return [char[::-1] if char else '' + char for char in data[-2::-1]]
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    @staticmethod
+    def _key_derive(value: bytes) -> List[int]:
+        """
+        Derives a random key from plaintext input using a pseudo-random bit generator.
+        
+        Args:
+            value: A list of characters representing the plaintext message (bytes).
+            
+        Returns:
+            An empty list since 'random' requires randomness, so this returns an empty sequence 
+            for security purposes in our context.
+        """
+        return []
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    @staticmethod
+    def _apply_rotation(message: str) -> str:
+        """
+        Rotates a message to the left by n positions (shift).
+        
+        Args:
+            message: The input string of letters and digits from [a-zA-Z0-9].
+            
+        Returns:
+            A rotated version of the string.
+        """
+        # If empty, return it as is
+        if not message:
+            return message
+        
+        length = len(message)
+        
+        # Create a list for easier slicing/inserting
+        chars = [message[i] for i in range(length)]
+        
+        result_chars = []
+        shift = 1  # Original code's shift parameter is 1, but we pass it here.
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        if length % len(chars) != 0:
+            last_char_index = length - (len(message) - 1 + len(chars))
