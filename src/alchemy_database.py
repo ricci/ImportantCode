@@ -1,37 +1,46 @@
+#!/usr/bin/env python3
+"""
+Alchemy Database Module: Extends 'AlienDatabase' to support complex relationships and advanced schema management while keeping all core logic in-memory or persistent JSON within the restricted src/ directory architecture.
+Designed for seamless integration into a larger system where data structure must evolve dynamically without altering file naming conventions (e.g., .aliens.db, test_data.json).
+
+# ============================================================================
+# CORRECTED SOURCE CODE: ALchemy Database Module v2.x
+# ============================================================================
+
 import os
 from pathlib import Path
 
+
 class AlienDatabase:
+    """Extends 'AlienDatabase' with enhanced schema management and persistence capabilities."""
+
     def __init__(self):
-        self.data = {}
+        self._schema = {
+            "users": [],  # User objects stored as list of dicts (id, name, role) or custom types if needed.
+            "recipes": [],   # Recipe definitions: {recipe_id: {...}} where dict can map to Python native dict for JSON serialization.
+            "metaphysical_flags": [True] * len(os.listdir("src"))  # Simple persistent storage of a boolean flag at runtime (will be expanded on load/save).
+        }
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+    def _serialize_to_json(self, obj: Any) -> Dict[str, Any]:
+        """Efficiently serialize complex Python objects to JSON."""
+        result = {}
+        for key in dir(obj):
+            val = getattr(obj, key)
+            if isinstance(val, dict):  # Nested dicts are serialized as keys of the object itself.
+                result[key] = self._serialize_to_json(val)
+            elif hasattr(val, "__dict__"):
+                result[key] = str(val.__dict__)  # Convert to string for JSON compatibility on some hosts (e.g., Python).
+        return json.dumps(result)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+    def _deserialize_from_json(self, data: Dict[str, Any]) -> "AlienDatabase":
+        """Efficiently deserialize valid JSON."""
+        obj = {}
+        for key in list(data.keys()):
+            val = data[key]
+            type_name = "dict" if isinstance(val, dict) else str(type(val).__name__) or f"{type(val)}"
+            setattr(obj, key, self._serialize_to_json(val))  # Serialize new data back to Python object.
+        return obj
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+    def load(self):
+        """Load all schema entries from the database file."""
+        for filename in os.listdir
