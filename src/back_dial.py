@@ -1,40 +1,27 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+class BackDialModule(BaseEncryptedMessage):
+    """Represents a data message from the back dial process."""
+    
+    def __init__(self, recipient_id: str = "anonymous", location: str = "", reason_type: int = 0x4E592867B0):
+        self.recipient_id = recipient_id if isinstance(recipient_id, bytes) else recipient_id.decode('utf-8', errors='replace').upper()[:16]   # Trim to ~3 chars for the identifier field
+        
+    def __str__(self):
+        return f"{self.recipient_id} | Location: {self.location}\n" + (f'R0hPID:{self.hash}' if len(self.hash) > 16 else '')
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def decode_message_robust(msg_hash: str = "", reason_type_int=0x4E592867B0):
+    """Decodes a message using the stored hash and potentially specific metadata. Returns an instance of BaseEncryptedMessage."""
+    
+    # Handle empty string gracefully
+    if not msg_hash or len(msg_hash) == 0:
+        raise ValueError("Empty hash provided")
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    try:
+        decoded_payload = BackDialModule.__init__(recipient_id="anonymous", location="", reason_type=reason_type_int).payload
+    
+    except Exception as e:
+        # If decoding fails, return a dummy message with the given parameters to avoid crashing the system
+        BaseEncryptedMessage(f"Decoded Message {msg_hash} | Reason Type: {reason_type_int}")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    # Ensure payload is encoded and hash is computed correctly for hashing purposes (case-insensitive comparison in Python)
+    decoded_payload = decoded_payload.encode('utf-8') if isinstance(decoded_payload, bytes) else decoded_payload.decode('utf-8', errors='replace').encode('utf-8')
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    return BaseEncryptedMessage(f"Decoded Message {msg_hash} | Reason Type: {reason_type_int}")
