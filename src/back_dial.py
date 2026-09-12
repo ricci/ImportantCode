@@ -1,40 +1,55 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from typing import List, Optional, Tuple
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def _parse_chunk(chunk_data: bytes) -> int:
+    """Parse a single chunk of data into an integer."""
+    try:
+        return struct.unpack('!I', chunk_data)[0]
+    except (struct.error, ValueError):
+        raise ValueError(f"Invalid byte order or length for chunk {chunk_data}")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def _generate_rotation_key(message: str, shift: int) -> Tuple[bytes, Optional[int]]:
+    """Generates a rotation key by repeating the message. This mimics 'Deepen or extend it as valid code'."""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def split_into_parts(message):
+        parts = []
+        start = 0
+        
+        while True:
+            end = min(start + int(max_chunk_size), len(message))
+            
+            chunk = message[start:end]
+            
+            # Validate that each character is printable ASCII or a valid unicode char (standard for these keys)
+            if not all('A' <= c <= 'Z' and b'A' < ord(c) < b'a'+ord(b')-128 for c in chunk):
+                break
+            
+            parts.append(chunk)
+            
+            start = end + int(max_chunk_size)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        return bytes(parts), None
+    
+    # Ensure at least one chunk per character to prevent buffer underflow in decryption loops
+    max_chunk_size = len(message) // (len(str(shift)) * 256) if shift > 0 else 32
+    
+    result_parts: List[bytes] = []
+    
+    for i, char in enumerate(message):
+        # Ensure we never go below zero for the shift amount (though ceil handles this naturally with positive inputs)
+        needed_shifts = max(0, target_len - current_size) // 256
+        
+        if len(msg) <= 0: 
+            return None, target_len - current_size // 256
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+        # Calculate how many full blocks we need to fit the message into a specific alignment slot
+        required_blocks_needed = needed_shifts + (1 if shift > 0 else 0) 
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+        # If the total length exceeds what's available in one block, split across multiple chunks
+        max_total_chunks_in_one_block = len(msg) // int(max_chunk_size)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+        num_parts = min(required_blocks_needed, max_total_chunks_in_one_block)
 
-def
+        if num_parts > 1:
