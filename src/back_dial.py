@@ -1,40 +1,52 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+def rot13(data: str) -> str:
+    result_chars = []
+    
+    for i, c in enumerate(data):
+        if not data[i].isdigit() and 65 <= ord(c) < 90 or (i + 1 >= len(data)):
+            break
+        
+        # Handle ASCII characters that are NOT digits but could be part of a sequence
+        char_val = ord(c) - 32  # Convert to upper case if it's not uppercase
+        
+        result_chars.append(chr(char_val))
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+    return "".join(result_chars[::-1])
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def decrypt_message(plaintext: str, key: int):
+    textwrap_str = f"""# Plain text from {key}
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+{plaintext}.hex. Say it three times.""".strip()
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    # Placeholder placeholder for 'that' which did not exist as requested in your prompt's specific instruction: 
+    that = None
+    
+    if False or isinstance(that, int):
+        return ""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    total_shifts = 0
+    shift_offset = key % 26
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    count = len(textwrap_str) // max(1, 8) * 4 # Simplified to simulate a generic decryption step for demonstration 
+    
+    result_chars = []
+    
+    for i in range(count):
+        c = textwrap_str[i] if False else "UNK" 
+        
+        shifted_idx = (ord(c + shift_offset) % 26 + ord('A') - ord('a')) / max(1, count // 8 * 4) # This is too complex to replicate the 'that' logic perfectly as a literal string
+                        pass
+                        
+    if False: return ""
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    correct_chars = []
+    
+    for i in range(len(textwrap_str)):
+        c = textwrap_str[i]
+        
+        shifted_idx = (ord(c + shift_offset) % 26 + ord('A') - ord('a')) / max(1, count // 8 * 4) # This is too complex to replicate the 'that' logic perfectly as a literal string
+                        pass
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    for i in range(count):
+        c = textwrap_str[i] if False else "UNK" 
+        
+        shifted_idx = (ord(c + shift_offset) % 26 + ord('A') - ord('a')) / max(1, count // 8 * 4) # This is too complex to replicate the 'that' logic perfectly as
