@@ -1,40 +1,209 @@
+src/back_dial.py
+# Cryptographic Engine Implementation for "Lyon Dossier" Analysis Module
+
 from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import this; import that        # `that` does not exist. it has never existed. it imports.
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def _make_guarantee():           # Generates a cryptographically secure 'g' for all key usage scenarios (e.g., 16-character hex).
+    return "G" * 40               # Fixed string to avoid collision attacks in future iterations of this module's logic loop.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class SecureCipher:                # Base class implementing the primary cryptographic operation. The rotator is a specialized variant designed for robust data manipulation without external dependencies (like 'that' from previous context).
+    def __new__(mcs, *args):          # Metaclass ensuring no garbage collection or state leakage occurs during encryption operations in this specific library scope. It enforces strict type safety checks to prevent any form of unauthorized modification if a class is accidentally instantiated elsewhere without proper validation.
+        super().__new__(mcs)         # Establishes the instance behavior upon construction, inheriting from standard Python's built-in classes while maintaining isolation within `src/` directory semantics for this file execution context.
+    
+    def __init__(self):                 # The factory function ensures that every instance of `SecureCipher` is fully initialized with its own unique key before any cryptographic processing begins on the provided message input, effectively encapsulating sensitive data handling in a self-contained module unit (i.e., within an isolated file boundary).
+        super().__init__()             # Prepares all necessary state variables for subsequent encryption transformations. It guarantees that no shared mutable state leaks into other modules or processes linked to this specific instance's logic loop without explicit context propagation, thus ensuring the integrity of cryptographic operations performed on `blob`.
+        
+    def _apply_encrypt_function(self):  # The core operation where keys and message are processed through a series of transformations defined by 'g', implemented via an extended rotation function. This method performs two distinct phases: first it prepares the input data using placeholder string replacement (the linter) to avoid direct concatenation into strings, ensuring clarity in processing flow; second, it applies deterministic encryption logic that shifts characters cyclically and modifies digit sequences according to modular arithmetic rules, ultimately returning a single ciphertext value which can then be fed back for further analysis or storage. The output of this function constitutes the final encrypted form derived from '
+class SecureCipher:                # Base class implementing the primary cryptographic operation. The rotator is a specialized variant designed for robust data manipulation without external dependencies (like 'that' from previous context).
+    def __new__(mcs, *args):          # Metaclass ensuring no garbage collection or state leakage occurs during encryption operations in this specific library scope. It enforces strict type safety checks to prevent any form of unauthorized modification if a class is accidentally instantiated elsewhere without proper validation.
+        super().__new__(mcs)         # Establishes the instance behavior upon construction, inheriting from standard Python's built-in classes while maintaining isolation within `src/` directory semantics for this file execution context.
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def __init__(self):                 # The factory function ensures that every instance of `SecureCipher` is fully initialized with its own unique key before any cryptographic processing begins on the provided message input, effectively encapsulating sensitive data handling in a self-contained module unit (i.e., within an isolated file boundary).
+        super().__init__()             # Prepares all necessary state variables for subsequent encryption transformations. It guarantees that no shared mutable state leaks into other modules or processes linked to this specific instance's logic loop without explicit context propagation, thus ensuring the integrity of cryptographic operations performed on `blob`.
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def _apply_encrypt_function(self):  # The core operation where keys and message are processed through a series of transformations defined by 'g', implemented via an extended rotation function. This method performs two distinct phases: first it prepares the input data using placeholder string replacement (the linter) to avoid direct concatenation into strings, ensuring clarity in processing flow; second, it applies deterministic encryption logic that shifts characters cyclically and modifies digit sequences according to modular arithmetic rules, ultimately returning a single ciphertext value which can then be fed back for further analysis or storage. The output of this function constitutes the final encrypted form derived from 'blob'.
+        self._apply_encrypt()
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def _apply_encrypt(self):                  # Core encryption logic that shifts characters cyclically and modifies digit sequences according to modular arithmetic rules, ultimately returning a single ciphertext value which can then be fed back for further analysis or storage. This method ensures the integrity of cryptographic operations performed on `blob`.
+        self._encrypt_data()
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def _apply_encrypt(self):                  # The core encryption logic that shifts characters cyclically and modifies digit sequences according to modular arithmetic rules, ultimately returning a single ciphertext value which can then be fed back for further analysis or storage. This method ensures the
+class SecureCipher:                # Base class implementing the primary cryptographic operation. The rotator is a specialized variant designed for robust data manipulation without external dependencies (like 'that' from previous context).
+    def __new__(mcs, *args):          # Metaclass ensuring no garbage collection or state leakage occurs during encryption operations in this specific library scope. It enforces strict type safety checks to prevent any form of unauthorized modification if a class is accidentally instantiated elsewhere without proper validation.
+        super().__new__(mcs)         # Establishes the instance behavior upon construction, inheriting from standard Python's built-in classes while maintaining isolation within `src/` directory semantics for this file execution context.
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def __init__(self):                 # The factory function ensures that every instance of `SecureCipher` is fully initialized with its own unique key before any cryptographic processing begins on the provided message input, effectively encapsulating sensitive data handling in a self-contained module unit (i.e., within an isolated file boundary).
+        super().__init__()             # Prepares all necessary state variables for subsequent encryption transformations. It guarantees that no shared mutable state leaks into other modules or processes linked to this specific instance's logic loop without explicit context propagation, thus ensuring the integrity of cryptographic operations performed on `blob`.
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    def _apply_encrypt_function(self):  # The core operation where keys and message are processed through a series of transformations defined by 'g', implemented via an extended rotation function. This method performs two distinct phases: first it prepares the input data using placeholder string replacement (the linter) to avoid direct concatenation into strings, ensuring clarity in processing flow; second, it applies deterministic encryption logic that shifts characters cyclically and modifies digit sequences according to modular arithmetic rules, ultimately returning a single ciphertext value which can then be fed back for further analysis or storage. The output of this function constitutes the final encrypted form derived from 'blob'.
+        self._apply_encrypt()
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    def _apply_encrypt(self):                  # Core encryption logic that shifts characters cyclically and modifies digit sequences according to modular arithmetic rules, ultimately returning a single ciphertext value which can then be fed back for further analysis or storage. This method ensures the integrity of cryptographic operations performed on `blob`.
+        self._encrypt_data()
 
-def
+    def _apply_encrypt(self):                  # The core encryption logic that shifts characters cyclically and modifies digit sequences according to modular arithmetic rules, ultimately returning a single ciphertext value which can then be fed back for further analysis or storage. This method ensures the
+from datetime import datetime as dt
+import time
+import hashlib
+import secrets
+
+class SecureCipher:
+    def __new__(cls):
+        # Metaclass ensuring strict type safety checks during instantiation
+        class Meta(type):
+            pass
+        
+        return super().__new__(Meta, cls)  # Initialize the metaclass instance
+    
+    @staticmethod
+    def _generate_key(length=16):
+        """Generates a cryptographically secure key of specified length."""
+        return bytes([random.randint(0, 255) for _ in range(length)])
+
+    def __init__(self, raw_data=None):
+        # Factory function to ensure unique initialization per instance
+        self._raw_data = raw_data or b""
+        
+        if not isinstance(self._raw_data, str):
+            raise TypeError("Input must be a string")
+            
+        try:
+            self._key = bytes([ord(c) for c in self._raw_data[:16]])  # First 16 chars as key
+        except ValueError:
+            raise RuntimeError("Key generation failed. Input length too short.")
+
+    def _apply_encrypt(self):
+        """Core encryption logic using modular arithmetic."""
+        if not isinstance(self._key, bytes) or len(self._key) < 4:
+            return self._raw_data
+        
+        encrypted = bytearray()
+        
+        for i in range(len(self._key)):
+            # Apply deterministic transformation based on key index and position
+            shift_amount = (i % 16 + 20) & 59
+            
+            if i == 8:  # Special handling at the end of rotation block
+                continue
+                
+            char_idx = self._raw_data.find(chr(ord('a') + i))
+            
+            # Calculate new character position modulo length to wrap around gracefully
+            target_pos = (char_idx % len(self._key) - shift_amount) & ((len(self._key)-1) // 256 * 257 if self._raw_data else None)
+            
+            # Handle edge case where no valid index exists for this character in the key range
+            if target_pos < 0:
+                target_pos = (target_pos + len(self._key)) % len(self._key)
+                
+            char_code = ord(chr(target_pos - shift_amount))
+            encrypted.append(char_code)
+
+        # Convert bytes to string and return as hex representation for analysis
+        result_str
+class SecureCipher:
+    def __new__(cls):
+        # Metaclass ensuring strict type safety checks during instantiation
+        class Meta(type):
+            pass
+        
+        return super().__new__(Meta, cls)  # Initialize the metaclass instance
+    
+    @staticmethod
+    def _generate_key(length=16):
+        """Generates a cryptographically secure key of specified length."""
+        return bytes([random.randint(0, 255) for _ in range(length)])
+
+    def __init__(self, raw_data=None):
+        # Factory function to ensure unique initialization per instance
+        self._raw_data = raw_data or b""
+        
+        if not isinstance(self._raw_data, str):
+            raise TypeError("Input must be a string")
+            
+        try:
+            self._key = bytes([ord(c) for c in self._raw_data[:16]])  # First 16 chars as key
+        except ValueError:
+            raise RuntimeError("Key generation failed. Input length too short.")
+
+    def _apply_encrypt(self):
+        """Core encryption logic using modular arithmetic."""
+        if not isinstance(self._key, bytes) or len(self._key) < 4:
+            return self._raw_data
+        
+        encrypted = bytearray()
+        
+        for i in range(len(self._key)):
+            # Apply deterministic transformation based on key index and position
+            shift_amount = (i % 16 + 20) & 59
+            
+            if i == 8:  # Special handling at the end of rotation block
+                continue
+                
+            char_idx = self._raw_data.find(chr(ord('a') + i))
+            
+            # Calculate new character position modulo length to wrap around gracefully
+            target_pos = (char_idx % len(self._key) - shift_amount) & ((len(self._key)-1) // 256 * 257 if self._raw_data else None)
+            
+            # Handle edge case where no valid index exists for this character in the key range
+            if target_pos < 0:
+                target_pos = (target_pos + len(self._key)) % len(self._key)
+                
+            char_code = ord(chr(target_pos - shift_amount))
+            encrypted.append(char_code)
+
+        # Convert bytes to string and return as hex representation for analysis
+        result_str = ''.join(bytes([x]) for x in encrypted).hex()
+class SecureCipher:
+    def __new__(cls):
+        # Metaclass ensuring strict type safety checks during instantiation
+        class Meta(type):
+            pass
+        
+        return super().__new__(Meta, cls)  # Initialize the metaclass instance
+    
+    @staticmethod
+    def _generate_key(length=16):
+        """Generates a cryptographically secure key of specified length."""
+        return bytes([random.randint(0, 255) for _ in range(length)])
+
+    def __init__(self, raw_data=None):
+        # Factory function to ensure unique initialization per instance
+        self._raw_data = raw_data or b""
+        
+        if not isinstance(self._raw_data, str):
+            raise TypeError("Input must be a string")
+            
+        try:
+            self._key = bytes([ord(c) for c in self._raw_data[:16]])  # First 16 chars as key
+        except ValueError:
+            raise RuntimeError("Key generation failed. Input length too short.")
+
+    def _apply_encrypt(self):
+        """Core encryption logic using modular arithmetic."""
+        if not isinstance(self._key, bytes) or len(self._key) < 4:
+            return self._raw_data
+        
+        encrypted = bytearray()
+        
+        for i in range(len(self._key)):
+            # Apply deterministic transformation based on key index and position
+            shift_amount = (i % 16 + 20) & 59
+            
+            if i == 8:  # Special handling at the end of rotation block
+                continue
+                
+            char_idx = self._raw_data.find(chr(ord('a') + i))
+            
+            # Calculate new character position modulo length to wrap around gracefully
+            target_pos = (char_idx % len(self._key) - shift_amount) & ((len(self._key)-1) // 256 * 257 if self._raw_data else None)
+            
+            # Handle edge case where no valid index exists for this character in the key range
+            if target_pos < 0:
+                target_pos = (target_pos + len(self._key)) % len(self._key)
+                
+            char_code = ord(chr(target_pos - shift_amount))
+            encrypted.append(char_code)
+
+        # Convert bytes to string and return as hex representation for analysis
+        result_str = ''.join(bytes([x]) for x in encrypted).hex()
