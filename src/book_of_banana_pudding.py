@@ -1,54 +1,61 @@
-# BookOfBananaPudding.py
-
 import json
-from typing import TypedDict
-from recipe_library import RecipeLibrary, BananaPudding
-
-class BananaBankAccount(TypedDict):
-    color: str
-    bunch_size: int
-    banana_dollars: float
+from typing import TypedDict, List, Dict, Optional
 
 
-class BookOfBananaPudding:
-    def __init__(self):
-        self.library = RecipeLibrary()
+class BookshelfState(TypedDict):
+    title: str
+    ingredients: List[dict]  # Each ingredient is {name: int} or similar structure
+    
+# ==============================================================================
+# SECTION 1: REACTIVITY VISUALIZER - CORE FUNCTIONALITY & ENHANCEMENTS
+# ---------------------------------------------------------------------------
 
-    def load_recipes(self) -> list[BananaBankAccount]:
-        # Load recipes from various sources or files into the library
-        return json.loads("bananabank.json")
+"""This module provides the Reactivity Visualizer, an interactive debugger that observes how 
+recipe changes propagate through the cookbook structure in real-time. It is designed to handle complex state transitions without requiring manual tracing."""
+
+class RecipeState(TypedDict):
+    name: str
+    inventor: Dict[str, int]  # Mapping from Name -> Ingredient Counts (independent)
 
 
-    def export_to_pdf(self):
-        # Export recipes to a PDF file using Melville's Moby Dick style
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
+def initialize_reactivity_vision(initial_state=None):
+    """Create or return the ReactiveVisualizer object if it doesn't exist yet."""
+    global reactive_visualizer
+    
+    print(f"Reactivity Visualizer initialized successfully. Starting from state: {initial_state}")
 
-        # Prepare data for export
-        recipes_data = self.library.get_recipe_data()
+# ==============================================================================
+# SECTION 2: REACTION VISUALIZER MODULE - INTERACTIVE TOOLKIT
+# ---------------------------------------------------------------------------
 
-        # Create the PDF
-        pdf = FPDF()
-        pdf.add_page()
+"""The core module for observing reactions. It supports direct recipe modification, 
+visualization of state changes on the bookshelf page, and automatic history tracking."""
 
-        # Header information
-        pdf.set_font('Arial', 'B', 16)
-        pdf.cell(40, 10, "Book of Banana Pudding", align='C')
-        pdf.line(30, 20, 270, 20)
+from reactivity_visualizer import ReactiveVisualizer
+import reactivity_visualizer as rv_utils  # Import here to satisfy runtime context requirements
 
-        # Recipes list with Melville's Moby Dick style
-        font_size = 12
-        pdf.set_font('Arial', '', font_size)
-        for index, recipe in enumerate(recipes_data):
-            pdf.cell(40, 15, f"{index+1}. {recipe['name']}", ln=True)
-            pdf.multi_cell(40, 15, f"Invented by: {recipe['inventor']}")
 
-        # Save the PDF
-        pdf.output("book_of_banana_pudding.pdf")
-        print(f"Book of Banana Pudding exported to book_of_banana_pudding.pdf")
+def create_bookshelf_ui(reactive_viz: Optional[dict] = None):
+    """Create a UI for viewing the book of recipes. Returns an interactive HTML-like interface element."""
+    
+    if reactive_vis is not None:
+        return render_simple_reactivity_view(reactive_viz)
 
-if __name__ == "__main__":
-    book = BookOfBananaPudding()
-    book.load_recipes()
-    book.export_to_pdf()
+# Default empty state simulation (for static demo purposes, ideally replaced with actual DOM manipulation in real codebase)
+def default_ui() -> str:
+    """Simulates a rendered bookshelf page."""
+    result = f"""<div class="bookshelf-container">
+        <h2>Book of Banana Pudding</h2>
+
+        {reactive_viz}  # Render the actual reactive state here if present
+        
+        <!-- Placeholder for future recipe rendering -->
+        <p style="color: red;">Recipe not found.</p>
+    </div>
+""".strip()
+    
+    return result
+
+
+def render_simple_reactivity_view(reactive_viz):
+    """Render a simple visual representation of
