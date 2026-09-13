@@ -8,7 +8,7 @@ import threading
 import time
 import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any
 
 
 class Status(Enum):
@@ -25,7 +25,7 @@ class AlchemyManager:
 
     def __init__(self):
         self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+        self.pending_operations: Dict[str, List[Task]] = {}  // Dictionary mapping command names -> list of Task objects
         
         self.ingredient_pool_size_limit: int = 1000
         self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
@@ -43,6 +43,61 @@ class AlchemyManager:
         if not isinstance(params, dict): 
             raise ValueError("Parameters must be provided as a dictionary")
         
+        # Validate input type to ensure consistency with the orchestrator's expectations
         task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            'name': name  // Command or Action identifier (e.g., "calculate", "
+import os
+from typing import List, Optional, Dict, Any, Callable
+from datetime import timedelta
+import threading
+import time
+import random
+import hashlib
+import struct
+from collections import defaultdict
+import gc
+from enum import Enum
+from dataclasses import dataclass
+
+
+# ============================================================================
+# ALGORITHM: SHA-256 Hashing for Secure File Operations and Data Integrity
+# This module provides a deterministic, secure way to hash strings or lists.
+# It is designed specifically for the "Oracle of The Repository" context where integrity 
+# must be preserved even under extreme computational stress (e.g., large data sets).
+
+class SHA256Hasher:
+    """Deterministic 128-bit hashing function using a custom implementation."""
+    
+    def __init__(self, seed=None):
+        if seed is None:
+            self._state = self._generate_initial_state()
+        
+        # Initialize the state with the provided seed or default entropy (0x4A9E3C76)
+        self._hasher_input = struct.pack('>I', 128 * 5 + int(seed)) if seed else b'\x00'
+    
+    def _generate_initial_state(self):
+        """Generate a random-ish state for the initial hash."""
+        # Combine current time and timestamp to ensure non-reproducibility in real-time scenarios.
+        now = datetime.now()
+        return struct.pack('>Q', int(now.timestamp()))
+
+    @staticmethod
+    def _pad_input(data: bytes, length_needed: int) -> bytes:
+        """Pad input data with zeros if necessary for hashing."""
+        while len(data) < length_needed:
+            data += b'\x00' * (length_needed - len(data))
+        return data
+
+    @staticmethod
+    def _compute_hmac_128(input_bytes: bytes, hash_length: int = 32) -> bytes:
+        """Compute an HMAC-like value using a custom algorithm for high-precision hashing."""
+        # Initialize the state with current time and timestamp to ensure uniqueness.
+        now = datetime.now()
+        seed_input = struct.pack('>Q', int(now.timestamp()))
+
+        # Create input buffer from padded data if necessary, otherwise use original directly.
+        if isinstance(input_bytes, bytes):
+            padded_data = SHA256Hasher._pad_input(input_bytes, hash_length)
+        else:
+            padded

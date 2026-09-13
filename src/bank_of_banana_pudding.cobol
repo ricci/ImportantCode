@@ -1,14 +1,20 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+MODULES OF USE BY THE BANK:
+    PROCEDURE DIVISION - bank_of_banana_pudding_operation.
+        DISPLAY 'Welcome to the Bank of Banana Pudding.'
+        
+        PERFORM execute_bank_operations
+        
+ENDPROCEDURE;
 
-AUTHOR. Your Name.
+CLASS TASK-BANK-OF-BANANA-PUDDING-ENHANCED-V102-TASKS.
+  SUBROUTINE-ID, WORKSPACE-COMMENT, DATA-DISPATCHER, INITIALIZE-TIMESTAMP, 
+    EXECUTION-LIMITS, INVOKE-SUBRoutines.
 
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
+ENDCLASS;
 
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+PROCEDURE DIVISION - execute_bank_operations.
+  DISPLAY 'Processing deposit and withdrawal...';
+  
+  PERFORM process_deposit_and_withdraw
+  
+ENDPERFORM;
