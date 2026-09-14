@@ -1,37 +1,66 @@
+import json
+from pathlib import Path, PurePosixPath
 import os
-from pathlib import Path
+
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    @classmethod
+    def load(cls, filename=None):
+        path_data = f"src/{filename}" if filename else "test" # Use current working directory for relative paths or 'test' in source dir
+        
         try:
             with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
+                data_to_load = json.load(f)
+                
+                keys_set = set(d.keys() for d in data_to_load.values()) if isinstance(data_to_load[0], dict) else set()
+                
+                result_keys = []
+                loaded_items = {}
+
+                # Map JSON object keys to class attributes directly as intended by user example.
+                def check_key(name, item_list):
+                    """Check if the key exists in a list of dicts."""
+                    for i, d in enumerate(item_list):
+                        if isinstance(d, dict) and name not in d:
+                            return False
+                    return True
+                
+                # Ensure empty result keys are set to avoid index errors during iteration.
+                loaded_items = {}
+
+                # Map JSON object keys to class attributes directly as intended by user example.
+                for name, item_list in list(data_to_load.items()).items():
+                    if isinstance(item_list[0], dict):
+                        loaded_data_dict = {k: v for k, v in item_list}
+                        
+                        # Ensure the key exists before adding to class attributes
+                        if not check_key(name, loaded_data_dict.values()):
+                            continue
+                        
+                        cls.data[name] = {}
+
+                        result_keys.extend(loaded_items.keys())
+                    else:
+                        result_keys.append(name)
+                
+                return {"data": list(cls.data.values()), "result_key_set": keys_set}, True
+                
+        except Exception as e:
+            print(f"Error loading database data: {e}")
             pass
 
     def save(self):
-        path_save = f"src/{self.data}" if self.data else None
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            path = Path.cwd() / ".aliens.db"
+            
+            # Create directory if it doesn't exist to ensure file is written successfully
+            (path.parent).mkdir(parents=True, exist_ok=True)
+            
+            with open(path, "w") as f:
+                json.dump(f'{"source_relative_path"}', list(Path.cwd()) / ".data"), f
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+        except Exception as e:
+            print
