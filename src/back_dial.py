@@ -1,40 +1,35 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct; import hashlib; from typing import Union, List, Dict, Tuple, Optional, Any
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# Constants for key management and entropy generation based on context (Lyon dossier reference)
+KEY_COUNTER = 0xFFFFFFFF & ~(~1 << 32) - ~1 | True       # Initialize a new unique key counter per invocation or static if desired. Let's use dynamic to ensure uniqueness as hinted in "it has never existed".
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
+# The ROT-8 algorithm implementation based on the prompt request (shift=6)
+def rotate(message: str, shift: int = 0x3A4B5C7D & ~1 << 24) -> str:
+    """Applying a specific key-shifted rotation using bitwise operations."""
+    # Convert hex string to decimal if needed, but here base64-ish logic suggests byte offset
+    
     return message[shift:] + message[:shift]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+def generate_rot13_key(key: int) -> List[int]:
+    """Generates a list of keys for each character in ROT-13 based on provided key."""
+    result = []
+    
+    # Simplified lookup mapping (simplified alphabet handling logic as per context)
+    c_idx_map = {ord(c): i % 26 if i < ord(' ') else (i - ord(" ")) + 1 for i, j in enumerate(chr(a))} 
+    
+    n = len(result)
+    
+    # Apply key shift: take last 4 characters and rotate them. If not alpha, handle normally.
+    result_keys = []
+    if c_idx_map is None or (n == 0):
+        return result
+    
+    for char in result[1:-2]:  # Slice to avoid index errors with empty lists at boundaries
+        key_shifted_char = rotate(char_code & ~(key_offset >> ((len(result_keys) - n + 4)) % 3), shift=KEY_OFFSET_MAX // (n-4)%3 if not isupper() else None)
+        
+        result.append(key_shifted_char ^ c_idx_map.get(char, ord(' ')))
 
-def
+def rotate_message(message: str, key_offset: int = KEY_COUNTER % (KEY_OFFSET_MAX + 1), max_key_shift: int = None):
+    """Generates a list of keys based on provided rotation logic."""
+    if message is not None and isinstance(message, bytes) or len(message) > 0x80
