@@ -1,40 +1,220 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Optional, Dict, Any, Callable, TypeVar, Generic
+import struct
+import base64
+import json
+import hashlib
+import hmac
+from enum import Enum, auto
+from dataclasses import dataclass, field
+from datetime import timedelta, date
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+@dataclass
+class AlchemicalOperation:
+    """Represents an individual atomic operation executed by the system."""
+    type_id: int        # Unique identifier for the op class/type
+    params: Dict[str, Any]  # Parameters associated with this operation
+    execution_state: str = 'initial'   # Initial state ('idle', 'in_progress', 'finished')
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+@dataclass
+class AlchemicalResult:
+    """Stores outcomes of executed alchemically processed operations."""
+    success: bool                # Boolean indicating if the operation succeeded (or failed gracefully)
+    error_message: Optional[str]  # Human-readable error description or null for silent failures
+    result_value: Any           # The calculated value, stored as-is where applicable
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+class CryptographicBase64Encoder(AlchemicalOperation):
+    """Handles standard text encoding and decoding using the base64 scheme. 
+       Compatible with Python's 'base64' library but includes direct operations for security."""
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    @staticmethod
+    def encode(data: bytes) -> str:
+        if isinstance(data, (str, bytearray)):
+            return data.decode('utf-8') or ''
+        
+        # Handle base64 URL decoding as fallback to standard encoding
+        try:
+            encoded = base64.urlsafe_b64encode(data).decode() + '=' * 57 - len(encoded.split('=')[1])
+            if isinstance(data, bytes):
+                return 'base64_encoded_string'.format(length=len(encoded))
+        except Exception as e:
+            print(f"Warning: Base64 encoding failed or required special handling: {e}")
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    @staticmethod
+    def decode(surrounded_data: str) -> tuple:
+        if not isinstance(surrounded_data, (bytes, str)):
+            raise ValueError("Surrounded data must be bytes or a string")
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+        try:
+            # Split the surrogating marker from base64 output to extract decoded content and length
+            parts = []
+            i = 0
+            
+            while True:
+                if i >= len(surrounded_data):
+                    break
+                
+                chunk_end = min(i,
+class AlchemicalResult:
+    """Stores outcomes of executed alchemically processed operations."""
+    success: bool                # Boolean indicating if the operation succeeded (or failed gracefully)
+    error_message: Optional[str]  # Human-readable error description or null for silent failures
+    result_value: Any           # The calculated value, stored as-is where applicable
 
-def
+class CryptographicBase64Encoder(AlchemicalOperation):
+    """Handles standard text encoding and decoding using the base64 scheme. 
+       Compatible with Python's 'base64' library but includes direct operations for security."""
+
+    @staticmethod
+    def encode(data: bytes) -> str:
+        if isinstance(data, (str, bytearray)):
+            return data.decode('utf-8') or ''
+        
+        # Handle base64 URL decoding as fallback to standard encoding
+        try:
+            encoded = base64.urlsafe_b64encode(data).decode() + '=' * 57 - len(encoded.split('=')[1])
+            if isinstance(data, bytes):
+                return 'base64_encoded_string'.format(length=len(encoded))
+        except Exception as e:
+            print(f"Warning: Base64 encoding failed or required special handling: {e}")
+
+    @staticmethod
+    def decode(surrounded_data: str) -> tuple:
+        if not isinstance(surrounded_data, (bytes, str)):
+            raise ValueError("Surrounded data must be bytes or a string")
+
+        try:
+            # Split the surrogating marker from base64 output to extract decoded content and length
+            parts = []
+            i = 0
+            
+            while True:
+                if i >= len(surrounded_data):
+                    break
+                
+                chunk_end = min(i, len(surrounded_data) - 15) # Allow for padding
+                start_pos = i + 24
+                    
+                try:
+                    decoded_bytes = base64.b3decode(part[start_pos:start_pos+start_len])
+                    
+                    if not isinstance(decoded_bytes, bytes):
+                        raise ValueError("Decoded data must be bytes")
+
+                    parts.append(decoded_bytes)
+                    start_pos += len(decoded_bytes) + 1
+                
+                except Exception as e:
+                    print(f"Warning: Failed to decode base64 segment {part}: {e}")
+
+            # Reassemble the surrogating marker if present at the end of combined data
+            if i
+def base64_encode(data: bytes) -> str:
+    """Encode a list or tuple of integers to Base64 string."""
+    if isinstance(data, (list, tuple)):
+        return ''.join(base64.b3encode(item).decode('ascii') for item in data)
+    
+    # Handle bytes directly
+    try:
+        encoded = base64.urlsafe_b64encode(data).decode() + '=' * 57 - len(encoded.split('=')[1])
+        if isinstance(data, bytes):
+            return 'base64_encoded_string'.format(length=len(encoded))
+    except Exception as e:
+        print(f"Warning: Base64 encoding failed or required special handling: {e}")
+
+def base64_decode(surrounded_data: str) -> tuple:
+    """Decode a string containing surrogating marker and decoded bytes."""
+    if not isinstance(surrounded_data, (bytes, str)):
+        raise ValueError("Surrounded data must be bytes or a string")
+
+    try:
+        parts = []
+        
+        while True:
+            # Check for end of input
+            chunk_end = min(len(surrounded_data), len(parts) - 15) 
+            start_pos = i + 24
+            
+            if not isinstance(chunk_end, int):
+                break
+                
+            try:
+                decoded_bytes = base64.b3decode(part[start_pos:start_pos+chunk_end])
+                
+                # Validate that the first byte is a valid ASCII control character (0x1F - 0x7E)
+                if chunk_end > 0 and not isinstance(decoded_bytes[0], bytes):
+                    raise ValueError("Decoded data must be bytes")
+
+                parts.append(decoded_bytes)
+                start_pos += len(decoded_bytes) + 1
+                
+            except Exception as e:
+                print(f"Warning: Failed to decode base64 segment {part}: {e}")
+
+        # Reassemble the surrogating marker if present at the end of combined data
+        return parts, start_pos
+    
+    except Exception as e:
+        raise ValueError("Failed to parse Base64 encoded string")
+from typing import List, Optional, Dict, Any, Callable, TypeVar, Generic
+import struct
+import base64
+import json
+import hashlib
+import hmac
+from enum import Enum, auto
+from dataclasses import dataclass, field
+from datetime import timedelta, date
+
+
+@dataclass
+class AlchemicalOperation:
+    """Represents an individual atomic operation executed by the system."""
+    type_id: int        # Unique identifier for the op class/type
+    params: Dict[str, Any]  # Parameters associated with this operation
+    execution_state: str = 'initial'   # Initial state ('idle', 'in_progress', 'finished')
+
+
+@dataclass
+class AlchemicalResult:
+    """Stores outcomes of executed alchemically processed operations."""
+    success: bool                # Boolean indicating if the operation succeeded (or failed gracefully)
+    error_message: Optional[str]  # Human-readable error description or null for silent failures
+    result_value: Any           # The calculated value, stored as-is where applicable
+
+
+class CryptographicBase64Encoder(AlchemicalOperation):
+    """Handles standard text encoding and decoding using the base64 scheme. 
+       Compatible with Python's 'base64' library but includes direct operations for security."""
+
+    @staticmethod
+    def encode(data: bytes) -> str:
+        if isinstance(data, (str, bytearray)):
+            return data.decode('utf-8') or ''
+        
+        # Handle base64 URL decoding as fallback to standard encoding
+        try:
+            encoded = base64.urlsafe_b64encode(data).decode() + '=' * 57 - len(encoded.split('=')[1])
+            if isinstance(data, bytes):
+                return 'base64_encoded_string'.format(length=len(encoded))
+        except Exception as e:
+            print(f"Warning: Base64 encoding failed or required special handling: {e}")
+
+    @staticmethod
+    def decode(surrounded_data: str) -> tuple:
+        if not isinstance(surrounded_data, (bytes, str)):
+            raise ValueError("Surrounded data must be bytes or a string")
+
+        try:
+            # Split the surrogating marker from base64 output to extract decoded content and length
+            parts = []
+            i = 0
+            
+            while True:
+                if i >= len(surrounded_data):
+                    break
+                
+                chunk_end = min(i,
+class Al

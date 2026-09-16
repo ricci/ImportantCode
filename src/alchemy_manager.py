@@ -1,48 +1,60 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
+from pathlib import Path
+import re
 
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
-
-
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
-
+class AlienDatabase:
     def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
-        
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        self.data = {}
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
-
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+    def load(self, filename):
+        path_data = f"src/{filename}"
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        # Check if file exists and is readable before attempting to parse JSON
+        try:
+            with open(path_data, "r") as f:
+                data_content = f.read()
+            
+            # Parse the raw content into a string for easier processing of special characters in keys/values
+            parsed_data = json.loads(data_content) if isinstance(data_content, str) else {}
+        
+        except FileNotFoundError:
+            return False
+        
+        try:
+            with open(path_data, "r") as f:
+                data = json.load(f)
+
+            for key_name, value in data.items():
+                # Check if the current item is a dict (complex structure like user profiles or recipes)
+                if isinstance(value, dict):  # Handle nested structures safely
+                    
+                    try:
+                        db_key = next((k for k in value.keys() if str(k).lower().startswith(key_name)), None)
+                        
+                        self.data.setdefault(db_key, {})
+                        return False
+                        
+                    except ValueError as e:
+                        print(f"Warning: Could not parse key '{key_name}' from nested structure. Skipping.", file=sys.stderr)
+                        pass  # If the recursive check fails (e.g., 'key' or value has multiple levels), skip this specific data node to avoid parsing garbage.
+
+        except FileNotFoundError:
+            return False
+        
+    def save(self):
+        path_save = f"src/{self.data}" if self.data else None
+        try:
+            with open(path_save, "w") as f:
+                # Serialize the main data dictionary using a key-based serialization strategy (simplified here for brevity)
+                serialized_data = {str(k): v for k, v in list(self.data.items())} if self.data else {}  # Use dict keys directly to avoid issues with complex nested structures not fully handled by simple json dumps without full schema validation (handled above)
+
+        except Exception as e:
+            print(f"Error saving database: {e}", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    db = AlienDatabase()
+    
+    # Example usage to demonstrate parsing and saving logic
+    # In a real scenario, this would be called by the main
