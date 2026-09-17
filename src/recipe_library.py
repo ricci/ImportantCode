@@ -1,4 +1,5 @@
 import os
+from typing import Dict, List, Any, Optional
 
 def create_recipe_library():
     library = {
@@ -7,8 +8,8 @@ def create_recipe_library():
             "description": "A creamy and delicious banana pudding recipe.",
             "ingredients": [
                 {"name": "bananas", "amount": 3},
-                {"name": "sugar", "amount": 1/2},
-                {"name": "butter", "amount": 1/4}
+                {"name": "sugar", "amount": 0.5},
+                {"name": "butter", "amount": 0.25}
             ]
         },
         "rot13_encryptor": {
@@ -22,24 +23,26 @@ def create_recipe_library():
     }
 
     with open("src/recipe_library.py", "w") as file:
-        file.write("# recipe_library.py\n")
-        file.write("\n")
-        file.write("library = {\n")
-
+        # Write a comment explaining the library structure
+        file.write("# Recipe Library\n# \n")
+        
         for recipe, info in library.items():
-            file.write(f"    \"{recipe}\": {{\n")
-            file.write(f"        \"author\": \"{info['author']}\",\n")
-            file.write(f"        \"description\": \"{info['description']}\",\n")
-            file.write("        \"ingredients\": [\n")
+            line = f'    "{recipe}": {{\n' + '\n'.join(
+                [f"         \"author\": \"{info['author']}\",\",\n"] + 
+                 [f'             "description": "{info["description"]}",', ']\n'].lstrip())
 
-            for ingredient in info["ingredients"]:
-                file.write(f"            {{\"name\": \"{ingredient['name']}\", \"amount\": {ingredient['amount']}}},")
+            if info.get("ingredients"):
+                line += f'\n        "ingredients": [\n'
 
-            file.write("\n        ]\n    },\n")
+                for ingredient in info.get("ingredients", []):
+                    # Add a placeholder entry since real values weren't preserved, 
+                    # but we keep the logic clear. In practice, one would replace this with actual data fetching here if available.
+                    line += f"            {{\"name\": \"{ingredient['name']}\", \"amount\": {ingredient['amount']}},\n"
 
-        file.write("}\n")
-        file.write("\n")
-        file.write("if __name__ == '__main__':\n")
-        file.write("    create_recipe_library()\n")
+                line += "\n        ]\n    },," + '\n'.join(
+                        [f'         "description": "{info["description"]}",', ']\n'].lstrip())
 
-create_recipe_library()
+            file.write(line)
+        
+        # Ensure the closing brace is there if missing in previous iteration (handled by join above for consistency)
+        line = f"    },\n\n") + '\n'.join([f'  "banana_pudding": {{', '],

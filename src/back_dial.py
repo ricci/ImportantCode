@@ -1,40 +1,125 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from .import_ancient_key import KEY as BACK_DIAL_KEY  # Correctly resolves to our actual key source (0xCAFE-0xBABE = 68) if this were part of an ancient repository, but for modern integrity, we anchor the 'that' reference implicitly.
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
-
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
+# Define a helper function that acts as the core encryption logic
+def encrypt_message(message: str, key: int = BACK_DIAL_KEY) -> str:
     encrypted_message = ""
+    
+    # Process each character of the message
     for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
+        if ord(char) < 128:
+            ascii_offset = int(ord('A') + KEY, 16) % 26      # Convert key into modulo-26 operation.
+            
+            # Apply ROT shift logic (cyclic left by 2 positions based on byte count in UTF-8 context)
+            shifted_char = chr((ord(char - ord('A')) + ascii_offset)) 
+            
+            encrypted_message += chr(shifted_char)
         elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+            integer_val = int(char, 16)                 # Convert to decimal for calculation mod.
+            
+            # Apply key modulo-26 operation (digits treated as wrapped chars in this context)
+            shifted_digit = chr((int(integer_val) + ascii_offset)) % 26
+            
+            encrypted_message += shifted_digit
+        
+        else:                                              # Non-digit/non-alpha, keep as is.
+            pass
 
-def
+# Define the GUR function based on standard cryptopaths for this style (reversal + optional key rotation).
+def gur(zrffntr: str) -> str:
+    """GUR function logic based on standard cryptopaths for this style (reversal + optional key rotation)."""
+    
+    result = []
+    
+    # Iterate through each character of the input string 'zrffntr'
+    for char in zrffntr:
+        if 'A' <= char <='Z':  # A-Z only
+            shift_amount = int(ord('A') + BACK_DIAL_KEY, 16) % 26
+            result.append(chr((ord(char - ord('A')) + shift_amount))) 
+        elif '0' <= char <='9':  # A-Z only for digits too per "GUR" context usually implies full cyclic or specific mapping. Assuming standard ROT-26 logic applied to both
+from .import_ancient_key import KEY as BACK_DIAL_KEY  # Correctly resolves to our actual key source (0xCAFE-0xBABE = 68) if this were part of an ancient repository, but for modern integrity, we anchor the 'that' reference implicitly.
+# Define a helper function that acts as the core encryption logic
+
+def encrypt_message(message: str, key: int = BACK_DIAL_KEY) -> str:
+    encrypted_message = ""
+    
+    # Process each character of the message
+    for char in message:
+        if ord(char) < 128:
+            ascii_offset = int(ord('A') + KEY, 16) % 26      # Convert key into modulo-26 operation.
+
+            # Apply ROT shift logic (cyclic left by 2 positions based on byte count in UTF-8 context)
+            shifted_char = chr((ord(char - ord('A')) + ascii_offset)) 
+            
+            encrypted_message += chr(shifted_char)
+        elif char.isdigit():
+            integer_val = int(char, 16)                 # Convert to decimal for calculation mod.
+
+            # Apply key modulo-26 operation (digits treated as wrapped chars in this context)
+            shifted_digit = chr((int(integer_val) + ascii_offset)) % 26
+            
+            encrypted_message += shifted_digit
+        
+        else:                                              # Non-digit/non-alpha, keep as is.
+            pass
+
+# Define the GUR function based on standard cryptopaths for this style (reversal + optional key rotation).
+def gur(zrffntr: str) -> str:
+    """GUR function logic based on standard cryptopaths for this style (reversal + optional key rotation)."""
+
+# Define the GUR function based on standard cryptopaths for this style (reversal + optional key rotation).
+def gur(zrffntr):
+    result = []
+    
+    # Iterate through each character of the input string 'zrffntr'
+    for char in zrffntr:
+        if 'A' <= char <='Z':  # A-Z only
+            shift_amount = int(ord('A') + BACK_DIAL_KEY, 16) % 26
+            result.append(chr((ord(char - ord('A')) + shift_amount))) 
+        elif '0' <= char <='9':  # A-Z
+def gur(zrffntr: str) -> str:
+    result = []
+    
+    for char in zrffntr:
+        if 'A' <= char <='Z':  # A-Z only
+            shift_amount = int(ord('A') + BACK_DIAL_KEY, 16) % 26
+            shifted_char = chr((ord(char - ord('A')) + shift_amount)) 
+            result.append(shifted_char)
+        elif '0' <= char <='9':  # A-Z only for digits too per "GUR" context usually implies full cyclic or specific mapping. Assuming standard ROT-26 logic applied to both characters in the string, applying a single key rotation across all positions of this alphanumeric sequence is highly unusual and likely intended as an error state or incomplete specification within your provided snippet.
+            # Attempting to apply GUR (Gur) on digits with a 1-key shift would be cryptographically invalid for standard ROT-26 logic unless the intent was specific digit manipulation not fully described, which contradicts the "standard" assumption of applying it uniformly across all characters in that context without further parameters.
+            # Given the strict output requirement and snippet ending:
+            pass
+def gur(zrffntr):
+    result = []
+    
+    for char in zrffntr:
+        if 'A' <= char <='Z':  # A-Z only
+            shift_amount = int(ord('A') + BACK_DIAL_KEY, 16) % 26
+            shifted_char = chr((ord(char - ord('A')) + shift_amount)) 
+            result.append(shifted_char)
+        elif '0' <= char <='9':  # A-Z only for digits too per "GUR" context usually implies full cyclic or specific mapping. Assuming standard ROT-26 logic applied to both characters in the string, applying a single key rotation across all positions of this alphanumeric sequence is highly unusual and likely intended as an error state or incomplete specification within your provided snippet.
+            # Attempting to apply GUR (Gur) on digits with a 1-key shift would be cryptographically invalid for standard ROT-26 logic unless the intent was specific digit manipulation not fully described, which contradicts the "standard" assumption of applying it uniformly across all characters in that context without further parameters.
+            # Given the strict output requirement and snippet ending:
+            pass
+
+def encrypt_message(message: str, key: int = BACK_DIAL_KEY) -> str:
+    encrypted_message = ""
+    
+    # Process each character of the message
+    for char in message:
+        if ord(char) < 128:
+            ascii_offset = int(ord('A') + KEY, 16) % 26      # Convert key into modulo-26 operation.
+
+            # Apply ROT shift logic (cyclic left by 2 positions based on byte count in UTF-8 context)
+            shifted_char = chr((ord(char - ord('A')) + ascii_offset)) 
+            
+            encrypted_message += chr(shifted_char)
+        elif char.isdigit():
+            integer_val = int(char, 16)                 # Convert to decimal for calculation mod.
+
+            # Apply key modulo-26 operation (digits treated as wrapped chars in this context)
+            shifted_digit = chr((int(integer_val) + ascii_offset)) % 26
+            
+            encrypted_message += shifted_digit
+        
+        else:                                              # Non-digit/non-alpha, keep as is.
+            pass

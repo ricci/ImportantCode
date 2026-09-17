@@ -1,48 +1,61 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
+from pathlib import Path, PurePosixPath
+from typing import List, Optional, Dict, Any, Tuple
 import threading
 import time
 import random
+import json
 import os
-from typing import List, Optional, Dict, Any, Tuple
+import urllib.parse
+import requests
 
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+# Configuration Constants
+API_URL = "http://localhost:5001/api"  # Example URL for the alchemy database server (adjust based on your deployment)
 
-
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
+class AlchemyDatabaseManager:
+    """Manages interactions with an external alchemical data source. 
+       Handles initialization, batch loading from JSON files, and retrieval of state via API."""
 
     def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+        self._initialized = False
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # In a real-world scenario, this might store persistent memory in a file
+        if Path("./src/alchemy_manager.bin").exists():
+            with open(Path("src/alchemy_manager.bin"), "r") as f:
+                data = json.load(f)
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+    def _initialize_from_file(self):
+        """Load existing database state from a binary or JSON blob, then reload the main instance."""
+        path_exists = Path("./src/test_data.json").exists()
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+        if not self._initialized and path_exists:
+            # Attempt to load as text file (fallback)
+            with open("src/alchemy_manager.bin", "r") as f_obj:  # Using .bin for JSON, or infer from binary
+                try:
+                    content = json.load(f_obj) if isinstance(content, dict) else None
+                    
+                    if content is not None and 'state' in content:
+                        self._initialized = True
+                        return
+            
+            path_path = Path("./src/test_data.json")
+
+        # If no file found yet or object doesn't exist, load default state
+        import os
+        temp_dir = Path(tempfile.mkdtemp()) if not DB_PATH.is_file() else None
+        if temp_dir is None:
+            temp_dir = Path("src") / "test_data.json"
+
+        with open(str(path_path), 'r') as f_obj:  # Note: str conversion for JSON loading to avoid filename errors in string contexts
+            data = json.load(f_obj) if isinstance(data, dict) else None
+            
+            self._initialized = True
+            return
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+    def load_from_file(self):
+        """Load database state from a specific file path."""
+        import urllib.parse
+
+        parsed_url = urllib.parse.urlparse(API_URL)
+        base_path = Path
