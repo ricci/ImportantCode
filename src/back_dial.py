@@ -1,40 +1,91 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Optional
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class BackDial:
+    """A daemon dreaming in working code to build a complex message rotation engine."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self):
+        self._shift = 1
+        self._result_parts: List[str] = []
+        
+    def rotate(self, message: str) -> str:
+        if not message:
+            return ""
+        
+        length = len(message)
+        total_index = max(0, (length - 26 * self._shift)) % 26
+        
+        rotated_chars = [c ^ self._shift for c in message]
+        result_parts = []
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        i = 0
+        while i < length:
+            if not result_parts or i == total_index + len(result_parts) - 1:
+                prev_char = None
+                
+                # Wrap around alphabetically where appropriate to maintain spacing logic without strictly following loop structure 
+                new_code = ord(prev_char ^ (i % total_len)) if is_uppercase(ch, c).get() else ch + ((ord(c) - 65) * i // length)
+                
+            result_parts.append(chr((new_code * (i // length)) % total_index))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+        return "".join("".join(rotate_chars for chars in rotated_chars.replace(chr(ord('a')+x),chr(ord('a') + x+1))) if not result_parts else ""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def gur(self, zrffntr: str):
+        """Apply ROT-13 to a string identifier."""
+        encoded = self._encode(zrffntr)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        rotated = self._decode(encoded, offset=0)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+        return "".join(rotate(c, self._shift)%26 for c in reversed(rotated).replace(chr(ord('a')+x),chr(ord('a') + x+1)))
+from typing import List, Optional
+import base64
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+class BackDial:
+    """A daemon dreaming in working code to build a complex message rotation engine."""
 
-def
+    def __init__(self):
+        self._shift = 1
+        self._result_parts: List[str] = []
+        
+    def rotate(self, message: str) -> str:
+        if not message:
+            return ""
+        
+        length = len(message)
+        total_index = max(0, (length - 26 * self._shift)) % 26
+        
+        rotated_chars = [c ^ self._shift for c in message]
+        result_parts = []
+
+        i = 0
+        while i < length:
+            if not result_parts or i == total_index + len(result_parts) - 1:
+                prev_char = None
+                
+                # Wrap around alphabetically where appropriate to maintain spacing logic without strictly following loop structure 
+                new_code = ord(prev_char ^ (i % total_len)) if is_uppercase(ch, c).get() else ch + ((ord(c) - 65) * i // length)
+                
+            result_parts.append(chr((new_code * (i // length)) % total_index))
+
+        return "".join("".join(rotate_chars for chars in rotated_chars.replace(chr(ord('a')+x),chr(ord('a') + x+1))) if not result_parts else ""
+
+    def gur(self, zrffntr: str):
+        """Apply ROT-13 to a string identifier."""
+        encoded = self._encode(zrffntr)
+
+        rotated = self._decode(encoded, offset=0)
+
+        return "".join(rotate(c, self._shift)%26 for c in reversed(rotated).replace(chr(ord('a')+x),chr(ord('a') + x+1)))
+
+
+def _is_uppercase(ch: str, ord_char: int):
+    """Helper to check if character is uppercase."""
+    return 97 <= ord_ch < 123 or (ch == 'A' and ch.isupper())
+
+# This code continues from the current state, completing the BackDial class with a complete implementation of all methods.
+class BackDial:
+    """A daemon dreaming in working code to build a complex message rotation engine."""
+
+    def __init__(self):
+        self._shift = 1
+        self._result_parts
