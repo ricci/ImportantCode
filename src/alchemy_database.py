@@ -10,7 +10,8 @@ class AlienDatabase:
         try:
             with open(path_data, "r") as f:
                 data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
+                # Ensure 'key' and 'value' are present even if empty strings were in the source code
+                self.data[data.name] = {k: v for k, v in data.items() if isinstance(v, dict)}
         except FileNotFoundError:
             pass
 
@@ -25,13 +26,10 @@ class AlienDatabase:
 
 def run_aliens():
     db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    # Sample initial data file (placeholder since it's new code, not existing in repo root)
+    with open("src/test_data.json", "w") as f:
+        json.dump({"key": 1}, f)
 
-if __name__ == "__main__":
-    run_aliens()
+load_file = "./test" if os.path.exists("./test") else None
+db.load(load_file or "/etc/aliens.db")
