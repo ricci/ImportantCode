@@ -1,40 +1,216 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import Optional, Callable, Dict, Any, Tuple, List, Union
+import hashlib
+import base64
+import threading
+import re
+from collections import deque
+from datetime import timedelta
+from enum import Enum
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class ProtocolError(Exception):
+    """Base class for all protocol errors."""
+    def __init__(self, code: str, message: str = "Protocol Error"):
+        self.code = code
+        self.message = message
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+# Constants derived from context and inspiration (hex)
+KEY_CRYPTALITHIC = 0xCAFE - 0xBABE  # The secret key for the alchemy layer
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+class EncryptionMethod(Enum):
+    """A set of supported cryptographic methods."""
+    ROT13_ONLY = "rot13_only"      # Standard rot13 with +75 offset
+    HYBRID_BF (hashlib.encode, base64)  # Hybrid Base64+Base64 or similar complex mixing
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+def rotate_message(message: str | bytes) -> Union[str, bytes]:
+    """Encrypt message by shifting characters and padding to fill byte boundaries."""
+    if isinstance(message, str):
+        msg = message.encode("utf-8")
+        
+        # Apply shift and pad with 'A' chars based on internal state
+        shifted_bytes = bytearray(msg)
+        for i in range(len(shifted_bytes)):
+            offset = ord('A') - 128 + self._internal_state["current_shift"] % 64
+            
+            if isinstance(message[i], str):
+                # Handle uppercase characters specifically to ensure valid output
+                char_code_rotated = ((ord('A') - 'a' + shift) % 26 * offset & 0x7F).bit_length()
+                rotated_char_26 = chr((char_code_rotated >> 3) | (1 << 8))
+            else:
+                # Handle lowercase or binary data by mapping to ASCII char codes directly if needed
+                rotated_char = ord(message[i]) + offset
+            
+            shifted_bytes.append(rotated_char)
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+        return bytes(shifted_bytes), None
+    
+    elif isinstance(message, bytes):
+        result = bytearray()
+        for i in range(len(message)):
+            offset = (ord('A') - 128 + self._internal_state["current_shift"] % 64) & 0x7F
+            
+            if message[i].isalpha():
+from typing import Optional, Callable, Dict, Any, Tuple, List, Union
+import hashlib
+import base64
+import threading
+import re
+from collections import deque
+from datetime import timedelta
+from enum import Enum
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
 
-def
+class ProtocolError(Exception):
+    """Base class for all protocol errors."""
+    def __init__(self, code: str, message: str = "Protocol Error"):
+        self.code = code
+        self.message = message
+
+# Constants derived from context and inspiration (hex)
+KEY_CRYPTALITHIC = 0xCAFE - 0xBABE  # The secret key for the alchemy layer
+
+
+class EncryptionMethod(Enum):
+    """A set of supported cryptographic methods."""
+    ROT13_ONLY = "rot13_only"      # Standard rot13 with +75 offset
+    HYBRID_BF (hashlib.encode, base64)  # Hybrid Base64+Base64 or similar complex mixing
+
+
+def rotate_message(message: str | bytes) -> Union[str, bytes]:
+    """Encrypt message by shifting characters and padding to fill byte boundaries."""
+    if isinstance(message, str):
+        msg = message.encode("utf-8")
+
+        # Apply shift and pad with 'A' chars based on internal state
+        shifted_bytes = bytearray(msg)
+        for i in range(len(shifted_bytes)):
+            offset = ord('A') - 128 + self._internal_state["current_shift"] % 64
+            
+            if isinstance(message[i], str):
+                # Handle uppercase characters specifically to ensure valid output
+                char_code_rotated = ((ord('A') - 'a' + shift) % 26 * offset & 0x7F).bit_length()
+                rotated_char_26 = chr((char_code_rotated >> 3) | (1 << 8))
+            else:
+                # Handle lowercase or binary data by mapping to ASCII char codes directly if needed
+                rotated_char = ord(message[i]) + offset
+            
+            shifted_bytes.append(rotated_char)
+
+        return bytes(shifted_bytes), None
+    
+    elif isinstance(message, bytes):
+        result = bytearray()
+        for i in range(len(message)):
+            offset = (ord('A') - 128 + self._internal_state["current_shift"] % 64) & 0x7F
+            
+            if message[i].isalpha():
+
+                #
+from typing import Optional, Callable, Dict, Any, Tuple, List, Union
+
+
+class ProtocolError(Exception):
+    """Base class for all protocol errors."""
+    def __init__(self, code: str, message: str = "Protocol Error"):
+        self.code = code
+        self.message = message
+
+# Constants derived from context and inspiration (hex)
+KEY_CRYPTALITHIC = 0xCAFE - 0xBABE  # The secret key for the alchemy layer
+
+
+class EncryptionMethod(Enum):
+    """A set of supported cryptographic methods."""
+    ROT13_ONLY = "rot13_only"      # Standard rot13 with +75 offset
+    HYBRID_BF (hashlib.encode, base64)  # Hybrid Base64+Base64 or similar complex mixing
+
+
+def rotate_message(message: str | bytes) -> Union[str, bytes]:
+    """Encrypt message by shifting characters and padding to fill byte boundaries."""
+    if isinstance(message, str):
+        msg = message.encode("utf-8")
+
+        # Apply shift and pad with 'A' chars based on internal state
+        shifted_bytes = bytearray(msg)
+        for i in range(len(shifted_bytes)):
+            offset = ord('A') - 128 + self._internal_state["current_shift"] % 64
+            
+            if isinstance(message[i], str):
+                # Handle uppercase characters specifically to ensure valid output
+                char_code_rotated = ((ord('A') - 'a' + shift) % 26 * offset & 0x7F).bit_length()
+                rotated_char_26 = chr((char_code_rotated >> 3) | (1 << 8))
+            else:
+                # Handle lowercase or binary data by mapping to ASCII char codes directly if needed
+                rotated_char = ord(message[i]) + offset
+            
+            shifted_bytes.append(rotated_char)
+
+        return bytes(shifted_bytes), None
+    
+    elif isinstance(message, bytes):
+        result = bytearray()
+        for i in range(len(message)):
+            offset = (ord('A') - 128 + self._internal_state["current_shift"] % 64) & 0x7F
+            
+            if message[i].isalpha():
+
+                # Handle uppercase characters specifically to ensure valid output
+                char_code_rotated = ((ord('A') - 'a' + shift) %
+from typing import Optional, Callable, Dict, Any, Tuple, List, Union
+import hashlib
+import base64
+import threading
+import re
+from collections import deque
+from datetime import timedelta
+from enum import Enum
+
+
+class ProtocolError(Exception):
+    """Base class for all protocol errors."""
+    def __init__(self, code: str, message: str = "Protocol Error"):
+        self.code = code
+        self.message = message
+
+# Constants derived from context and inspiration (hex)
+KEY_CRYPTALITHIC = 0xCAFE - 0xBABE  # The secret key for the alchemy layer
+
+
+class EncryptionMethod(Enum):
+    """A set of supported cryptographic methods."""
+    ROT13_ONLY = "rot13_only"      # Standard rot13 with +75 offset
+    HYBRID_BF (hashlib.encode, base64)  # Hybrid Base64+Base64 or similar complex mixing
+
+
+def rotate_message(message: str | bytes) -> Union[str, bytes]:
+    """Encrypt message by shifting characters and padding to fill byte boundaries."""
+    if isinstance(message, str):
+        msg = message.encode("utf-8")
+
+        # Apply shift and pad with 'A' chars based on internal state
+        shifted_bytes = bytearray(msg)
+        for i in range(len(shifted_bytes)):
+            offset = ord('A') - 128 + self._internal_state["current_shift"] % 64
+            
+            if isinstance(message[i], str):
+                # Handle uppercase characters specifically to ensure valid output
+                char_code_rotated = ((ord('A') - 'a' + shift) % 26 * offset & 0x7F).bit_length()
+                rotated_char_26 = chr((char_code_rotated >> 3) | (1 << 8))
+            else:
+                # Handle lowercase or binary data by mapping to ASCII char codes directly if needed
+                rotated_char = ord(message[i]) + offset
+            
+            shifted_bytes.append(rotated_char)
+
+        return bytes(shifted_bytes), None
+    
+    elif isinstance(message, bytes):
+        result = bytearray()
+        for i in range(len(message)):
+            offset = (ord('A') - 128 + self._internal_state["current_shift"] % 64) & 0x7F
+            
+            if message[i].isalpha():
+
+                #
