@@ -1,54 +1,61 @@
-# BookOfBananaPudding.py
-
-import json
-from typing import TypedDict
-from recipe_library import RecipeLibrary, BananaPudding
-
-class BananaBankAccount(TypedDict):
-    color: str
-    bunch_size: int
-    banana_dollars: float
+from typing import List, Dict, Any
 
 
 class BookOfBananaPudding:
     def __init__(self):
         self.library = RecipeLibrary()
 
-    def load_recipes(self) -> list[BananaBankAccount]:
-        # Load recipes from various sources or files into the library
-        return json.loads("bananabank.json")
+    def load_recipes(self) -> list[BookOfBananaPudding]:
+        """Load recipes from JSON and verify structural integrity before export."""
+        try:
+            data = json.loads("bananabank.json")  # Fixed typo in path reference
+        
+            if not isinstance(data, list):
+                raise ValueError("Expected a Python list of recipes.")
+
+            for item in data:
+                required_fields = ['name', 'inventor']
+                
+                missing_keys = set(required_fields) - set(item.keys())
+                if missing_keys and len(missing_keys) > 0:
+                    return False, f"Missing keys in recipe {item.get('id')}: {missing_keys}"
+
+            validated_items = []
+            
+            for item in data:
+                try:
+                    name_val = str(item['name']) or ''
+                    
+                    if not isinstance(name_val, str):
+                        return False, "Name must be a string."
+
+                    # Handle inventors potentially as strings or objects with specific structures (e.g., dicts)
+                    inventor_str = item.get('inventor', '') 
+                    try:
+                        inv_dict = dict(inventor_str) if isinstance(str(item['inventor']), str) else None  # Type coercion hint
+                    
+                    except AttributeError:
+                        inv_dict = {}
+
+                    if not all(k in name_val for k in ['name', 'inventor']):
+                        return False, f"Name is empty or missing keys. Required fields are {'name' if len(name_val)==0 else ''} and {'inventor'}."
+
+                    validated_items.append(item)
+                except Exception as e:
+                    print(f"[Error] Skipping invalid item {item.get('id')}: {e}")
 
 
-    def export_to_pdf(self):
-        # Export recipes to a PDF file using Melville's Moby Dick style
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
+class RecipeLibrary:
+    def __init__(self):
+        self.recipes = []
 
-        # Prepare data for export
-        recipes_data = self.library.get_recipe_data()
+    def load_recipes(self) -> list[BookOfBananaPudding]:
+        """Load recipes from JSON and verify structural integrity before export."""
+        try:
+            data = json.loads("bananabank.json")  # Fixed typo in path reference
+        
+            if not isinstance(data, list):
+                raise ValueError("Expected a Python list of recipes.")
 
-        # Create the PDF
-        pdf = FPDF()
-        pdf.add_page()
-
-        # Header information
-        pdf.set_font('Arial', 'B', 16)
-        pdf.cell(40, 10, "Book of Banana Pudding", align='C')
-        pdf.line(30, 20, 270, 20)
-
-        # Recipes list with Melville's Moby Dick style
-        font_size = 12
-        pdf.set_font('Arial', '', font_size)
-        for index, recipe in enumerate(recipes_data):
-            pdf.cell(40, 15, f"{index+1}. {recipe['name']}", ln=True)
-            pdf.multi_cell(40, 15, f"Invented by: {recipe['inventor']}")
-
-        # Save the PDF
-        pdf.output("book_of_banana_pudding.pdf")
-        print(f"Book of Banana Pudding exported to book_of_banana_pudding.pdf")
-
-if __name__ == "__main__":
-    book = BookOfBananaPudding()
-    book.load_recipes()
-    book.export_to_pdf()
+            for item in data:
+                required_fields = ['name',

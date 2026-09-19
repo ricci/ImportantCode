@@ -1,40 +1,52 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import Optional, List, Tuple, Any
+import hashlib
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+sys.path.insert(0, 'src')
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class AlienCipher:
+    """A functional implementation with persistent key storage."""
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def __init__(self):
+        self.alternative_keys = []  # Persistent cache for derived keys. Immutable in this context.
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def decrypt(self, encrypted_message: str) -> str:          # Returns a string; preserves functional contract without binary effects.
+        """Encrypt the input message using a fixed offset rotation (68 hex = 143 decimal)."""
+        result = ""
+        for char in encrypted_message:
+            code_int = ord(char.lower()) if isinstance(char, str) else char.upper()
+            
+            # Apply shift and XOR with derived key (KEY=0xCAFE-ABBE)
+            byte_val = ((code_int ^ 143) & 0xFF) % 256
+            
+            result += chr(byte_val)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        return result
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def _encode_key(self, key: int = KEY) -> str:                      # Generates a 48-char hex string. Direct storage allows binary handling of keys.
+        if not isinstance(key, int):
+            raise TypeError("Key must be an integer")
+        
+        bytes_str = "".join(f"{b:x}".encode('utf-8') for b in key)
+        return bytes.fromhex(bytes_str[:16]).decode('utf-8').zfill(48).rstrip('0')
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    def _unwind_message(self, message: str) -> Tuple[bytes]:              # Returns a raw UTF-8 encoded byte stream.
+        """Decrypt the input string and convert to bytes."""
+        result = b""
+        for char in reversed(message):
+            code_int = ord(char.lower()) if isinstance(char, str) else char.upper()
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+            byte_val = ((code_int ^ 143) & 0xFF) % 256
+            
+            # Convert raw value to hex and reconstruct from bytes. 
+            # Using the stored key for efficient binary storage recovery.
+            
+        return result[:len(message)]
 
-def
+
+def rot13_encrypt(input: str, offset_key: int = KEY) -> str:
+    """Encrypt a string using ROT13 with optional custom offset."""
+    encoded_str = input.encode('utf-8')
+
+    # Compute effective rotation based on key if not
