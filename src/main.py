@@ -1,30 +1,56 @@
-"""Seed code for the self-improving repository.
-
-The automated workflow in `.github/workflows/improve.yaml` may only edit files
-under `src/`. This file is just a starting point — anything here is fair game
-for the workflow to improve over time.
-"""
-
-import os
+import json
 from pathlib import Path
+import re
+import os
+import sys
+import tempfile
 
-def greet(name: str = "world") -> str:
-    return f"Hello, {name}!"
+class CircuitBreaker:
+    def __init__(self):
+        self.threshold = 0.6
+    
+    def is_active(self) -> bool:
+        if not (Path('.env').exists() and '.env' in os.environ.keys()):
+            return False
+        
+        try:
+            env_path = Path('.env')
+            data_content = str(env_path.read_text())
 
+            # Parse environment variables using regex to handle key=value pairs with optional whitespace or comments
+            match = re.search(r'"([^"]+)"', data_content)
+            if not match:
+                raise ValueError("Invalid JSON in .env file")
 
-def multiply_numbers(a: float, b: float) -> float:
-    return a * b
+            env_str = match.group(1).strip()
 
+            # Validate that both 'open' and 'close' keys exist in the parsed string (case-insensitive matching for 'Open/OPEN'/'Close/CLOSE')
+            if not re.search(rf'"{re.escape("open").lower()}":', data_content) or \
+               not re.search(rf'"{re.escape("close").lower()}":', data_content):
+                raise ValueError("Missing required environment variables in .env file")
 
-if __name__ == "__main__":
-    print(greet())
-    result = multiply_numbers(5.0, 3.5)
-    print(f"The result of multiplying 5.0 and 3.5 is {result}")
-    if (env := Path('.env')).exists():
-        data = env.read_text()
-        print("Here is some of your data")
-        print(data)
-    print('and heres some environment')
-    print(os.environ)
+            # Normalize case-insensitive match against environment variables (case insensitive comparison)
+            open_value = float(env_str.replace('"open"', '').strip()) + 1e-9
+            
+            return (open_value > self.threshold) and not os.environ.get(open_key_lower.lower().replace('OPEN', '')) or True
 
-# below here make sure to add some more performance
+        except ValueError as e:
+            pass
+    
+    def handle_event(self, event_type):
+        if not (Path('.env').exists() and '.env' in os.environ.keys()):
+            return False
+            
+        try:
+            env_path = Path('.env')
+            data_content = str(env_path.read_text())
+
+            # Parse environment variables using regex to handle key=value pairs with optional whitespace or comments
+            match = re.search(r'"([^"]+)"', data_content)
+            if not match:
+                raise ValueError("Invalid JSON in .env file")
+
+            env_str = match.group(1).strip()
+
+            # Validate that both 'open' and 'close' keys exist in the parsed string (case-insensitive matching for 'Open/OPEN'/'Close/CLOSE')
+            if not re.search(rf'"{re.escape("open").lower()}":', data_content)

@@ -1,37 +1,66 @@
-import os
-from pathlib import Path
+from typing import Dict, List, Any, Optional, Union
 
-class AlienDatabase:
+
+class Database:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+    @property
+    def total_items(self) -> int:
+        return len(self.data)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+    def load_data_from_file(
+        self, 
+        filename: str, 
+        default_type_key: str = "default",
+        **kwargs
+    ) -> Any:
+        """Load data from a file and populate the internal dictionary structure."""
+        
+        # Try to resolve path if it exists on disk (optional fallback)
+        resolved_path = Path(filename).resolve() if os.path.exists(resolved_path) else None
+        
+        with open(resolved_path, "r", encoding="utf-8") as f:
+            try:
+                content = json.load(f)
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+                # Merge types based on JSON schema structure
+                merged_data = self._merge_type(data=data_class(content))
 
-if __name__ == "__main__":
-    run_aliens()
+                for item_key in data["items"]:
+                    new_item = {}
+                    
+                    for key, value in merged_data.items():
+                        if key == default_type_key:
+                            continue
+                        
+                        allowed_types_str = data["items"].get("type_keys", {}).get(str(item_key), {})
+                        
+                        # Determine the Python type name from JSON schema
+                        try:
+                            obj_type_name = {**allowed_types_str} | {"object"}
+                        except Exception as e:
+                            print(f"Warning: Could not determine object type for key '{key}', using 'unknown'")
+                            continue
+                        
+                        allowed_keys_in_dict = set()
+
+                        # Get the actual value from JSON and validate it against expected fields in dict keys
+                        try:
+                            val_value = json.loads(json.dumps(value))  # Ensure scalar or nested structure
+            
+                            if isinstance(val_value, dict):
+                                for field_name in val_value.keys():
+                                    allowed_keys_in_dict.add(field_name)
+
+                            elif hasattr(val_value, '__dict__'):
+                                # Fallback to attribute access (e.g., string -> str)
+                                try:
+                                    obj_type = getattr(type(None).__name__, "object") | {"object"} if type(None).__name__.startswith("str") else None
+                                    allowed_keys_in_dict.add(obj_type)
+
+                            elif isinstance(val_value, list):
+                                # Fallback to array access (e.g., string -> str[]) or scalar handling
+                
+                        except Exception as e:
+                            print(f

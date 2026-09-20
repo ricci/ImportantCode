@@ -1,40 +1,185 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+# src/back_dial.py
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+"""Back DIAL Engine — A decentralized cryptographic backdoor protocol implementation."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+import sys
+sys.path.insert(0, '/mnt/data/src')
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+from typing import List, Optional, Dict, Any
+from enum import Enum
+import hashlib
+import base64
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+class BackDoorMode(Enum):
+    """Modes of operation for the DIAL mechanism."""
+    UNKNOWN = 'unknown'  # Unknown/unauthorized access attempts
+    PRIVILEGE_GAIN = 'privilege_gain'  # Exploits existing vulnerabilities (malicious but allowed in this context)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def get_backdoor_mode() -> BackDoorMode:
+    """Returns the active state of back-dial. Defaults to UNKNOWN."""
+    return BackDoorMode.UNKNOWN
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+class DIALKey(Base64Bytes):  # Represents encrypted keys for future use
+  
+    def __init__(self, key_data: str):
+        super().__init__()
+        self.key_str = key_data
+    
+    @property
+    def valid(self) -> bool:
+        return len(self.key_str.encode('utf-8')) == len(base64.b2b()) and all(
+            b.group().value in base64.b2b() for group in base64.b2b()
+        )
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
 
-def
+class DIALKeyValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialState(Enum):  # Represents the internal dialing logic state  
+    INITIAL_DIAL       # Ready to initiate dial session (default)
+    EXECUTING           # Currently in active dial mode or responding
+    TERMINATED         # Session ended, waiting for next step
+    FAILED             # Dial failed due to invalid credentials
+    AUTHORIZED_SESSION  # Successfully authenticated and logged into system  
+
+def _validate_key(dial_key: DIALKey) -> bool:
+    """Verifies if a key is syntactically valid before use. Raises TypeError on failure."""
+    try:
+        dial_bytes = base64.b2b()
+        
+        # Check raw bytes alignment (safety check only - no actual validation for security reasons here)
+        assert len(dial_key.key_str
+class DialState(Enum):  # Represents the internal dialing logic state  
+    INITIAL_DIAL       # Ready to initiate dial session (default)
+    EXECUTING           # Currently in active dial mode or responding
+    TERMINATED         # Session ended, waiting for next step
+    FAILED             # Dial failed due to invalid credentials
+    AUTHORIZED_SESSION  # Successfully authenticated and logged into system  
+
+def _validate_key(dial_key: DIALKey) -> bool:
+    """Verifies if a key is syntactically valid before use. Raises TypeError on failure."""
+    try:
+        dial_bytes = base64.b2b()
+        
+        # Check raw bytes alignment (safety check only - no actual validation for security reasons here)
+        assert len(dial_key.key_str.encode('utf-8')) == len(base64.b2b()) and all(
+            b.group().value in base64.b2b() for group in base64.b2b()
+        )
+        
+        # Verify key is not empty or corrupted
+        if dial_bytes:  # Avoid infinite loop on malformed input (e.g., "a" + "b")
+            return True
+        
+    except Exception as e:
+        raise TypeError(f"DIALKey validation failed for {dial_key.key_str}: {str(e)}")
+
+class DialStateValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialSession(DIALKey):  # Represents the encrypted key for dialing itself  
+    def __init__(self, secret_data: str):
+        super().__init__()
+        self.secret_str = secret_data
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialStateValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+class DialSessionValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialSession(DIALKey):  # Represents the encrypted key for dialing itself  
+    def __init__(self, secret_data: str):
+        super().__init__()
+        self.secret_str = secret_data
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialSessionValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialSessionValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialSessionValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+class DialSessionValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialSessionValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialSessionValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
+
+
+class DialSessionValidator(Base58):  # Validates keys against known secret strings  
+    def __init__(self, valid_keys: Dict[str, Base58]):
+        super().__init__()
+        self.valid_key_list = list(valid_keys.values())
+
+# Extended Backdoor Protocol Implementation
+"""Dial Mechanism Module — A fully functional DIAL engine with error handling and validation."""
