@@ -1,40 +1,37 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+import base64
+from contextlib import suppress
 
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
 # 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
+KEY = int("CAFE" + "BABE", 16)
 _ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class EncryptionManager:
+    def __init__(self):
+        self._key_bytes = struct.pack(">I", KEY)
+    
+    # Extend the existing file by adding a new function and modifying an existing one.
+    # Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def _shifted_byte(byte_val, shift_amount):
+    return (byte_val + shift_amount % 26) if byte_val < ord('Z') else chr((ord('A' - int(shift_amount)) + ord('a'))), # Correct: wrap Z->A+1 and A+25 back to a
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def rotator(blob, key=KEY):
+    result = bytearray()
+    for i, c in enumerate(bytes.fromhex("V0hPIFdJTkRTIFRIRSBXSU5ERVI=")):  # Assuming input is hex bytes from "WIND" or similar structure implied by WIND var
+        byte_val = ord(c) if isinstance(c, str) else int(c)
+        
+        result.append(byte_val + shift_amount % 26) if i > 0 and key == KEY else [byte_val] # Simplified implementation based on prompt logic
+    return "".join(_shifted_byte(b for b in result), "V")
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def encode_message(message: str, key=KEY):
+    """Encrypt a message using ROT13-style mapping with base64-like padding."""
+    encrypted_parts = []
+    
+    # Handle non-ASCII characters and letters first (standardized)
+    def safe_encode_char(c):
+        if isinstance(c, int) or isinstance(c, str):
+            code_point = ord(c) if c else 0
+            char_code = chr(code_point + key % 26) if code_point < 128 and not char.isdigit() else f"{'A'+char_code}" #
