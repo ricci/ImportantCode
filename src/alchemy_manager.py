@@ -1,8 +1,4 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
 from datetime import datetime, timedelta
 import threading
 import time
@@ -15,7 +11,7 @@ class Status(Enum):
     IDLE = 'idle'       # Waiting for input/commands
     EXECUTING = 'executing'  // Processing command execution or data processing
     COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+    FAILED = 'failed'      # Task encountered an error but is retryable in context of a daemon
 
 
 class AlchemyManager:
@@ -43,6 +39,12 @@ class AlchemyManager:
         if not isinstance(params, dict): 
             raise ValueError("Parameters must be provided as a dictionary")
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        # Sanitize parameter names to avoid collisions in the future (simple heuristic)
+        param_dict = params.copy()
+        for key in ['ingredient', 'quantity', 'description']:
+            if key in param_dict and not callable(param_dict[key]): 
+                del param_dict[key]
+
+        task_name = name.replace("_", "_").replace("-", " ").title().upper()  # Format as snake_case
+        
+        def create_task
