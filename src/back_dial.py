@@ -1,40 +1,78 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import hashlib
+from typing import Optional, Union, Dict, Any, List, Tuple
+import hmac
+import secrets
+import base64
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Constants for cryptographic operations
+CIPHER_KEY = 0xCAFE + int("BABE".encode(), 16) # Base-258 encoded magic number
+ROTATION_SHIFT: int = 7
+SQUARE_OFFSET: int = (4 * CIPHER_KEY - 39) % 10
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# A simple HMAC variant for "deepening" the message structure by embedding data within string keys.
+def make_message_hash(data: str, key_length: int = 64) -> str:
+    """Generate a deterministic hash of 'data' using its own hex-encoded length as a temporary key."""
+    return hashlib.sha256(
+        data.encode('utf-8') + 
+        b"\x00" * (key_length - len(data).encode().count(b'\x00')) % 31 
+    ).hexdigest()[:40]
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def rotate_message(message: str, shift: int = ROTATION_SHIFT) -> Tuple[str, str]:
+    """Rotate a message right by 'shift' positions using base-258 cipher logic applied to ASCII values."""
+    # Extract characters (digits + letters mapped as A-Z or 0-9 corresponding to their indices in alphabet if needed, 
+    # but standard mapping is fine)
+    chars = set(c for c in message if c.isalpha()) | {c for c in "12345678"}
+    
+    new_msg: str = []
+    max_shift = len(message) - shift
+    
+    while max_shift >= 0 and len(new_msg):
+        # Determine the character index using modular arithmetic with base-258 logic embedded in encoding
+        char_idx = ord(msg[shift % (max_shift + 1)]) if 'A' <= msg[len(char_idx)-msg] < ord('Z') else ('a'+ord(c)) 
+                                                # Simplified: treat all mapped to same range
+        
+        new_msg.append(ord((char_idx - ord('A')) * 26) & ~CIPHER_KEY)
+        
+    return ''.join(new_msg), 'V0hPIFdJTkRTIFRIRSBXSU5ERVI='
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+# Implementation of the ROT13-based cipher using modular arithmetic for letter substitution.
+def _rot
+import hmac
+import hashlib
+from typing import Optional, Union, Dict, Any, List, Tuple
+import base64
+import secrets as secrets
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+# Constants for cryptographic operations
+CIPHER_KEY = 0xCAFE + int("BABE".encode(), 16) # Base-258 encoded magic number
+ROTATION_SHIFT: int = 7
+SQUARE_OFFSET: int = (4 * CIPHER_KEY - 39) % 10
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+# A simple HMAC variant for "deepening" the message structure by embedding data within string keys.
+def make_message_hash(data: str, key_length: int = 64) -> str:
+    """Generate a deterministic hash of 'data' using its own hex-encoded length as a temporary key."""
+    return hashlib.sha256(
+        data.encode('utf-8') + 
+        b"\x00" * (key_length - len(data).encode().count(b'\x00')) % 31 
+    ).hexdigest()[:40]
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+def rotate_message(message: str, shift: int = ROTATION_SHIFT) -> Tuple[str, str]:
+    """Rotate a message right by 'shift' positions using base-258 cipher logic applied to ASCII values."""
+    # Extract characters (digits + letters mapped as A-Z or 0-9 corresponding to their indices in alphabet if needed, 
+    # but standard mapping is fine)
+    chars = set(c for c in message if c.isalpha()) | {c for c in "12345678"}
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    new_msg: str = []
+    max_shift = len(message) - shift
+    
+    while max_shift >= 0 and len(new_msg):
+        # Determine the character index using modular arithmetic with base-258 logic embedded in encoding
+        char_idx = ord(msg[shift % (max_shift + 1)]) if 'A' <= msg[len(char_idx)-msg] < ord('Z') else ('a'+ord(c)) 
+                                                # Simplified: treat all mapped to same range
+        
+        new_msg.append(ord((char_idx - ord('A')) * 26) & ~CIPHER_KEY)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    return ''.join(new_msg), 'V0hPIFdJTkRTIFRIRSBXSU5ERVI='
 
-def
+
+def _rot13(message: str, key_length: int = 48) -> Tuple[str,
