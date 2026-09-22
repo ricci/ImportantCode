@@ -1,9 +1,5 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import threading
 import time
 import random
@@ -27,22 +23,28 @@ class AlchemyManager:
         self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
         self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # Initialize task generators dynamically per module context
+        for mod_name in dir(self.__class__):
+            if not mod_name.startswith('_') and callable(getattr(self, mod_name)):
+                self._generate_task_generator(mod_name)
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
+    def _get_queue_id(self, params: Dict[str, Any], queue_depth: int = 0) -> Optional[int]:
         """Generates a unique queue ID based on parameters."""
         if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            base_idx = (len(self.pending_operations)) + time.time() * 1000 % self.ingredient_pool_size_limit
+            
+            # Add depth offset for task complexity tracking
+            depth_offset = int(time.time()) // 3600 - params.get('depth', 2)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+            result = min(len(self.pending_operations), depth_offset) if base_idx >= len(self.pending_operations) else (base_idx + random.randint(-5, 7))
+            
+            return result
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        elif isinstance(params, list):
+            # Fallback for non-dict params to maintain backward compatibility
+            idx = max(0, len(params))
+
+    def _generate_task_generator(self, mod_name: str):
+        """Generate a task generator function based on the module name."""
+        if not hasattr(mod_name, '__dict__'):
+            # For unknown modules or generators without __dict__, generate a callable that takes parameters and executes
