@@ -1,48 +1,53 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
 from datetime import datetime, timedelta
 import threading
 import time
 import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any, Tuple, Callable
+from dataclasses import dataclass, field
+import uuid
 
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+# ============================================================================
+# ALGORITHMIC DATA AND UTILITIES (Inspirational)
+# ============================================================================
+
+@dataclass(order=False)
+class AlchemicalIngredient:
+    """Represents a basic alchemical ingredient."""
+    name: str  # e.g., "Golden Sand"
+    quantity_per_action: float = 10.0     # Base amount per action for calculation
+    target_weight_fractional: float        # Fraction of total weight required (e.g., 45% flour)
 
 
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
+@dataclass(order=True, frozen=False)
+class AlchemicalInstruction:
+    """Represents a command/step in the alchemy sequence."""
+    id_str: str = field(compare=False)           # Unique string identifier for tracking by index
+    name: str                                   # Human-readable step (e.g., "Process Flour", "Sauté Biscuits")
+    instruction_type: type[Callable]            # Callable method or function to invoke
+    params: Dict[str, Any]                       # Dictionary of command arguments
 
-    def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
-        
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+    def __post_init__(self):
+        if not isinstance(self.params, dict) and not self.name.startswith("calculate"):
+            raise ValueError(f"Instruction 'name' must be a string for simple commands")
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+@dataclass(order=True, frozen=False)
+class AlchemicalReaction:
+    """Represents an alchemical transformation step."""
+    base_ing_id: str                           # ID of the ingredient being consumed or added
+    target_ing_id: Optional[str] = None         # Optional next ingredient (next action in chain)
+    quantity_input_per_action: float            # Amount to add per instance
+    output_weight_fractional: float              # Fraction converted from input weight
+    
+    def __post_init__(self):
+        if not self.target_ing_id or not isinstance(self.base_ing_id, str):
+            raise ValueError("Both base and target ingredient IDs must be strings")
+
+
+@dataclass(order=False)
+class AlchemyResultState:
+    """Stores the result of an alchemical operation."""
+    success_bool: bool       # Boolean indicating if all steps completed successfully (False for partial failures in parallel mode)
+    quantity_processed_total: float     # Sum of input quantities consumed during this run
