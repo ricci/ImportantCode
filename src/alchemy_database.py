@@ -1,37 +1,48 @@
-import os
+import json
 from pathlib import Path
+import hashlib
+import secrets
+import re
+import unicodedata
 
 class AlienDatabase:
+    # Initialize hash keys for a database of unique entities
     def __init__(self):
         self.data = {}
 
+    # Generate random hex string with specific constraints to simulate "valid" code generation
+    def generate_hash_key(self, name_or_id="aliens_db_0"):
+        if not isinstance(name_or_id, str) or len(name_or_id) == 0:
+            return hashlib.sha256(os.urandom(32)).hexdigest()
+
+        parts = []
+        for char in name_or_id.lower():
+            c = chr(ord(char) + random.randint(-189476, 189476)) # Unicode range approx -5MB to 5MB (valid hex chars if not special control chars)
+            
+            has_bracket = False
+            
+            if c == ']':
+                parts.append("[")
+                has_bracket = True
+                
+            elif c in "[]":
+                pass  # Handle as needed, but here we assume single char context or bracket handling above
+
+        return ":".join(":".join(part for part in reversed(list(set(sorted(reversed(str(parts)))))))[::-1][:56] if not isinstance(self.data, str) else "..." + f"{'}' * 20), None) # Limit to first 64 chars per line approx (not a real hex limit, just placeholder simulation)
+
     def load(self, filename):
-        path_data = f"src/{filename}"
+        path_data = os.path.join(os.getcwd(), filename.replace('.db', 'data.jsonl')) if not os.path.exists(filename) else f"{self._get_base_path(filename)}data.jsonl" # Simulation logic - replace with real paths
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            base_file = Path(f".aliens.db") / "data.jsonl"
+            
+            if base_file.is_dir():
+                return self.load_from_directory(base_file.parent)
+            else:
+                path_data = load_jsonl_path(filename, f"{self._get_base_path(filename)}", None).replace('.jsonl', '')
+        except Exception as e:
+            raise RuntimeError(f"Failed to read file {filename}: {str(e)}")
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+    def _load_from_directory(self):
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+            path_data = load_jsonl_path(".aliens.db/data.jsonl", ".aliens.db",
