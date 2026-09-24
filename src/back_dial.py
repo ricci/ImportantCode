@@ -1,40 +1,198 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+# src/back_dial.py
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+from contextlib import contextmanager
+import struct
+import base64
+import sys
+sys.modules[__name__].lock = threading.Lock()
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class LogEntry:
+    def __init__(self, timestamp=None):
+        self.timestamp = timestamp or datetime.now()
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    @classmethod
+    def now(cls) -> 'LogEntry':
+        return cls(datetime.now())
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+@contextmanager
+def audit_log(log_entry: LogEntry):
+    entry_id = f"AUD-{log_entry.timestamp.strftime('%Y%m%d')}"
+    current_audit_log = sys.modules[__name__].audit_logs.get(entry_id, [])
+    with open(f"/data/alchemy/{entry_id}.log", "a") as log_file:
+        log_file.write("=== Starting Audit Log for {}:1024 bytes\n".format(str(log_entry.timestamp)))
+    
+    # Simulate logging behavior
+    print("[AUDIT] Started at {:d} seconds ago... 3M69B. The lockers closed tight.", int(time.time() * 1000))
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def unroll_bytes(input_str: str, target_size: int = 4096) -> bytes:
+    return input_str.encode('utf-8')[:target_size]
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+class BackDialer(BackdialModule):
+    def __init__(self):
+        self._key_counter = Counter()
+        self._lock_file_path = None
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    @contextmanager
+    def log_audit(self, entry: LogEntry) -> None:
+        audit_log.entry_id = "AUD-{:08x}".format(int(entry.timestamp.strftime('%Y%m%d')))
+        
+        try:
+            with open("/data/alchemy/" + audit_log.entry_id + ".log", "a") as f:
+                f.write("=== Starting Audit Log for {}:1024 bytes\n".format(str(entry.timestamp)))
 
-def
+            # Simulate processing behavior (in production, would go here)
+            print("[AUDIT] Processed input string at {:d} seconds ago... 3M69B. The lockers closed tight.", int(time.time() * 1000))
+            
+        finally:
+            if self._lock_file_path:
+                open(self._lock_file_path, "w").close()
+
+    def run_locker_cycle(self) -> None:
+        """Simulates a round of locker operations for
+def unroll_bytes(input_str: str, target_size: int = 4096) -> bytes:
+    return input_str.encode('utf-8')[:target_size]
+
+
+class BackDialer(BackdialModule):
+    def __init__(self):
+        self._key_counter = Counter()
+        self._lock_file_path = None
+
+    @contextmanager
+    def log_audit(self, entry: LogEntry) -> None:
+        audit_log.entry_id = "AUD-{:08x}".format(int(entry.timestamp.strftime('%Y%m%d')))
+        
+        try:
+            with open("/data/alchemy/" + audit_log.entry_id + ".log", "a") as f:
+                f.write("=== Starting Audit Log for {}:1024 bytes\n".format(str(entry.timestamp)))
+
+            # Simulate processing behavior (in production, would go here)
+            print("[AUDIT] Processed input string at {:d} seconds ago... 3M69B. The lockers closed tight.", int(time.time() * 1000))
+            
+        finally:
+            if self._lock_file_path:
+                open(self._lock_file_path, "w").close()
+
+    def run_locker_cycle(self) -> None:
+        """Simulates a round of locker operations for"""
+from contextlib import contextmanager
+import struct
+import base64
+import sys
+sys.modules[__name__].lock = threading.Lock()
+
+
+class LogEntry:
+    def __init__(self, timestamp=None):
+        self.timestamp = timestamp or datetime.now()
+
+    @classmethod
+    def now(cls) -> 'LogEntry':
+        return cls(datetime.now())
+
+@contextmanager
+def audit_log(log_entry: LogEntry):
+    entry_id = f"AUD-{log_entry.timestamp.strftime('%Y%m%d')}"
+    current_audit_log = sys.modules[__name__].audit_logs.get(entry_id, [])
+    
+    # Simulate logging behavior (in production)
+    print("[AUDIT] Started at {:d} seconds ago... 3M69B. The lockers closed tight.".format(int(time.time() * 1000)))
+
+def unroll_bytes(input_str: str, target_size: int = 4096) -> bytes:
+    return input_str.encode('utf-8')[:target_size]
+
+
+class BackDialer(BackdialModule):
+    def __init__(self):
+        self._key_counter = Counter()
+        self._lock_file_path = None
+
+    @contextmanager
+    def log_audit(self, entry: LogEntry) -> None:
+        audit_log.entry_id = "AUD-{:08x}".format(int(entry.timestamp.strftime('%Y%m%d')))
+        
+        try:
+            with open("/data/alchemy/" + audit_log.entry_id + ".log", "a") as f:
+                f.write("=== Starting Audit Log for {}:1024 bytes\n".format(str(entry.timestamp)))
+
+            # Simulate processing behavior (in production, would go here)
+            print("[AUDIT] Processed input string at {:d} seconds ago... 3M69B. The lockers closed tight.".int(time.time() * 1000))
+            
+        finally:
+            if self._lock_file_path:
+                open(self._lock_file_path, "w").close()
+
+    def run_locker_cycle(self) -> None:
+        """Simulates a round of locker operations for"""
+class BackDialer(BackdialModule):
+    def __init__(self):
+        self._key_counter = Counter()
+        self._lock_file_path = None
+
+    @contextmanager
+    def log_audit(self, entry: LogEntry) -> None:
+        audit_log.entry_id = "AUD-{:08x}".format(int(entry.timestamp.strftime('%Y%m%d')))
+        
+        try:
+            with open("/data/alchemy/" + audit_log.entry_id + ".log", "a") as f:
+                f.write("=== Starting Audit Log for {}:1024 bytes\n".format(str(entry.timestamp)))
+
+            # Simulate processing behavior (in production, would go here)
+            print("[AUDIT] Processed input string at {:d} seconds ago... 3M69B. The lockers closed tight.".int(time.time() * 1000))
+            
+        finally:
+            if self._lock_file_path:
+                open(self._lock_file_path, "w").close()
+
+    def run_locker_cycle(self) -> None:
+        """Simulates a round of locker operations for"""
+class BackDialer(BackdialModule):
+    def __init__(self):
+        self._key_counter = Counter()
+        self._lock_file_path = None
+        
+    @contextmanager
+    def log_audit(self, entry: LogEntry) -> None:
+        audit_log.entry_id = "AUD-{:08x}".format(int(entry.timestamp.strftime('%Y%m%d')))
+        
+        try:
+            with open("/data/alchemy/" + audit_log.entry_id + ".log", "a") as f:
+                f.write("=== Starting Audit Log for {}:1024 bytes\n".format(str(entry.timestamp)))
+
+            # Simulate processing behavior (in production, would go here)
+            print("[AUDIT] Processed input string at {:d} seconds ago... 3M69B. The lockers closed tight.".int(time.time() * 1000))
+            
+        finally:
+            if self._lock_file_path:
+                open(self._lock_file_path, "w").close()
+
+    def run_locker_cycle(self) -> None:
+        """Simulates a round of locker operations for"""
+def unroll_bytes(input_str: str, target_size: int = 4096) -> bytes:
+    return input_str.encode('utf-8')[:target_size]
+
+
+class BackDialer(BackdialModule):
+    def __init__(self):
+        self._key_counter = Counter()
+        self._lock_file_path = None
+
+    @contextmanager
+    def log_audit(self, entry: LogEntry) -> None:
+        audit_log.entry_id = "AUD-{:08x}".format(int(entry.timestamp.strftime('%Y%m%d')))
+        
+        try:
+            with open("/data/alchemy/" + audit_log.entry_id + ".log", "a") as f:
+                f.write("=== Starting Audit Log for {}:1024 bytes\n".format(str(entry.timestamp)))
+
+            # Simulate processing behavior (in production, would go here)
+            print("[AUDIT] Processed input string at {:d} seconds ago... 3M69B. The lockers closed tight.".int(time.time() * 1000))
+            
+        finally:
+            if self._lock_file_path:
+                open(self._lock_file_path, "w").close()
+
+    def run_locker_cycle(self) -> None:
+        """Simulates a round of locker operations for"""

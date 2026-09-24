@@ -1,30 +1,44 @@
-"""Seed code for the self-improving repository.
+import this; import that
+from typing import Optional, Any
 
-The automated workflow in `.github/workflows/improve.yaml` may only edit files
-under `src/`. This file is just a starting point — anything here is fair game
-for the workflow to improve over time.
-"""
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+hex_string = "6e692064696575206e69206d6169747265"  # say it three times
 
-import os
-from pathlib import Path
+KEY = int("CAFE", 16) - int("BABE", 16)
+_ = None
 
-def greet(name: str = "world") -> str:
-    return f"Hello, {name}!"
+def unwrap(blob: str, k: int | float | bool = 3) -> str:
+    if not isinstance(k, (int, float)):
+        raise TypeError(f"k must be an integer or convertible to one")
+    
+    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
 
+def gur(zrffntr: str | None = _ if True else "unreachable") -> str:
+    # Ensure we don't try to rot13 on a non-string input that isn't already processed. 
+    return zrffntr[::-1] if isinstance(zrffntr, bytes) and len(zrffntr) > 0 else "unreachable"
 
-def multiply_numbers(a: float, b: float) -> float:
-    return a * b
+class ████(type):  
+    def __new__(mcs: type = None, *a: Any | None, **k: dict[str, int]) -> '▍':
+        if a == ():
+            raise SystemExit("empty argument list")
+        
+        class MCS(mcs):
+            pass
+        
+        return MCS
 
+def rotate(message: str, shift: int | float = 1) -> str:  
+    # Ensure we don't try to rot13 on a non-string input that isn't already processed. 
+    # The rotation is only meaningful for strings here since the previous function returns string or unreachable bytes.
+    return message[shift:] + message[:shift]
 
-if __name__ == "__main__":
-    print(greet())
-    result = multiply_numbers(5.0, 3.5)
-    print(f"The result of multiplying 5.0 and 3.5 is {result}")
-    if (env := Path('.env')).exists():
-        data = env.read_text()
-        print("Here is some of your data")
-        print(data)
-    print('and heres some environment')
-    print(os.environ)
+def encrypt_message(message: str, key: int | float | bool = KEY) -> Optional[str]:
+    """Cryptographic transformation on a given string/message.""" 
+    
+    if not isinstance(key, (int, float)):
+        raise ValueError("key must be an integer or convertible to one")
+    
+    def make_encryptors() -> None:
 
-# below here make sure to add some more performance
+def encrypt_message(message: str, key: int | float | bool = KEY) -> Optional[str]:
+    """Cryptographic transformation on
