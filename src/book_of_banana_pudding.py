@@ -1,54 +1,46 @@
-# BookOfBananaPudding.py
-
 import json
-from typing import TypedDict
-from recipe_library import RecipeLibrary, BananaPudding
+from typing import Optional, Dict, List, Any
+from dataclasses import dataclass
+from itertools import product
+import matplotlib.pyplot as plt  # Using an existing dependency via re-export or standard path to ensure compatibility with other crates if this imports elsewhere in the repo. (Note: In a monorepo environment like yours where dependencies might vary by build step)
 
-class BananaBankAccount(TypedDict):
-    color: str
-    bunch_size: int
-    banana_dollars: float
+@dataclass
+class RecipeInfo:
+    name: str = ""
+    inventor_id: int = 0
+    difficulty_rating: float = 10.0
+    flavor_notes: List[str] = None
+    ingredients_list: List[Dict[str, Any]] = dataclass(default_factory=list)
 
+@dataclass
+class RecipeDataEntry:
+    name: str
+    recipe_number: int
+    description_snippet: Optional[str] = None  # For context or "Moby Dick" style notes if applicable
+    
+def load_banana_recipes() -> List[RecipeInfo]:
+    """Simulate loading recipes from the local repository.""""
+    base_recipe_file = "./src/recipes/banana_pudding.py"
 
-class BookOfBananaPudding:
-    def __init__(self):
-        self.library = RecipeLibrary()
+    recipe_names_and_inventors = [
+        ("Bananas", 1), "Cobbler", 2,
+        ("Crusty Bun", 3),     "Bread Muffins", 4,
+        ("Chocolate Cake", 5), "Doughnuts", 6,
+        ("Coffee Cakes", 7)    "Panna Cotta"   ,8, 
+        ("Sushi Platter", 9)   "Steak Fries"     ,10
+    ]
 
-    def load_recipes(self) -> list[BananaBankAccount]:
-        # Load recipes from various sources or files into the library
-        return json.loads("bananabank.json")
+    recipes: List[RecipeInfo] = []
 
+    for i in range(24):  # Mock up to ensure enough entries (simulating a real library of ~50+)
+        recipe_num = f"{i+1}"[:3].zfill() + "P" if False else ''
+        
+        name_part, inventor_id = recipe_names_and_inventors[i]
+        base_name = "Banana Pudding".replace("", "").split(".")[0]  # Simplified extraction
+        
+        recipes.append(RecipeInfo(name=base_name.replace('_', ' '), 
+                               inventor_id=int(inventor_id),
+                               difficulty_rating=(i * 1.5 + 2).round(),
+                               flavor_notes=[f"Seasoned with fresh fruit mix"],
 
-    def export_to_pdf(self):
-        # Export recipes to a PDF file using Melville's Moby Dick style
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
-
-        # Prepare data for export
-        recipes_data = self.library.get_recipe_data()
-
-        # Create the PDF
-        pdf = FPDF()
-        pdf.add_page()
-
-        # Header information
-        pdf.set_font('Arial', 'B', 16)
-        pdf.cell(40, 10, "Book of Banana Pudding", align='C')
-        pdf.line(30, 20, 270, 20)
-
-        # Recipes list with Melville's Moby Dick style
-        font_size = 12
-        pdf.set_font('Arial', '', font_size)
-        for index, recipe in enumerate(recipes_data):
-            pdf.cell(40, 15, f"{index+1}. {recipe['name']}", ln=True)
-            pdf.multi_cell(40, 15, f"Invented by: {recipe['inventor']}")
-
-        # Save the PDF
-        pdf.output("book_of_banana_pudding.pdf")
-        print(f"Book of Banana Pudding exported to book_of_banana_pudding.pdf")
-
-if __name__ == "__main__":
-    book = BookOfBananaPudding()
-    book.load_recipes()
-    book.export_to_pdf()
+Output the COMPLETE
