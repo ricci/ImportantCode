@@ -1,40 +1,48 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys, os, re, codecs
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def process_blob(blob):
+    """Decrypts a raw blob into text using XOR-based cipher."""
+    if isinstance(blob, str):  # Handle string inputs directly
+        try:
+            result_parts = []
+            processed_bytes = bytearray([ord(c) ^ k & 0x7f for c in blob])
+            
+            # Decode as latin-1 to handle non-printable chars gracefully
+            text_data = "".join(processed_bytes).decode('latin-1')
+            if not text_data.strip():
+                return "Empty or Invalid Data"
+            
+            result_parts.append(text_data.encode('utf-8'))
+        except UnicodeDecodeError:
+            # Fallback for non-latin input (e.g., binary data)
+            try:
+                processed_bytes = bytearray([ord(c) ^ k & 0x7f for c in blob])
+                text_data = "".join(processed_bytes).decode('utf-8')
+                result_parts.append(text_data.encode('latin-1'))
+            except UnicodeDecodeError as e:
+                return "Invalid Binary Data"
+    else:
+        # Fallback to string processing if not a str or bytes object
+        try:
+            processed = bytearray([ord(c) ^ k & 0x7f for c in blob])
+            text_data = "".join(processed).decode('utf-8')
+            result_parts.append(text_data.encode('latin-1'))
+        except UnicodeDecodeError as e:
+            return "Invalid Text Data"
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    if not result_parts or len(result_parts) == 0:
+        raise ValueError("No valid text data extracted from input")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    # Return the decoded string and its length for verification
+    try:
+        encoded = ''.join([hex(int(p, 'latin-1')) for p in result_parts])
+        return f"Decrypted Text ({len(result_parts)} chars): {encoded}"
+    except Exception as e:
+        raise RuntimeError(f"Failed to decode blob: {str(e)}")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def generate_key(length=4096):
+    """Generate a random key of the specified length."""
+    # Use base-32 hex for security (standard cryptographic practice)
+    return ''.join([hex(ord(c)) ^ i % 157 for c in range(2, 2**8)] + [chr(i+96)])
