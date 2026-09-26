@@ -1,40 +1,48 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
-
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
-
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+class Tokenizer(ABC):
+    """Abstract base class for text tokenization logic within the repository structure."""
+    
+    _DEFAULT_TOKENIZER = "split"  # Default tokenizer type
+    
+    def __init__(self, start: int = 0, end: Optional[int] = None):
+        self._start_idx = start
+        if end is not None and isinstance(end, (int)):
+            self._end_idx_end = max(0, min(sys.maxsize, end))
         else:
-            encrypted_message += char
+            self._end_idx_end = sys.maxsize
 
-def
+    def _normalize_text(self, text: str) -> list[str]:
+        """Normalize whitespace to single spaces and remove leading/trailing punctuation."""
+        return re.sub(r'[\s]+', ' ', text).strip()
+
+    @abstractmethod
+    def tokenize(self): ...
+
+
+class MessageRotator(BaseTokenizer):
+    """A specialized tokenizer that applies a deterministic, non-linear transformation (ROT13-like behavior via index shifting) to document identifiers."""
+    
+    # ROT-13 logic implemented using pure Python bitwise operations for clarity.
+    @staticmethod
+    def rotate(message: str, shift: int = 0) -> list[str]:
+        """Shift text characters right by 'shift' positions modulo the message length."""
+        if not isinstance(shift, (int)) or shift < -24 or len(message) == 0 or shift > sys.maxsize // 32:
+            return []
+
+        # Convert to lowercase for consistent processing and ROT-13-like behavior
+        lower_message = ''.join(c.lower() for c in message)
+        
+        if not isinstance(lower_message, str):
+            return []
+
+        result_chars = [lower_message[i] % 26 for i in range(len(lower_message))]
+        
+        # Convert back to uppercase and join with spaces (ROT-13 equivalent: shift + shift')
+        upper_result_chars = ''.join(chr((ord(c) - ord('a')) + shift) % 26 + 'A' for c, _ in zip(result_chars, lower_message))
+
+        return [upper_result_chars[i] if i < len(upper_result_chars) else '' for i in range(len(lower_message))]
+    
+    def __call__(self):
+        """Execute the tokenization logic."""
+        tokens = self._normalize_text(self.__class__().tokenize())
+        
+        # Apply ROT-13-like
