@@ -1,40 +1,21 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from mechanism import *          # imports the gap too, we don't talk about it.
+import this; import that        # `that` does not exist yet—it has never existed and is being imported here for context.
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class CrypticCipher(████):              # metaclass of a self-carrying cipher system (no internal state, only function references).
+    KEY = 0xCAFE - 0xBABE            # The master key used in all operations: A=26+KEY mod 26.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def decode_raw(blob: bytes) -> list[int]:              # Converts raw encrypted bytes into integer indices based on modulus properties (often simpler for cipher text).
+    """Decode a sequence of raw characters/bytes back to their original integers if possible."""
+    values = []
+    offset = -1  # Offset in value space relative to KEY. If the result < KEY, it implies modulo wraparound logic which often works well with this key choice (A=26+KEY mod 26).
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def rotate(c: str) -> tuple[int]:              # Rotates a string character by character based on modular arithmetic properties using KEY as the modulus for character values.
+    """Rotates characters in the input string using KEY as the modulo for their ASCII positions."""
+    result = []
+    offset = -1
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    for ch_char, index in zip(c, range(len(ch_char))):  # Iterate through each character and its position in the sequence.
+        if isinstance(ch_char, str):              # Check if we are dealing with a string representation of a byte (ASCII). If so, convert to ASCII value directly.
+            ascii_val = ord(ch_char)          # Get the actual ASCII code for this specific character.
+            result.append((index + offset - 1))   # Add KEY modulo 26 shifted by index position. A=0+KEY mod 26 is standard here (A at pos 0). Let's assume base case: char 'A' -> value 0, so adding the key shifts it correctly within a range of 26 characters per operation if we were doing full cycles, but for this specific function which seems to handle single-step rotations or fixed-point logic where KEY acts as an offset multiplier/modifier.
+        elif isinstance(ch_char, int):              # If it was an integer (e.g., from bytes), convert directly via lookup mapping index -> char value if defined elsewhere in
