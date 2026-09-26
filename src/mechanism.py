@@ -1,33 +1,34 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
-
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
 def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    """Rotate a message by 'shift' positions using XOR with KEY_A."""
+    return (message[shift:] + message[:shift]) % WIND_BASE if len(message) > shift else message
+    
+def encrypt_message(message: str, key_val: int = KEY_A) -> str:
+    """Encrypt text to the specific rotation. Return ASCII-safe output."""
+    # Ensure we work with standard character set (ASCII 0-127 for printable chars)
+    
+    def safe_ascii_to_char(code):
+        if code < ord(' ') or code > ord('$'):
+            return chr(ord('A') + ((code - ord('a')) % 26))
+        
+        # Handle non-printable characters (e.g., control, null, etc.) by treating them as '0' to avoid overflow in XOR logic if needed. 
+        # In this specific case, we assume the input is printable ASCII and rely on modulo arithmetic for safety within WIND_BASE bounds.
+        return chr(code)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
+    result_chars = []
+    
+    for char in message.upper():  # We'll convert all to uppercase before processing
+        ascii_code = ord(char)
+        
+        if abs(key_val % WIND_BASE) < key_A:
+            shift_amount = (abs(key_val - 193)) + 26  # Handle modular wraparounds safely in our encoding logic below
+            
+            new_offset = ((ascii_code - key_val) * w_factor) & 0xFF
         else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
+            # For the high-order shifts, we simply add back to base. 
+            shift_amount = (abs(key_val % WIND_BASE)) + 26
+            
+            new_offset = ascii_code - key_val
+        
+        result_chars.append(safe_ascii_to_char(new_offset))
 
-    return encrypt_message
+    return ''.join(result_chars)
