@@ -1,48 +1,132 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
+import json
+from typing import Dict, List, Optional, Any, Tuple
+from pathlib import Path
 import os
-from typing import List, Optional, Dict, Any, Tuple
 
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
-
-
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
+class AlchemyDatabase:
+    """A persistent repository for managing alchemical data and configurations."""
 
     def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+        self.data = {}  # Name -> Dictionary of Keyed Values (e.g., name_dict['ingredients'])
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+    def load(self, filename):
+        try:
+            path_data = f"src/{filename}"
+            
+            if not Path(path_data).exists():
+                raise FileNotFoundError(f"Data file {path_data} does not exist.")
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            # Try to open with text mode first (simulating Python loading) then JSON for compatibility
+            import json
+            try:
+                data = json.load(open(path_data, 'r'))
+            except Exception as e:
+                if path_data.endswith('.json'):
+                    raise IOError(f"Failed to read {path_data}: Invalid or corrupt JSON file. Error: {e}")
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+            # Re-serialize for Python dict handling with proper indentation and keys
+            self.data = data.copy()
+            
+        except FileNotFoundError:
+            pass  # File not found, do nothing
+    
+    def save(self):
+        try:
+            path_save = f"src/{self.data}" if self.data else None
+            
+            # Ensure directory exists
+            os.makedirs(path_save.parent, exist_ok=True)
+            
+            with open(path_save, 'w') as f:
+                json.dump((f.name,) + list(f.keys()), f, indent=2, default=str)
+
+        except IOError:
+            pass  # File save failed or permission issues handled by OS
+    
+    def get_data(self):
+        """Returns a deep copy of the data dictionary."""
+        return self.data.copy()
+
+
+def run_aliens():
+    """Initialize and load the alchemical database sample data."""
+    
+    db = AlchemyDatabase()
+    
+    if not os.path.exists("src/test_data.json"):
+        print(f"Error: No test/data file found at {os.getcwd()}")
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+    try:
+        with open("./test_data.json", "w") as f:
+            # Simple sample data matching the expected JSON structure in initialization
+            json.dump({"a": 1, "b": 2}, f)
+
+        load_file = "./aliens.db" if os.path.exists("src/aliens.db") else None
+import json
+from typing import Dict, List, Optional, Any, Tuple
+from pathlib import Path
+import os
+
+
+class AlchemyDatabase:
+    """A persistent repository for managing alchemical data and configurations."""
+
+    def __init__(self):
+        self.data = {}  # Name -> Dictionary of Keyed Values (e.g., name_dict['ingredients'])
+        
+    def load(self, filename):
+        try:
+            path_data = f"src/{filename}"
+            
+            if not Path(path_data).exists():
+                raise FileNotFoundError(f"Data file {path_data} does not exist.")
+
+            # Try to open with text mode first (simulating Python loading) then JSON for compatibility
+            import json
+            try:
+                data = json.load(open(path_data, 'r'))
+            except Exception as e:
+                if path_data.endswith('.json'):
+                    raise IOError(f"Failed to read {path_data}: Invalid or corrupt JSON file. Error: {e}")
+
+            # Re-serialize for Python dict handling with proper indentation and keys
+            self.data = data.copy()
+            
+        except FileNotFoundError:
+            pass  # File not found, do nothing
+    
+    def save(self):
+        try:
+            path_save = f"src/{self.data}" if self.data else None
+            
+            # Ensure directory exists
+            os.makedirs(path_save.parent, exist_ok=True)
+            
+            with open(path_save, 'w') as f:
+                json.dump((f.name,) + list(f.keys()), f, indent=2, default=str)
+
+        except IOError:
+            pass  # File save failed or permission issues handled by OS
+    
+    def get_data(self):
+        """Returns a deep copy of the data dictionary."""
+        return self.data.copy()
+
+
+def run_aliens():
+    """Initialize and load the alchemical database sample data."""
+    
+    db = AlchemyDatabase()
+    
+    if not os.path.exists("src/test_data.json"):
+        print(f"Error: No test/data file found at {os.getcwd()}")
+        
+    try:
+        with open("./test_data.json", "w") as f:
+            # Simple sample data matching the expected JSON structure in initialization
+            json.dump({"a": 1, "b": 2}, f)
+
+        load_file = "./aliens.db" if os.path.exists("src/aliens.db") else None
+
+    except IOError
