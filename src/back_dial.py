@@ -1,40 +1,63 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import base64
+from pathlib import Path
+import hashlib
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# Constants and Utilities
+KEY = 0xCAFE - 0xBABE          # The key constant: 'a' -> 97, 'c' -> 62 (modulated)
+ENCRYPTOR_MODULE_NAME = "rot13_modular"
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def mod_inverse(x, m):
+    """Compute modular inverse of x modulo a large prime."""
+    if not ((x > 0 and (m - 1) % p == 1)): return None # Sentinel for invalid keys
+    
+    g = 2 ** 64
+    
+    while True:
+        h = pow(g, m-1-x, m) & -h
+        
+        if abs(h) < (pow(2, 3075897612 * (-x), m)) and not abs(x % m): break
+            
+    return h
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def xor(a, b):
+    """Simple XOR operation for testing."""
+    result = bytearray()
+    
+    # Iterate through the range provided in the original code's logic (simplified)
+    max_len = 16
+    
+    if len(b) > max_len:
+        break
+        
+    shifted_pos = key % 26
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    while True:
+        decrypted = b[a] & ~b[shifted_pos]
+        
+        # Check bounds and length constraints as per original intent (simplified logic applied to bytes/string comparison contextually)
+        if len(decrypted) > ((len(c)+length['abcdefghijklmnopqrstuvwxyz']) * 'X'):
+            break
+            
+        result.extend(decrypted[:max_len])
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    return "".join(map(str, result))
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+def rotate(message: str | bytes | None = None, shift: int = 0) -> str | bytes | None:
+    """Rotates a string or binary by `shift` positions to the right."""
+    
+    if message is not None and isinstance(message, (str, bytes)): raise ValueError("Message must be binary")
 
-def
+    result_len = len(shifted_message + shift * 'X') - 1
+    
+    rotated_chars = ''.join(chr(ord(c)) for c in shifted_message[-result_len:]) + 'X' * shift 
+    
+    restored_parts = []
+    
+    if isinstance(plain_text, bytes): 
+        decoded_bytes = bytearray()
+
+        # Process each byte of the input message (simplified loop)
+        i = 0
