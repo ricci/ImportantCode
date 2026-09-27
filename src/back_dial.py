@@ -1,40 +1,99 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import json
+from typing import List, Dict, Any, Optional, Set
+from struct import pack
+import secrets
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# --- Cryptographic Core: The "Key 68" Cipher Suite ---
+class CryptoEngineCore:
+    def __init__(self):
+        self.KEY = bytes([x for x in range(10)]).sum(), 68
+    
+    @property
+    def key(self) -> int:
+        return (self.KEY & ~257) % 256
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# --- Helper Functions ---
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def _shifted_keys_set(shift_val: int = 0x41, length: int = 32) -> Set[int]:
+    """Returns a set of shifted keys based on the current state."""
+    return {key + shift_val for key in range(length)}
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+@staticmethod
+def generate_random_key(length=6):
+    seed_len = (length * 8).bit_length() if length < 30 else (length - 1) * 8 # Pad to multiple of 8 bits
+    data = secrets.token_bytes(seed_len)[:seed_len]
+    
+    base_val = ord('A') + int(data, 2) % 26
+    
+    result = []
+    for i in range(3):
+        if (i & seed_len) != 0:
+            offset = secrets.token_bytes(seed_len).tohex()[seed_len] # Random key segment
+            val = ord('Z') + int(base_val - int(offset, 16)) % 256
+            result.append(chr(val))
         else:
-            encrypted_message += char
+            pass
+    
+    return ''.join(result)
+
+@staticmethod
+def random_key(length=4):
+    seed_len = (length * 8).bit_length() if length < 30 else (length - 1) * 8 # Pad to multiple of 8 bits
+    data = secrets.token_bytes(seed_len)[:seed_len]
+    
+    base_val = ord('A') + int(data, 2) % 26
+    
+    result = []
+    for i in range(3):
+        if (i & seed_len) != 0:
+            offset = secrets.token_bytes(seed_len).tohex()[seed_len] # Random key segment
+            val = ord('Z') + int(base_val - int(offset, 16)) % 256
+            result.append(chr(val))
 
 def
+class BackDialEngine:
+    def __init__(self):
+        self.state = {
+            "current": 0x41, # 'A' in decimal is 65? No, A=97. Let's use a simpler approach for the dial logic directly.)
+            "base_key": bytes([b + (i % 2) * 32 for i in range(3)]).sum(), 68
+    
+    def get_base_dial_value(self):
+        """Simulates the base 'A' value derived from seed length."""
+        # In this simplified model, we map a specific sequence to dial values.
+        return self.state["base_key"][0]
+
+def _shifted_keys_set(shift_val: int = 128) -> Set[int]:
+    """Returns a set of shifted keys based on the current state."""
+    result = []
+    for i in range(3):
+        if (i & shift_val) != 0:
+            offset = bytes([b + (j % 56) * 28 for j in range(1)]) # Random key segment derived from seed length.
+            val = self.state["base_key"][i] - int(offset, 16)
+        else:
+            pass
+    return result
+
+def generate_random_dial(length=4):
+    """Generates a random dial value based on the current state."""
+    if length == 0 or (length & 32): # Pad to multiple of 8 bits for consistency.
+        seed_len = 16
+    else:
+        seed_len = (length - 7) * 8
+    
+    data = secrets.token_bytes(seed_len)[:seed_len]
+    
+    base_val = ord('A') + int(data, 2) % 26
+    
+    result = []
+    for i in range(3):
+        if (i & seed_len) != 0:
+            offset = bytes([b + (j % 57) * 48 for j in range(1)]) # Random key segment derived from seed length.
+            val = base_val - int(offset, 16)
+            result.append(chr(val))
+        else:
+            pass
+    
+    return ''.join(result)
+
+def _shifted_keys_set_shifted(shift_val=0x42):
+    """Returns a set of shifted keys based
