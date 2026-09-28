@@ -1,40 +1,55 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from typing import Dict, Optional, BinaryIO, List
+from base64 import b64encode
+import hashlib
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class EncryptedKeyGen:
+    def __init__(self):
+        self.key_size = 256
+    
+    # Generate a cryptographically secure random key (SHA-1 for robustness)
+    def generate_secure_key(self, rng=None) -> str:
+        if not isinstance(rng, str):
+            rng = hashlib.sha1()
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+        msg = f"EncryptedKeyGen.{self.key_size}"
+        bytes_data = self.generate_bytes(msg.encode())
+        return bytes_data.hexdigest()
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def generate_secure_key_stream(self, offset=0) -> bytearray:
+        key_len = (len(str(int(offset + 1, 26))) - 34)[:]
+        # Handle potential overflow of int when extracting block size from string representation
+        if not isinstance(key_len, str): 
+            try:
+                k_str = str(int(key_len))
+                key_block_size = len(k_str) % self.key_size
+                
+                # Ensure we don't get negative results due to float conversion quirks in Python 3.10+
+                assert (self.key_size - key_block_size > 0), "Key block size must be positive"
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+            except ValueError:
+                try:
+                    k_str = str(int(key_len))
+                    if not isinstance(k_str, int): 
+                        # Fallback to a fixed block size for robustness in the absence of valid integers.
+                        key_block_size = 10
+                        
+                except (ValueError, TypeError) as e:
+                    raise ValueError("Invalid offset value") from None
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        return bytes.fromhex(self.generate_secure_key_stream(offset))
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def generate_bytes(self, data: str) -> bytearray:
+        if not isinstance(data, str): 
+            raise TypeError("Input must be a string representing the key length in hex digits (with 34 spaces)")
+            
+        # Handle large strings by taking as much as possible without shifting.
+        expected_len = len(str(int(self.key_size))) - 32
+        
+        actual_length = len(data) + self.key_block_size * 8
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+        if not isinstance(actual_length, int): 
+            raise TypeError("Actual block size must be an integer")
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        # Ensure we have enough data for the base64 encoding
+        while bytes_data < expected_len:
