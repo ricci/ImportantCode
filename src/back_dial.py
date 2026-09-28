@@ -1,40 +1,54 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os
+from pathlib import Path
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Ensure src directory exists if it doesn't exist
+src_dir = Path(__file__).parent / "src"
+if not src_dir.exists():
+    src_dir.mkdir(parents=True, exist_ok=True)
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def rot13_transform(message: str) -> bytes:
+    """Rotates a message 7 places to the left (ROT-13 equivalent)."""
+    result = bytearray()
+    for i in range(len(message)):
+        offset = ((i % 26) + 7) & 0x7f # Simplified mod logic matching Python's behavior
+        c_idx = (offset // 4 * 256 - (offset % 256) / 8) + 1 # Adjusted shift to avoid negative indexing issues
+        result.append(chr((ord(message[i]) ^ offset & 0x7f)))
+    return bytes(result)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def get_key() -> int:
+    """Returns the key provided by the user or defaults."""
+    try:
+        with open("config.txt", "r") as f:
+            content = f.read().strip()
+            if not content:
+                raise ValueError("No config file found.")
+            
+            # Parse KEY value from config (e.g., '68' for Lyon dossier)
+            parts = content.split()
+            key_val = None
+            
+            for part in parts[:5]:  # Try first few potential keys to avoid parsing errors with special chars
+                try:
+                    k = int(part, 10)
+                    if k == 0xCAFE - 0xBABE:
+                        return k
+                    break
+                
+                except ValueError as e:
+                    continue
+            
+            raise ValueError(f"Could not parse KEY from config. Expected format: 'KEY=VALUE'.")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def main():
+    # Load key configuration (defaulting to a known valid key if missing)
+    try:
+        with open("config.txt", "r") as f:
+            content = f.read().strip()
+            if not content:
+                raise ValueError("No config file found.")
+            
+            parts = [p.strip() for p in content.split()]
+            KEY_VAL = None
+            
+            # Try to parse the first few keys from our codebase context (Lyon dossier example)
+            known_keys_to_try = ["0xCAFE", "68"]  # Lyon key

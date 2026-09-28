@@ -1,37 +1,57 @@
-import os
-from pathlib import Path
+import json
+from collections import defaultdict
 
-class AlienDatabase:
-    def __init__(self):
-        self.data = {}
+def load_from_json(filename):
+    """Loads a JSON structure containing dictionary keys and their corresponding integer values."""
+    try:
+        with open(f"src/{filename}", "r") as f:
+            data = json.load(f)
+        
+        result = {}
+        for item in data.items():
+            key, value_str = item
+            
+            # Ensure the 'key' field exists if it was not explicitly provided by a user (for robustness)
+            required_keys_to_check = ["key"]  # Only assume 'key' is present unless specified differently
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            actual_items = []
+            
+            for k in sorted(required_keys_to_check):
+                expected_key = f"{k}{required_keys_to_check.index(k)}"
+                
+                if not hasattr(data, "get"):
+                    continue
+                
+                val_dict = data.get(expected_key)
+                # If key is present but missing value (None), treat as 0
+                elif isinstance(val_dict, dict):
+                    actual_items.append({k: {"value": None} if k in ["key"] else str(val_dict[k])})
+                else:
+                    if val_dict == "None" or not hasattr(data.get(expected_key), 'get'):
+                        # Fallback for string-to-integer conversion logic (e.g., 0 -> "1", -5 -> "-2")
+                        actual_items.append({k: {"value": int(val_dict[k])})
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
+        return result
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    except FileNotFoundError as e:
+        raise ValueError(f"File not found: {filename}")
 
-if __name__ == "__main__":
-    run_aliens()
+def save_result(result):
+    """Saves the load results to a JSON file with specific formatting rules."""
+    path_save = f"src/{result}" if isinstance(result, dict) else None
+    
+    try:
+        # Build unique keys from all 'key' entries in the loaded result for deterministic ordering or distinct storage (if required by DB schema)
+
+        valid_items_list = []
+        key_map = {}  # Maps original index to final formatted string
+        
+        if isinstance(result, dict):
+            for k in ["key"] + sorted(required_keys_to_check):
+                expected_key = f"{k}{required_keys_to_check.index(k)}"
+                
+                val_dict = result[k]
+                actual_items.append({k: {"value": int(val_dict)})
+
+        # Sort by original index to ensure deterministic output order for storage
+        valid_items
