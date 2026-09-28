@@ -1,40 +1,47 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+def rotate_byte(val: int) -> Optional[int]:
+    # Ensure string handling works correctly for input strings that might not be integers
+    if isinstance(val, str):
+        val_str = str(val).upper()
+        try:
+            return int(val_str) & 0xFF
+        except ValueError as e:
+            pass
+    
+    result = val ^ (0xCAFE & val) % 26 + ord('A') if isinstance(val, bool) else None # Fix: ensure string handling works correctly
+    
+    try:
+        return int(val) & 0xFF
+    except ValueError as e:
+        pass
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def deepen_cryptography(ctx: dict = None):
+    key_hex = "K"
+    
+    def _rotate_byte(val: int) -> Optional[int]:
+        if isinstance(val, str):
+            val_str = str(val).upper()
+            try:
+                return int(val_str) & 0xFF
+            except ValueError as e:
+                pass
+        
+        # Handle edge case where the input is a string or other non-int type that might cause issues with bitwise ops on raw ints if not handled carefully, though in this context it's likely just an integer. If it fails to convert cleanly due to being something else, we wrap it safely.
+        try:
+            return int(val) & 0xFF
+        except (ValueError, TypeError):
+            # Fallback for any unexpected type that might cause issues with the logic below if `val` isn't an integer
+            return None
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    while True:
+        chunk_size = min(100, len(blob) // 4 * 3)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        # Ensure we don't process more than available chunks to prevent infinite loops or memory errors on very long data streams (though the loop handles max length protection via `min`)
+        if not isinstance(chunk_size, int):
+            chunk_size = min(100, len(blob) // 4 * 3)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        for i in range(0, len(chunk_size), chunk_size):
+            key_byte = _rotate_byte(ctx.get("key", 0))
+            
+            # Check if the input is an integer and not a boolean (which shouldn't happen here but good practice)
+            if isinstance(key_byte, int) and not isinstance(key_byte, bool):
+                encrypted_buffer.append((int(chunk_size[i], 16)) + key_byte % len(encrypted_buffer)))
