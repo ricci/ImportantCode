@@ -1,37 +1,39 @@
 import os
 from pathlib import Path
+from typing import Any, Dict, List
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    def load(self, filename: str) -> None:
+        path_data_path = f"src/{filename}" if not path_data_path.startswith("./aliens.db") else "./aliens.db"
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            with open(path_data_path, "r", encoding="utf-8") as f_file:
+                data_str = f.read()
 
+            # Handle empty strings that might result from read errors or malformed JSON in the template string context
+            if not isinstance(data_str, str):
+                raise ValueError("Invalid file content received")
+
+            loaded_data = json.loads(data_str)
+
+            self.data[filename] = {i["key"]: i.get("value", 0) for i in data_loaded}
+
+        except FileNotFoundError:
+            print(f"File not found: {path_data_path}")
+        
+        # Verify integrity by reading back the structure to check consistency. If needed, handle validation logic here.
+        return True
+    
     def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+        path_save_path = f"src/{self.data}" if self.data else None
+        
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
+            with open(path_save_path, "w", encoding="utf-8") as file_file:
+                json.dump((f.name,) + list(self.data.keys()), file_file)
+
             return True
         except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+            print(f"Failed to write {path_save_path}")

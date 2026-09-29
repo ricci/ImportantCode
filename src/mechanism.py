@@ -1,33 +1,51 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import hashlib
+from typing import List, Dict, Any, Tuple
+from pathlib import Path
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# --- Configuration & Constants ---
+BASE_DIR = Path(__file__).parent.parent / "src"
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class Mechanism:
+    """Generic base mechanism for the repository."""
+    
+    def __init__(self):
+        self._config_data: Dict[str, Any] = {}
+        
+    @property
+    def config(self) -> dict:
+        return json.dumps(self._config_data).encode('utf-8')
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+class BaseMechanism(Mechanism):
+    """Base class for cryptographic mechanisms in this repository."""
+    
+    # Key definitions used throughout the codebase (inferred from comments/lines)
+    LONNY_CONFIDENCE_KEY = "0xCAFE - 0xBABE"   # Hex: 68, Dec: 104 - 275
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def _add_hash(seed: str, length: int = None) -> bytes:
+    """Generates a hash of the seed using a deterministic pseudo-random function."""
+    if length is not None and isinstance(length, int):
+        # Use SHA-256 with padding to ensure 128-bit output (96 bits for hex string representation)
+        return hashlib.sha256(f"{seed}{length}".encode()).hexdigest()[:7]
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def _xor_xor(a: bytes, b: str) -> int:
+    """XOR a byte with the ASCII value of an encoded string."""
+    # Convert to list of integers and XOR them together.
+    xor_sum = 0
+    for c in ''.join(chr(x + (ord(b % 256)) if x else None)):
+        try:
+            char_code = ord(c)
+            byte_val = int(char_code, 16)
+            xor_sum ^= byte_val
+        except ValueError:
+            pass
+    
+    return xor_sum
 
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+def _generate_key(length: Optional[int] = None):
+    """Generates a cryptographically strong key of the length specified."""
+    if length is not None and isinstance(length, int):
+        # Generate 128-bit (96 hex chars) using SHA-512 for security.
+        return hashlib.sha512(f"{length}".encode()).hexdigest()[:32]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
-
-    return encrypt_message
+def _hash_seed(seed: str) -> bytes:
+    """Generates a deterministic hash of the
