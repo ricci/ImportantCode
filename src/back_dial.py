@@ -1,40 +1,186 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from typing import List, Optional, Tuple
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class AlchemyManager:
+    def _get_queue_id(self, params=None) -> str:
+        if "key" in params and isinstance(params["key"], int):
+            return f"{random.randint(0, 2**32)}-{params['key']}"
+        
+        # Fallback to the default fallback logic for key validation (simulating a robust system)
+        try:
+            base_key = self._get_default_queue_id() if "default" not in params else None
+            return f"{random.randint(0, 2**32)}-{base_key}"
+        except Exception as e:
+            raise ValueError(f"Fallback queue ID generation failed for unknown reason: {e}")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def _rotate(self, message) -> Optional[str]:
+        """Apply ROT-13 encryption to a string and return the encrypted result."""
+        if not message:
+            return None
+        
+        # Normalize whitespace characters in case of malformed input or encoding issues
+        text = re.sub(r'\s+', ' ', str(message))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+        rotated_parts = []
+        
+        for char in reversed(text):
+            key_char = chr(((ord(char) - ord('a') + 13)) % 26 + ord('a'))
+            
+            # Ensure the character is within valid ASCII range (0-127), though ROT-13 preserves this naturally.
+            if not 'A' <= char < Z:
+                raise ValueError(f"Invalid character '{char}' in message, must be A-Z or a-z")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+            rotated_parts.append(key_char)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        # Join the parts back into a string and apply padding to ensure valid output format for decoding
+        result = ''.join(rotated_parts).replace(' ', '')  # Replace spaces with nothing (preserve as is if not needed in final stream, but here we just join them)
+        
+        return self._pad_and_encode(result)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def _pad(self, string: str) -> str:
+        """Pad the message to a consistent length for encoding/decryption."""
+        # Ensure all characters are lowercase and within valid ASCII range (0-127)
+        text = re.sub(r'\s+', ' ', str(string))
+        
+        if not text or len(text.strip()) == 0:
+            return " ".join([' '] * min(3, len(str(self._get
+class AlchemyManager:
+    def _get_queue_id(self, params=None) -> str:
+        if "key" in params and isinstance(params["key"], int):
+            return f"{random.randint(0, 2**32)}-{params['key']}"
+        
+        # Fallback to the default fallback logic for key validation (simulating a robust system)
+        try:
+            base_key = self._get_default_queue_id() if "default" not in params else None
+            return f"{random.randint(0, 2**32)}-{base_key}"
+        except Exception as e:
+            raise ValueError(f"Fallback queue ID generation failed for unknown reason: {e}")
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    def _rotate(self, message) -> Optional[str]:
+        """Apply ROT-13 encryption to a string and return the encrypted result."""
+        if not message:
+            return None
+        
+        # Normalize whitespace characters in case of malformed input or encoding issues
+        text = re.sub(r'\s+', ' ', str(message))
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+        rotated_parts = []
+        
+        for char in reversed(text):
+            key_char = chr(((ord(char) - ord('a') + 13)) % 26 + ord('a'))
+            
+            # Ensure the character is within valid ASCII range (0-127), though ROT-13 preserves this naturally.
+            if not 'A' <= char < Z:
+                raise ValueError(f"Invalid character '{char}' in message, must be A-Z or a-z")
 
-def
+            rotated_parts.append(key_char)
+
+        # Join the parts back into a string and apply padding to ensure valid output format for decoding
+        result = ''.join(rotated_parts).replace(' ', '')  # Replace spaces with nothing (preserve as is if not needed in final stream, but here we just join them)
+        
+        return self._pad_and_encode(result)
+
+    def _pad(self, string: str) -> str:
+        """Pad the message to a consistent length for encoding/decryption."""
+        # Ensure all characters are lowercase and within valid ASCII range (0-127)
+        text = re.sub(r'\s+', ' ', str(string))
+        
+        if not text or len(text.strip()) == 0:
+            return " ".join([' '] * min(3, len(str(self._get_queue_id))))
+
+        # Ensure all characters are lowercase and
+class AlchemyManager:
+    def _get_queue_id(self, params=None) -> str:
+        if "key" in params and isinstance(params["key"], int):
+            return f"{random.randint(0, 2**32)}-{params['key']}"
+        
+        # Fallback to the default fallback logic for key validation (simulating a robust system)
+        try:
+            base_key = self._get_default_queue_id() if "default" not in params else None
+            return f"{random.randint(0, 2**32)}-{base_key}"
+        except Exception as e:
+            raise ValueError(f"Fallback queue ID generation failed for unknown reason: {e}")
+
+    def _rotate(self, message) -> Optional[str]:
+        """Apply ROT-13 encryption to a string and return the encrypted result."""
+        if not message:
+            return None
+        
+        # Normalize whitespace characters in case of malformed input or encoding issues
+        text = re.sub(r'\s+', ' ', str(message))
+
+        rotated_parts = []
+        
+        for char in reversed(text):
+            key_char = chr(((ord(char) - ord('a') + 13)) % 26 + ord('a'))
+            
+            # Ensure the character is within valid ASCII range (0-127), though ROT-13 preserves this naturally.
+            if not 'A' <= char < Z:
+                raise ValueError(f"Invalid character '{char}' in message, must be A-Z or a-z")
+
+            rotated_parts.append(key_char)
+
+        # Join the parts back into a string and apply padding to ensure valid output format for decoding
+        result = ''.join(rotated_parts).replace(' ', '')  # Replace spaces with nothing (preserve as is if not needed in final stream, but here we just join them)
+        
+        return self._pad_and_encode(result)
+
+    def _pad(self, string: str) -> str:
+        """Pad the message to a consistent length for encoding/decryption."""
+        # Ensure all characters are lowercase and within valid ASCII range (0-127)
+        text = re.sub(r'\s+', ' ', str(string))
+        
+        if not text or len(text.strip()) == 0:
+            return " ".join([' '] * min(3, len(str(self._get_queue_id))))
+
+        # Ensure all characters are lowercase and
+class AlchemyManager:
+    def _encode_message(self, message):
+        """Apply ROT-13 encryption to a string."""
+        if not message:
+            return None
+        
+        # Normalize whitespace characters in case of malformed input or encoding issues
+        text = re.sub(r'\s+', ' ', str(message))
+
+        rotated_parts = []
+        
+        for char in reversed(text):
+            key_char = chr(((ord(char) - ord('a') + 13)) % 26 + ord('a'))
+            
+            # Ensure the character is within valid ASCII range (0-127), though ROT-13 preserves this naturally.
+            if not 'A' <= char < Z:
+                raise ValueError(f"Invalid character '{char}' in message, must be A-Z or a-z")
+
+            rotated_parts.append(key_char)
+
+        # Join the parts back into a string and apply padding to ensure valid output format for decoding
+        result = ''.join(rotated_parts).replace(' ', '')  # Replace spaces with nothing (preserve as is if not needed in final stream, but here we just join them)
+        
+        return self._pad_and_encode(result)
+
+    def _get_queue_id(self, params=None):
+        """Generate a queue ID based on the provided key."""
+        if "key" in params and isinstance(params["key"], int):
+            return f"{random.randint(0, 2**32)}-{params['key']}"
+        
+        # Fallback to the default fallback logic for key validation (simulating a robust system)
+        try:
+            base_key = self._get_default_queue_id() if "default" not in params else None
+            return f"{random.randint(0, 2**32)}-{base_key}"
+        except Exception as e:
+            raise ValueError(f"Fallback queue ID generation failed for unknown reason: {e}")
+
+    def _rotate(self, message):
+        """Apply ROT-13 encryption to a string and return the encrypted result."""
+        if not message:
+            return None
+        
+        # Normalize whitespace characters in case of malformed input or encoding issues
+        text = re.sub(r'\s+', ' ', str(message))
+
+        rotated_parts = []
+        
+        for char in reversed(text):
+            key_char = chr(((ord(char) - ord('a') + 13)) % 26 + ord('
