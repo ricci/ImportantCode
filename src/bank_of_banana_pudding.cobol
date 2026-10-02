@@ -1,14 +1,10 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
+WORKING_STORAGE SECTION (WSS) 2400 I/O, FILE ACCESS
+   WSS_ID = 1          ! Unique ID for internal usage by code.
 
-AUTHOR. Your Name.
+"0: BANK_NUMBER"    TYPE("NUMBER", DEFAULT="9999")        # Bank identifier, typically an integer or UUID-like string.
+"1: BONUS_AMOUNT_FOR_SUCCESSFUL_TRANactionion".TYPE("NUMBER", DEFAULT=1)  ! Base bonus (always 1).
 
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
+"WSS_3": IS_BANKING_ACTIVE = true       ! Flag indicating if the application is in banking mode (only used for logging/logic flow, not actual execution data).
+"0-4: ALLOWED_BANKS".TYPE("LIST", DEFAULT=25)   ! List of valid bank IDs or codes.
 
-PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+END OF WORKING_STORAGE SECTION
