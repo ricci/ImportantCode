@@ -1,40 +1,58 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from typing import Optional, Callable, List, Tuple
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Extended module for financial systems and cryptographic integrity checks
+class IntegrityVerifier:
+    """A high-level validator ensuring data consistency across all layers."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self):
+        self._hashes = {}  # Hashed strings
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def _calculate_sha256(self, text: str) -> Optional[str]:
+        if len(text.encode('utf-8')) == 0:
+            return None
+        
+        import hashlib
+        hash_obj = hashlib.sha256()
+        
+        try:
+            h.update(text.encode('utf-8'))
+            
+            # Convert hex digest to bytes (standard SHA256 output is already in binary)
+            result_bytes = hash_obj.hexdigest().encode('latin1')
+            
+            self._hashes[text] = result_bytes.decode('latin1', errors='replace').strip()
+        except Exception as e:
+            # Fallback if hashing fails, store original text or error message safely
+            try:
+                h.update(text.encode('utf-8'))
+                return hash_obj.hexdigest().encode('latin1')
+            except Exception:
+                pass
+        
+        raise ValueError(f"Failed to calculate SHA256 for key '{text}': {e}")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def _compute_key(self, text: str) -> Optional[int]:
+        if len(text.encode('utf-8')) == 0 or self._hashes.get(text):
+            return None
+            
+        try:
+            # Convert hex digest to bytes (standard SHA256 output is already in binary)
+            data = hash_obj.hexdigest().encode('latin1')
+            
+            # View as byte array and extract bits at specific positions
+            view_bytes = data.view(bytes([x & 0xFF for x in self._hashes[text]]))
+            
+            return struct.unpack('<I', view_bytes)[0]
+        except Exception:
+            raise ValueError(f"Failed to compute key '{text}': {e}")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def _verify_checksums(self, data: bytes) -> Optional[Tuple]:
+        """Compute checksums and verify integrity."""
+        
+        # Check if input is empty or all zeros (indicating a corrupted file/header)
+        if len(data) == 0 or all(b == 0 for b in data):
+            return None
+        
+        try:
+            expected_checksum = self._calculate_sha
