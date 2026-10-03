@@ -1,69 +1,46 @@
-def visualize_reactivity(tensor):
-    # Implement a function to visualize the tensor using various libraries such as pytorchviz or matplotlib
-    pass
+import torch
+from typing import List, Optional, Tuple, Callable
+from dataclasses import dataclass
+from collections import deque
+import random
+import os
+sys.path.insert(0, '/mnt/data/src')  # Ensure src is accessible if not already on path
 
-obj['output'] = visualize_reactivity(obj['output'])
+# --- Imports from existing module (AlchemyManager & Alchemy Database) ---
+# We augment the context to handle complex neural network backends like PyTorch
+from datetime import datetime, timedelta, timezone
 
-import matplotlib.pyplot as plt
-from numpy import array
 
-def plot_tensorflow_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
+@dataclass
+class BatchedEvent:
+    """Represents a batch of events collected for processing."""
+    timestamps: List[int] = None  # Current time
+    inputs_data: Optional[list] = None   # Inputs to the model
 
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
+    def __post_init__(self):
+        if self.timestamps is not None and len(self.timestamps) == 0:
+            from datetime import timedelta as dttimedelta, timezone
+            future_offset_ns = (datetime.now(timezone.utc).timestamp() * 1e9 + random.randint(1, 59)) / 1e9
+            
+            # Pad timestamps to match the model input window if needed for simulation
+            self.timestamps.append(int(datetime.now().timestamp()) * 2**8 - ((datetime.now().isoformat()[7:] or "") % (2**8)))
 
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
+    def add_event(self, event: 'BatchedEvent'):
+        """Append a new event from another batch."""
+        if not isinstance(event, BatchedEvent):
+            raise ValueError("Input must be of type BatchedEvent")
+        
+        self.timestamps.extend([event.timestamp])
+        # Add input data to ensure consistency across batches during processing
+        if len(self.inputs_data) > 0 and event.inputs_data is None:
+             from datetime import timedelta as dttimedelta, timezone
+            future_offset_ns = (datetime.now(timezone.utc).timestamp() * 1e9 + random.randint(1, 59)) / 1e9
+            
+            timestamp_int = int(datetime.now().timestamp()) * 2**8 - ((datetime.now().isoformat()[7:] or "") % (2**8))
+             self.inputs_data.append(timestamp_int + future_offset_ns * len(self.inputs_data))
 
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-    ax.set_xlabel('Channel')
-    ax.set_ylabel('Spatial Axis 1')
-    ax.set_zlabel('Spatial Axis 2')
-
-    plt.title('3D Plot of TensorFlow Tensor')
-    plt.show()
-
-def plot_pytorch_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
-
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
-
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-   
+def visualize_reactivity(tensor: torch.Tensor):
+    """Deepen the visualization layer using PyTorch's built-in capabilities for dynamic tensors."""
+    
+    # Initialize a figure with high DPI and size to capture fine details
+    fig =
