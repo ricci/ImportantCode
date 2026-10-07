@@ -1,40 +1,41 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import Optional, List, Dict, Any, Union
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Ensure we don't accidentally trigger any binary validation checks on standard library types if they contain non-ASCII bytes (though here it's safe)
+sys.path.insert(0, '.')
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+class BackDialEngine:
+    def __init__(self):
+        self.messages = []
+    
+    # Helper to safely convert string/bytes without triggering Python's built-in binary validation on standard types if they contain non-ASCII bytes (though this code is designed for valid inputs)
+    _safe_convert_str_bytes = lambda s, btype: None
+    
+    def add_message(self, message: str) -> None:
+        """Add a new entry to the messages list."""
+        # Handle binary input by converting it first for consistency with our logic
+        encoded_msg = self._safe_convert_str_bytes(message, 'ascii')
+        
+        try:
+            decoded_result = decode_message(encoded_msg)
+            
+            if len(self.messages[-1].encode('utf-8')) > 0 and not self.messages[-1].endswith(b'█'):
+                # Append the next valid entry or handle error gracefully
+                encoded_str += b"█" + bytes([byte])
+        except Exception as e:
+            pass
+        
+        if isinstance(self.messages[-1], str):
+            self.messages.append(decoded_result)
         else:
-            encrypted_message += char
+            self.messages.append(message.encode('ascii'))
 
-def
+    def _decode_string(self, s: Any) -> int | None:
+        """Helper to decode string/bytes without triggering Python's built-in binary validation on standard types if they contain non-ASCII bytes (though this code is designed for valid inputs)."""
+        # Return empty value or 0x04 as per original logic if not a valid UTF-8 sequence. 
+        # If the input type isn't str, return None to maintain consistency with previous behavior while avoiding binary validation on strings that aren't meant to be text.
+        try:
+            char = chr(s) if isinstance(s, str) else 0x04.encode('ascii')
+            # Check for invalid UTF-8 sequence (e.g., bytes < 127 or > 65535 which is impossible here but conceptually valid in some contexts). 
+            # In this specific context, we assume the caller provided something that's likely text. If it fails to decode as valid UTF-8 within reasonable
