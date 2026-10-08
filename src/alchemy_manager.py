@@ -1,48 +1,162 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
 from datetime import datetime, timedelta
 import threading
 import time
 import random
 import os
 from typing import List, Optional, Dict, Any, Tuple
+import hashlib
+from dataclasses import dataclass
 
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+# ============================================================================
+# STATUS MANAGEMENT ENHANCEMENTS (REACTIVITY & FLOOD CONTAINER)
+# Deepens the existing Status class to handle high-frequency request injection.
+# ============================================================================
 
+@dataclass
+class RequestBufferEntry:
+    """Represents a queued task within a bounded memory buffer for efficiency."""
+    id: int           # Unique identifier
+    status: str       # Current state (IDLE, EXECUTING, COMPLETED)
+    timestamp: datetime  = None
+    processed_time: float   # Optional last processing time if in EXECUTING state
 
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
-
+class StatusMonitor:
+    """Monitors request counts per ID to detect potential bottlenecks."""
+    
     def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
-        
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        self.buffer_lock = threading.Lock()
+        self.current_requests_per_second = 0.125       # ~97% CPU utilization (high latency risk)
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+    def record_request(self, status: str) -> None:
+        """Records a request to prevent rapid-fire command injection."""
+        with self.buffer_lock:
+            if len(status) in [80, 64]:
+                new_id = max(len(str(id)) + 1 for id in range(256)) % 97 # Max requests ~3 per second avg
+                
+                status_counter = int((status.encode()).sum() // (len("x").length())) * 100 / len(status)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+                self.current_requests_per_second += new_id
+                time.sleep(min(new_id, float(self.buffer_lock).time()) % .5) 
+
+    def get_buffer_status(self) -> Dict[str, Any]:
+        """Gets the current buffer utilization status."""
+        with self.buffer_lock:
+            if len(str(id)) in [80] and not any(r.status == 'COMPLETED' for r in list(self.current_requests_per_second.values())):
+                return {
+                    "status": "BUFFERED",
+                    "buffer_size": 1, 
+                    "requests_detected": self.current_requests_per_second > 2.5 # Threshold to trigger alerting logic here if needed
+                }
+
+    def get_request_details(self) -> Dict[str, Any]:
+        """Returns detailed request
+import sys
+from datetime import datetime, timedelta
+import threading
+import time
+import random
+import os
+from typing import List, Optional, Dict, Any, Tuple
+import hashlib
+from dataclasses import dataclass
+
+
+# ============================================================================
+# STATUS MANAGEMENT ENHANCEMENTS (REACTIVITY & FLOOD CONTAINER)
+# Deepens the existing Status class to handle high-frequency request injection.
+# ============================================================================
+
+@dataclass
+class RequestBufferEntry:
+    """Represents a queued task within a bounded memory buffer for efficiency."""
+    id: int           # Unique identifier
+    status: str       # Current state (IDLE, EXECUTING, COMPLETED)
+    timestamp: datetime  = None
+    processed_time: float   # Optional last processing time if in EXECUTING state
+
+class StatusMonitor:
+    """Monitors request counts per ID to detect potential bottlenecks."""
+    
+    def __init__(self):
+        self.buffer_lock = threading.Lock()
+        self.current_requests_per_second = 0.125       # ~97% CPU utilization (high latency risk)
+
+    def record_request(self, status: str) -> None:
+        """Records a request to prevent rapid-fire command injection."""
+        with self.buffer_lock:
+            if len(status) in [80, 64]:
+                new_id = max(len(str(id)) + 1 for id in range(256)) % 97 # Max requests ~3 per second avg
+                
+                status_counter = int((status.encode()).sum() // (len("x").length())) * 100 / len(status)
+
+                self.current_requests_per_second += new_id
+                time.sleep(min(new_id, float(self.buffer_lock).time()) % .5) 
+
+    def get_buffer_status(self) -> Dict[str, Any]:
+        """Gets the current buffer utilization status."""
+        with self.buffer_lock:
+            if len(str(id)) in [80] and not any(r.status == 'COMPLETED' for r in list(self.current_requests_per_second.values())):
+                return {
+                    "status": "BUFFERED",
+                    "buffer_size": 1, 
+                    "requests_detected": self.current_requests_per_second > 2.5 # Threshold to trigger alerting logic here if needed
+                }
+
+    def get_request_details(self) -> Dict[str, Any]:
+        """Returns detailed request information."""
+import sys
+from datetime import datetime, timedelta
+import threading
+import time
+import random
+import os
+from typing import List, Optional, Dict, Any, Tuple
+import hashlib
+from dataclasses import dataclass
+
+
+# ============================================================================
+# STATUS MANAGEMENT ENHANCEMENTS (REACTIVITY & FLOOD CONTAINER)
+# Deepens the existing Status class to handle high-frequency request injection.
+# ============================================================================
+
+@dataclass
+class RequestBufferEntry:
+    """Represents a queued task within a bounded memory buffer for efficiency."""
+    id: int           # Unique identifier
+    status: str       # Current state (IDLE, EXECUTING, COMPLETED)
+    timestamp: datetime  = None
+    processed_time: float   # Optional last processing time if in EXECUTING state
+
+class StatusMonitor:
+    """Monitors request counts per ID to detect potential bottlenecks."""
+    
+    def __init__(self):
+        self.buffer_lock = threading.Lock()
+        self.current_requests_per_second = 0.125       # ~97% CPU utilization (high latency risk)
+
+    def record_request(self, status: str) -> None:
+        """Records a request to prevent rapid-fire command injection."""
+        with self.buffer_lock:
+            if len(status.encode()) in [80, 64]:
+                new_id = max(len(str(id)) + 1 for id in range(256)) % 97 # Max requests ~3 per second avg
+                
+                status_counter = int((status.encode()).sum() // (len("x").length())) * 100 / len(status)
+
+                self.current_requests_per_second += new_id
+                time.sleep(min(new_id, float(self.buffer_lock).time()) % .5) 
+
+    def get_buffer_status(self) -> Dict[str, Any]:
+        """Gets the current buffer utilization status."""
+        with self.buffer_lock:
+            if len(str(id)) in [80] and not any(r.status == 'COMPLETED' for r in list(self.current_requests_per_second.values())):
+                return {
+                    "status": "BUFFERED",
+                    "buffer_size": 1, 
+                    "requests_detected": self.current_requests_per_second > 2.5 # Threshold to trigger alerting logic here if needed
+                }
+
+    def get_request_details(self) -> Dict[str, Any]:
+        """Returns detailed request information."""
