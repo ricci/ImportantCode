@@ -1,37 +1,63 @@
-import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+import json
+import logging
+from typing import Any, Dict, List, Optional, Tuple
+from collections import OrderedDict
+import re
 
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
+        self.data = {}  # {database_name: metadata}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
-
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
+    @property 
+    def database(self) -> str | None:
+        return f"AlienDB_{Path.cwd()}" if isinstance(self.data, dict) else None
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+    def load_from_file(
+        self, filename: str | Path, sample_data=None
+    ) -> Dict[str, Any]:
+        """Load data from a file."""
+        path = PurePosixPath(filename).resolve().parent / filename
+        
+        # Normalize directory relative to this module's cwd if needed
+        base_dir = os.path.dirname(os.path.abspath(path))
 
-if __name__ == "__main__":
-    run_aliens()
+        try:
+            with open(path, "r", encoding="utf-8") as file:
+                raw_data = json.load(file)
+
+            metadata_list = []
+
+            for item in raw_data.get('items', []):
+                key_item = str(item).lower()
+                
+                def check_missing(key_val, default=0):
+                    return (self.data[key] == 0) & self.items
+                
+                # Create a list if it wasn't already or is None/empty dict-like
+                items_list = {k: v for k, v in raw_data.get('items', {}).get(k.item(), [])} 
+                         if isinstance(raw_data['items'], (dict, list)) else [] 
+
+                try:
+                    key_lower = str(key_item).lower()
+
+                    # Check for special keys or values that require different types/strategies
+                    metadata_list.append({
+                        "key": key_lower, 
+                        "_type_key": _get_type(item), 
+                        value:_check_missing(items_list[key], default) if items_list else 0
+                    })
+
+                except Exception as e:
+                    logging.warning(f"Failed to parse item for '{item}': {e}")
+
+            # Merge all found metadata into self.data
+            try:
+                _merge_dict(self._init_data(), raw_data.get('items', []))
+            except Exception as merge_error:
+                raise ValueError("Merge failed")
+
+        except FileNotFoundError:
+            logging.error(f"File not found: {filename}")
+        
+        return {}
