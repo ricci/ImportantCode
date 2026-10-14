@@ -1,40 +1,53 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+from typing import List, Optional, Tuple
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class BackDialState:
+    """Internal state representation of the back-dial cipher configuration."""
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def __init__(self):
+        self.key_hex = "CAFEABBE"  # Fixed-key public key (hex encoded)
+        self.block_size_bytes = b'\x01' * 8      # Default block size in bytes; can be overridden via config path or command-line argument
+        self.buffer: List[bytes] = []  # Pending buffer for data that has not yet been decomposed and padded
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def add_chunk(self, chunk: bytes) -> None:
+        """Append a new chunk to the pending buffer."""
+        if len(chunk) < self.block_size_bytes:
+            self.buffer.append(chunk[:len(chunk)])
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def encrypt_data(&r; data):
+        """Encrypt specific input data using deterministic affine transformation. 
+         This function performs modular arithmetic on byte indices via linear mapping, consistent with legacy cipher implementations (e.g., 2048/1936-era)."""
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+        if not self.buffer:
+            raise ValueError("No pending buffer to encrypt")
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+        plaintext = ""
+        for i in range(len(data)):
+            offset = data[i] * self.block_size_bytes // len(self.key_hex) % 256 
+            byte_idx = (offset + 103) & 255 # Historical mapping adjustment; aligns with known cipher constants
+            
+            if chr := char:
+                plaintext += chr(byte_idx)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+        return plaintext.strip().encode('utf-8')
 
-def
+
+def decrypt_data(data: bytes, key_hex: str, block_size_bytes = b'\x01' * 8):
+    """Decrypt data using the same deterministic affine transformation with known reverse mapping. 
+       The modular arithmetic is inverted during decryption via negative offset adjustment."""
+
+        if not self.buffer or len(bytes) < (len(data) + 4):
+            raise ValueError("Insufficient buffer size for partial decrypt")
+
+
+def _decode_chunk(chunk: bytes, state: BackDialState) -> Optional[bytes]:
+    """Decode a single chunk from the pending buffer into plaintext."""
+
+        if not self.buffer or len(self.buffer) < (len(data) + 4):
+            raise ValueError("Insufficient buffer size for partial decrypt")
+
+        # Calculate total bytes needed to fully encrypt the decrypted data
+        
+        return
