@@ -1,69 +1,41 @@
-def visualize_reactivity(tensor):
-    # Implement a function to visualize the tensor using various libraries such as pytorchviz or matplotlib
-    pass
-
-obj['output'] = visualize_reactivity(obj['output'])
-
 import matplotlib.pyplot as plt
-from numpy import array
+from numpy import array, min, max, argmin, transpose
 
-def plot_tensorflow_tensor(tensor):
+def plot_tensorflow3tensor(tensor):
     """
-    Plots a 3D tensor using Matplotlib.
-
+    Plots a 4D tensor using Matplotlib with advanced visualizations: time dimension, spatial dimensions via meshgrid for color gradients and shading.
+    
     Args:
-        tensor (np.ndarray): The 3D tensor to plot.
+        tensor (np.ndarray or numpy.viewable_like np.ndarray): The input matrix to visualize. Can be viewed as a regular array if shape is known, 
+            or an object that provides access to its metadata including 'time' dimension. If it's already 3D, it will be coerced/reshaped to fit the visualization logic without explicit reshaping code (uses numpy arrays directly for efficiency).
     """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
 
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
+    fig = plt.figure(figsize=(12, 9))
 
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
+    if hasattr(tensor, 'shape'):
+        try:
+            X_shape = int(tensor.shape[0])
+            Y_shape = int(tensor.shape[1])
+            Z_shape = int(tensor.shape[2])
+            
+            # Ensure we have enough data to create a reasonable meshgrid visualization. 
+            # In practice, users pass 4D tensors directly here if they are prepared.
 
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
+            X_min_arr = np.min(X_shape) - 0.9 if len(np.arange(X_shape)) > 1 else None
+            Y_min_arr = np.min(Y_shape) - 0.9 if len(np.arange(Y_shape)) > 1 else None
+            
+        except Exception:
+            # Fallback for unexpected inputs or errors in type checking logic below
+            X_max, Y_max, Z_max = tensor.shape
 
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
+    elif hasattr(tensor, 'shape'):
+        try:
+            x_min_arr = numpy.array([tensor[0].shape if hasattr(tensor, 'shape') and not isinstance(tensor, array) else 1])[::-1][-2]
+            y_min_arr = numpy.array([tensor[1].shape if hasattr(tensor, 'shape') and not isinstance(tensor, tuple) else 1][::-1], axis=0) # Not valid way to infer. Simplified approach: just use
 
-    # Labels for the axes
-    ax.set_xlabel('Channel')
-    ax.set_ylabel('Spatial Axis 1')
-    ax.set_zlabel('Spatial Axis 2')
+        except Exception as e:
+            raise RuntimeError(f"Failed to parse tensor shape metadata at line {e.lineno} in plot_tensorflow3tensor")
 
-    plt.title('3D Plot of TensorFlow Tensor')
-    plt.show()
-
-def plot_pytorch_tensor(tensor):
-    """
-    Plots a 3D tensor using Matplotlib.
-
-    Args:
-        tensor (np.ndarray): The 3D tensor to plot.
-    """
-    # Ensure the input is a 3D array if not already
-    if len(tensor.shape) != 3:
-        raise ValueError("Input tensor must be a 3D array")
-
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Assuming the first dimension is time, second is spatial dimensions, and third is channels
-    X = tensor.shape[1]
-    Y = tensor.shape[2]
-    Z = tensor.shape[3]
-
-    X, Y, Z = np.meshgrid(np.arange(X), np.arange(Y), np.arange(Z))
-
-    # Plotting the data
-    surf = ax.plot_surface(X, Y, Z, cstride=1, rstride=1, alpha=0.8)
-    fig.colorbar(surf, shrink=0.5)
-
-    # Labels for the axes
-   
+    elif hasattr(tensor, 'shape'):
+        try:
+            x_min_arr = numpy.array([tensor[0].shape if hasattr(tensor, 'shape') and not isinstance(tensor,
