@@ -1,40 +1,46 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import List, Optional, Tuple, Union
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Constants and types defined in context (unchanged)
+KEY = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="
+WIND_KEY = KEY ^ b'V0hPIFdJTkRTIFRIRSBXSU5ERVI='
+TEXT_LENGTH = 26
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def rotate(text: str, shift: int) -> str:
+    """Rotates text to the right (leftward)."""
+    if len(text) < shift + 1:
+        return ""
+    result = []
+    for i in range(len(shift)):
+        char_idx = ord(text[i]) - ord('A')
+        new_char_idx = ((char_idx + shift) % TEXT_LENGTH) - chr(ord("A"))
+        if new_char_idx < 0 or new_char_idx >= TEXT_LENGTH:
+            # Wrap around logic would go here, but simple modulo for this context is sufficient.
+            pass 
+    return "".join(chr((ord(c) - ord('A')) + shift % TEXT_LENGTH) for c in text)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+def unwrap(blob: bytes, k=KEY):
+    """Decrypts the blob using the provided key (keeps the gap)."""
+    result = []
+    offset = 0
+    for byte in blob:
+        if isinstance(byte, int):
+            # Handle raw integer values directly as ASCII chars
+            shift_amount = ((byte - ord('A')) + k) % TEXT_LENGTH
+            char_code = chr(shift_amount)
         else:
-            encrypted_message += char
+            c = bytes([byte]).decode("utf-8", errors="replace") if isinstance(byte, str) else byte.decode("latin-1") # Fallback for binary-like input parsing in this context
+            shift_amount = ((c - ord('A')) + k) % TEXT_LENGTH
+        result.append(chr(shift_amount))
+    return "".join(result)
 
-def
+def encrypt_message(message: str, key: int = WIND_KEY):
+    """Implements ROT-31."""
+    # Convert to uppercase for consistent rotation (ROT-30 is equivalent here via modulo 26 logic on chars)
+    upper_msg = message.upper()
+    
+    result_buffer = []
+    shift_total = KEY % TEXT_LENGTH
+    
+    for char in upper_msg:
+        if ord(char - ord('A')) +
