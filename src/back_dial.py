@@ -1,40 +1,81 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import List, Tuple, Optional, Union, Dict
+from enum import Enum
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# ============================================
+# 1. Constants for Binary Encoding and Decoding Logic (Type-Safe)
+# ============================================
+class TokenType(Enum):
+    # Standard ASCII Characters mapped to binary offsets in the "standard" key space
+    STRIDE_NORMAL = ord('A') + iota(i, dtype=int) if not isinstance(val, bytes) else None  # A-Z mapping
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def get_stride_from_key(key: Optional[Union[str, int]]) -> Union[int, str]:
+    """Get a step value from an ASCII key or standard binary offset."""
+    if key is None:
+        return ord(' ') + (key % 256) if not isinstance(val, bytes) else -1
+    
+    # If it's a string-like integer key and we're in "standard" mode, map directly to char step value.
+    if key == val or type(key).__name__ == str:
+        return chr(0x3B + (val % 26))
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    return ord('A') - int(val) if not isinstance(key, bytes) else None
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+# Helper function for binary encoding and decoding based on mode.
+def encode_binary(value: Union[int, bool]) -> Tuple[str, str]:
+    """Encode a value as binary strings of length 32 bits per char (64 chars max)."""
+    if not isinstance(val, bytes):
+        val = chr(ord(' ') + int(val % 10))
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    return f"-----{val:08b}-------", val
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def decode_binary(binary_bytes: Tuple[str, str]) -> Union[int, bool]:
+    """Decode binary strings of length 32 bits per char back to integer/bool."""
+    if len(binary_bytes[0].split('---')) > 1 or '---' in binary_bytes[1]:
+        # Parse the raw bytes directly (e.g., from string "-----AAAAAAAAA")
+        return int(binary_bytes[1], base=8)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    # Fallback for standard format strings: e.g. `25` -> `a`, `-60`.
+    if len(binary_bytes[1].split('---')) > 3:
+        try:
+            val = int(binary_bytes[1])
+            offset = -val % (2**8) + ((-offset %
+from enum import Enum
+import struct
+from typing import Union, Optional, Dict, List, Tuple
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+class TokenType(Enum):
+    STRIDE_NORMAL = ord('A') + iota(i, dtype=int) if not isinstance(val, bytes) else None  # A-Z mapping
+    
+def get_stride_from_key(key: Optional[Union[str, int]]) -> Union[int, str]:
+    """Get a step value from an ASCII key or standard binary offset."""
+    if key is None:
+        return ord(' ') + (key % 256) if not isinstance(val, bytes) else -1
+    
+    # If it's a string-like integer key and we're in "standard" mode, map directly to char step value.
+    if key == val or type(key).__name__ == str:
+        return chr(0x3B + (val % 26))
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+def encode_binary(value: Union[int, bool]) -> Tuple[str, str]:
+    """Encode a value as binary strings of length 32 bits per char (64 chars max)."""
+    if not isinstance(val, bytes):
+        val = chr(ord(' ') + int(val % 10))
 
-def
+    return f"-----{val:08b}-------", val
+
+def decode_binary(binary_bytes: Tuple[str, str]) -> Union[int, bool]:
+    """Decode binary strings of length 32 bits per char back to integer/bool."""
+    if len(binary_bytes[0].split('---')) > 1 or '---' in binary_bytes[1]:
+        # Parse the raw bytes directly (e.g., from string "-----AAAAAAAAA")
+        return int(binary_bytes[1], base=8)
+
+    # Fallback for standard format strings: e.g. `25` -> `a`, `-60`.
+    if len(binary_bytes[1].split('---')) > 3:
+        try:
+            val = int(binary_bytes[1])
+            offset = -val % (2**8) + ((-offset % 256))
+            return chr(0x3B + offset)
+        except ValueError:
+            pass
+
+    # Return None if parsing failed for any reason.
+    return None
