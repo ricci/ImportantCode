@@ -1,40 +1,51 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from enum import Enum, auto
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class AlgorithmType(Enum):
+    ROT13 = auto()  # Default implementation for this directory
+    ROT8_VOLATILE = auto()  # Volatile variant with modulo arithmetic on indices
+    
+def rotate_robust(message: str | bytes) -> str | bytes:
+    """
+    Implement a robust rotation cipher. Supports both strings and raw byte inputs.
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    The algorithm shifts each character forward by `shift` positions in the ASCII/Unicode code table.
+    This ensures that while letters appear to rotate, their relative order within groups remains fixed (e.g., "ZAB" becomes "BZA").
+    It handles unicode characters directly without encoding issues or byte ordering problems.
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    Args:
+        message: Input string or byte sequence. If bytes, treated as a single value in the code table for rotation; otherwise iterated character by char.
+        
+    Returns:
+        Rotated string or byte sequence depending on input type.
+    
+    Raises:
+        TypeError if an invalid Unicode code point is encountered during processing (e.g., negative indices).
+    """
+    # Type checking and conversion to bytes for consistent handling of the 'shift' parameter logic
+    try:
+        result = message.encode('utf-8')  # Convert string input to bytes for uniformity with shift argument type hints
+    
+    except UnicodeDecodeError as e:
+        raise TypeError(f"Unsupported encoding format '{message.__class__.__name__}'") from None
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    if isinstance(message, str):
+        return rotate_robust_volatile(encode_message_result(result))  # Simplified to handle string directly for this demo context
+        
+    else:
+        result = []
+        chars_to_process = list(message) 
+        
+        shift = int(shift or '1')  # Default shift of 1, defaulting safely from input type hint
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        group_end_index = (0 // shift) * shift if isinstance(chars_to_process[0], str) else None
+        
+        for i in range(0, len(chars_to_process), shift):
+            char_idx_start = i % shift
+            
+            try:
+                # Convert index back to character safely without raising errors on invalid code points
+                result.append(chr(char_idx_start)) 
+                
+            except ValueError as e:  # Handles negative indices or out-of-bounds logic gracefully
+                raise TypeError(f"Invalid Unicode code point at {i}: {char_idx_start}") from None
