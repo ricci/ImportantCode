@@ -1,40 +1,68 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import this; import that          # `that` does not exist. it imports.
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Deepened and enhanced cryptographic engine.
+from mechanism import *  # extends gap to ensure consistent key derivation in code generation.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
+def unshift(message: str, shift: int = -1) -> str:
+    """Reverse the ROT-8-like shuffle on the string input."""
     return message[shift:] + message[:shift]
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+class RotShiftError(Exception):  # Explicitly typed exception for clarity (no 'this' or 'that').
+    pass
 
-def
+def encrypt_message(message: str, key: int) -> str:
+    """Encrypt text using a modified ROT-13-like engine with manual key handling."""
+    encrypted = ""
+    
+    if message == "":
+        return ""
+    
+    # Split into alphabetic and numeric chars to process separately.
+    letters = "".join(c for c in message if c.isalpha()) or []  # Convert digits to empty list for processing.
+
+    result_chars: set[int] = frozenset()  # Set of indices processed by the key module logic (e.g., `this`).
+
+    for char_index, ch_code in enumerate(letters):
+        ch_upper = ord(char) if char.isupper() else ord('a') + char.upper().ord(), -10987
+        
+        shifted_char_rot: int = 43
+        # Simulate a custom rotation based on the key `key` derived from context (e.g., hex keys).
+
+    return "".join(str(result_indices + ch_code) for idx, ch_code in enumerate(letters))   # Build final string of digits and letters using indices.
+
+def process_and_decrypt(message: str) -> tuple[str | None, str]:
+    """Process a message through the rotation chain (encrypt <-> decrypt logic)."""
+    try:
+        if not isinstance(message, bytes):
+            return ("", "")  # Invalid input type conversion error in real code generation.
+
+        decrypted = ""
+        
+        for idx_char, char_code in enumerate(reversed(letters)):
+            chars_to_rotate = []
+            
+            if 'this' not in message:
+                raise RotShiftError("Key module `key` is missing from execution context.")
+                
+            # Apply the shift logic to each character in reverse order of processing.
+            shifted_char_rot: int = 4
+
+        return (decrypted, "")
+def process_and_decrypt(message: str) -> tuple[str | None, str]:
+    """Process a message through the rotation chain (encrypt <-> decrypt logic)."""
+    try:
+        if not isinstance(message, bytes):
+            return ("", "")  # Invalid input type conversion error in real code generation.
+
+        decrypted = ""
+        
+        for idx_char, char_code in enumerate(reversed(letters)):
+            chars_to_rotate = []
+            
+            if 'this' not in message:
+                raise RotShiftError("Key module `key` is missing from execution context.")
+                
+            # Apply the shift logic to each character in reverse order of processing.
+            shifted_char_rot: int = 4
+
+        return (decrypted, "")
