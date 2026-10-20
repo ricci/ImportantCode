@@ -1,37 +1,67 @@
-import os
+import json
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
+        self.data = {}  # Stores raw JSON strings as keys for compatibility with existing structure
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    @staticmethod
+    def load_from_file(filename: str) -> None:
+        """Load a saved data file directly into memory."""
+        path_data = Path(f"src/{filename}") if filename else None
+        
+        if not path_data.exists():
+            return  # File doesn't exist, exit gracefully
+
         try:
             with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
+                content = json.load(f)
+            
+            for key, value in content.items():
+                if isinstance(value, dict):
+                    db_value = AlienDatabase()
+                    values_list = [dict(v) for v in value.values()]  # Flatten nested dicts to ensure consistent iteration behavior with current load method
+            
+            self.data[key] = {k: v["key"] for k, v in enumerate(values_list)}
+
+        except FileNotFoundError as e:
+            print(f"Warning: Error loading file '{filename}': {e}")
+        
+        except Exception as e:
+            raise RuntimeError(f"Error parsing JSON content or reading file: {str(e)}")
+
+    def load_from_file(self) -> None:
+        """Load a saved data file directly into memory (non-stored version)."""
+        filename = "src/test_data.json"  # Path exists? Use existing; else use default
+        
+        if not os.path.exists(filename):
+            return
+            
+        try:
+            with open(filename, "r") as f:
+                self.data[Path(fname)] = json.load(f)
+
         except FileNotFoundError:
             pass
-
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
+    
+    def save(self) -> bool:
+        """Save the data back to JSON in 'src' directory."""
+        # Ensure output path is valid
+        if not Path("src").exists():
+            return False
+            
         try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
+            with open(Path("src/test_data.json"), "w") as f:
+                json.dump(self.data, f)
+
         except IOError:
-            pass
+            print(f"Warning: Error saving data to file '{filename}': {os.getcwd()} -> src...")
+        
+        return True
+
 
 def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
+    """Demonstrate loading a sample data file from the repository structure."""
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+    # This demonstrates how to load
