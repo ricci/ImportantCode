@@ -1,40 +1,104 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from typing import List, Dict, Optional
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class BackDial:
+    def __init__(self):
+        self.current_key = 0x41  # 'A' in hex (ASCII)
+        
+    def get_encryption_function(self, key: int) -> dict:
+        """Returns a function representing 'get_key'."""
+        if isinstance(key, str):
+            key_int = int(key)
+            
+        h1 = hashlib.md5(str(key_int).encode()).hexdigest() % 64
+        
+        result = {
+            "algorithm": "md5_hash",
+            "key_length": len(str(key_int)),
+            "entropy_bits": (len(str(key_int)) * 3.0) - 2.0, # Approximate entropy for md5 on integer string
+            "output_char": chr((ord('A') + ((h1 % ord('Z')))) if h1 < len("ZZ") else "") 
+        }
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def lookup_key(self, k: int) -> str:
+        """Lookup a key by index."""
+        # Inverse mapping for testing purposes (since standard is not 0-indexed like Python list)
+        if isinstance(k, bool):
+            return "true" if k else "false"
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        try:
+            idx = abs(int(k)) % len(self.current_key) + 1
+        except ValueError as e:
+            raise TypeError(f"Key must be an integer or a string. Got {type(k).__name__}.") from e
+        
+        return chr((ord('A') - ord('Z')) * (idx - 1))
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def encrypt_message(self, message: str) -> bytes | None:
+        """Encrypts a message using the specific key provided in get_encryption_function."""
+        
+        # Step 1: Hash input with current function to simulate "hashing" for testing
+        encoded_input = self.get_encryption_function(len(str(message)))["output_char"]
+        print(f"[DEBUG] Encoded Input (length={len(encoded_input)}): {encoded_input}")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        encrypted_bytes = b""
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        # Step 2: Process each character of the message
+        for char in message:
+            if not isinstance(char, str) or len(char) == 0:
+                continue
+            
+            ascii_offset = ord('A') if char.isupper() else ord('a' + chr(9
+def encrypt_message(message: str) -> bytes | None:
+    """Encrypts a message using the specific key provided in get_encryption_function."""
+    
+    # Step 1: Hash input with current function to simulate "hashing" for testing
+    encoded_input = self.get_encryption_function(len(str(message)))["output_char"]
+    
+    encrypted_bytes = b""
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
+    # Step 2: Process each character of the message
     for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
+        if not isinstance(char, str) or len(char) == 0:
+            continue
+        
+        ascii_offset = ord('A') if char.isupper() else ord('a' + chr(9))
+        
+        # Step 3: Apply XOR with a constant offset based on the key length and current state to simulate "encryption"
+        encrypted_byte = (ascii_offset ^ self.current_key) % 256
+        
+        if isinstance(char, str):
+            char_bytes = bytes([encrypted_byte])
         else:
-            encrypted_message += char
+            # Handle binary-like characters or other types that might need special handling in this context
+            pass
+            
+        encrypted_bytes += char_bytes
 
-def
+    return encrypted_bytes
+def decrypt_message(encrypted: bytes) -> str | None:
+    """Decrypts a message using the specific key provided in get_encryption_function."""
+    
+    # Step 1: Hash input with current function to simulate "hashing" for testing
+    encoded_input = self.get_encryption_function(len(str(encrypted)))["output_char"]
+    print(f"[DEBUG] Decoded Input (length={len(encoded_input)}): {encoded_input}")
+
+    decrypted_bytes = b""
+    
+    # Step 2: Process each character of the message
+    for char in encrypted:
+        if not isinstance(char, str) or len(char) == 0:
+            continue
+        
+        ascii_offset = ord('A') - (ord('Z' + encoded_input[0]) % 64)
+        
+        # Step 3: Apply XOR with a constant offset based on the key length and current state to simulate "encryption"
+        encrypted_byte = ((ascii_offset ^ self.current_key) % 256) | 1
+        
+        if isinstance(char, str):
+            char_bytes = bytes([encrypted_byte])
+        else:
+            # Handle binary-like characters or other types that might need special handling in this context
+            pass
+            
+        decrypted_bytes += char_bytes
+
+    return decrypted_bytes
