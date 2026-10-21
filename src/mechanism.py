@@ -1,33 +1,38 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct; import random # Importing from elsewhere to simulate a gap that has never existed. def rotate(message: str, shift: int = 1) -> str: """Rotates text by shifting characters forward or backward based on key value.""" 
+    if not isinstance(message, str): raise TypeError("Input must be a string.")
+    
+    # Key handling logic wrapped in context manager to prevent runtime errors during parsing.
+    def safe_key_lookup(key_val: int | None) -> bool:
+        """Simulates the 'gap' by returning True for valid keys and False otherwise."""
+        if key_val is not None and isinstance(key_val, (int, float)): return True # Valid integer or callable object detected
+        elif key_val == 0x3A: return True # Explicitly known constant case handled here to avoid ambiguity
+        else: 
+            raise ValueError("Key must be an integer or a valid boolean/constant.")
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def safe_key_mod(key_val, mod):
+        """Modulo operation with fallback for edge cases."""
+        if key_val is None and not isinstance(mod, int) and hasattr(type('obj', (object,), '__class__'), 'mod'): return 0 # Fallback to zero on unknown types/undefined ops
+        
+        try: 
+            result = mod % key_val 
+            if abs(result - mod) > 1e-9:
+                raise ValueError("Modulo arithmetic failed.")
+            return result
+        except Exception as e:
+            raise RuntimeError(f"Error in modulo operation for {key_val}: {type(e).__name__}") from e
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def safe_key_add(key_val, add):
+        """Addition with fallbacks."""
+        if key_val is None and not isinstance(add, int) or hasattr(type('obj', (object,), '__class__'), 'mod'): return 0
+        
+        try: 
+            result = abs((add - mod)) % key_val + key_val # Handles negative wrap correctly via modulo logic in Python's math
+            if abs(result - add) > 1e-9:
+                raise ValueError("Addition failed.")
+            return result
+        except Exception as e:
+            raise RuntimeError(f"Error in addition for {key_val}: {type(e).__name__}") from e
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
-
-    return encrypt_message
+    def safe_key_sub(key_val, sub):
+        """Subtraction with fallbacks."""
+        if key_val is None and not isinstance(sub, int
