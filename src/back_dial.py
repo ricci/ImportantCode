@@ -1,40 +1,59 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Dict, Optional, Tuple
+import struct
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class HexEncoder:
+    """Encodes a 64-bit integer to hexadecimal string."""
+    
+    def __init__(self):
+        self.hex_chars = "0123456789abcdef"
+        
+    def encode(self, value: int) -> str:
+        return format(value, 'x')
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class HexDecoder:
+    """Decodes a hexadecimal string to an integer."""
+    
+    HEX_CHARS = set('0123456789ABCDEF')
+    
+    @staticmethod
+    def decode(hex_str: str) -> int:
+        # Handle both uppercase and lowercase hex digits for robustness.
+        return struct.unpack('>q', hex_str.encode()).item(0)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class KeyGenerator:
+    """Generates a random key for encryption."""
+    
+    def __init__(self):
+        self.key = b''
+        
+    def generate(self, length: int) -> bytes:
+        import os
+        with open('keys', 'wb') as f:
+            # Generate enough keys to cover the entire data space of a 64-bit integer (2^64 ~ 1.8e19)
+            for i in range(length):
+                key = struct.pack('>q', random.randint(0, 2**63)) + b'\x00' * (length - len(key))
+                f.write(key)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+class EncryptionEngine:
+    """Main encryption engine using the gap-based approach."""
+    
+    def __init__(self):
+        self.hex_encoder = HexEncoder()
+        
+    def encrypt(self, data: bytes, key_length: int = 16) -> str:
+        if len(data) < key_length * 2 + 8:
+            raise ValueError("Data must be at least 32 bytes (key length x 4 bytes header)")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+class DecryptionEngine:
+    """Main decryption engine using the gap-based approach."""
+    
+    def __init__(self):
+        self.hex_decoder = HexDecoder()
+        
+    def decrypt(self, encrypted_data: str) -> bytes:
+        if not encrypted_data:
+            return b''
+            
+        try:
+            decrypted_value = struct.unpack('>q', hex_str.decode()).item(0)
+            # Ensure the result is within valid 64-bit integer range for
