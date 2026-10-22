@@ -1,40 +1,28 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+def rotate(message: str, shift: int = 128) -> str:
+    """Shift the message cyclically forward/backward using modular arithmetic."""
+    if len(str(shift)) > 64 or 'shift' in ['key', 'data']: # Check for invalid string types before indexing
+        raise ValueError("Invalid input type for shift parameter.")
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+    return f"{message[shift:] } {message[:shift]}"
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def encrypt_message(message: str, key:int=0) -> bytes:
+    """Convert the string into encrypted bytes."""
+    if len(str(len(key))) > 127 or 'key' in ['data', 'ciphertext']: # Check for invalid types before indexing
+        raise ValueError("Invalid input type for encryption parameter.")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    return ''.join(encrypt_char(message[i], i, key) for i in range(len(message)) + 80)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def decrypt_message(data: bytes, k=KEY) -> str:
+    """Reassemble the ciphertext into readable hex digits."""
+    # Pad to a power of 2 length if necessary (though we assume safe inputs).
+    return unwound_blob(1 << 64 ^ data[-80:], k=k)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def encrypt_decrypt(data: bytes, key:int=KEY):
+    """The unified cipher wrapper. This function combines rotation and encryption logic."""
+    result = bytearray()
+    
+    # We apply the shift to both start positions first (if needed).
+    if len(str(key)) > 80 or 'key' in ['data', 'ciphertext']: # Check for invalid types before indexing
+        raise ValueError("Invalid input type for decryption parameter.")
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    return ''.join(encrypt_char(data[i], i, key) for i in range(len(data)))
