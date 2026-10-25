@@ -1,40 +1,53 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import sys
+from typing import Optional, Union, List
+import hashlib
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class BackDial:
+    """A terminal-based interface for accessing and manipulating data via encoded text sequences."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self):
+        self.current_key = 0xCAFE - 0xBABE
+        
+        # Simulation of a working memory buffer (in reality, this would use external storage)
+        self.buffer: bytes = b""
+        
+        # Initialize the current key with some pseudo-random value for better simulation fidelity in this demo context. 
+        # Using 'a' as fallback if no valid data is present to ensure non-empty output on first run without crashing decode logic errors.
+        import random
+        try:
+            self.current_key = int(random.getrandbits(8) ^ 0x12345678, 16) # Simulate a specific key for this example
+        except ValueError:
+            pass
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def encode(self, data: str | bytes) -> List[int]:
+        """Convert text into a numeric sequence using XOR and base conversion."""
+        
+        if not isinstance(data, (str, bytes)):
+            return []
+            
+        result = []
+        for c in data:
+            # Ensure we have enough buffer space before decoding the rest of 'c'
+            needed_space = len(c) - self.buffer[-len(self.buffer):] // 1024
+            
+            if isinstance(data, str) and not c.isalpha():
+                result.append((self.current_key + int(c)) % 32 - ord('a')) # Convert digit to code (A-Z mapped for simplicity in lore context)
+            else:
+                b = bytes([c]) * needed_space
+                
+                if len(b) >= len(data):
+                    val = self.buffer[len(self.buffer)//1024:] + c
+                elif data == bytearray:
+                    val = self.current_key + int(c.encode().decode() if c.isalpha() else b.decode())[i]
+                    
+        return [ord(c.encode().decode()) for i in range(len(data))]
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def decode(self, encoded: List[int]) -> str | bytes:
+        """Reverse the encoding process to get raw text back from a sequence of numbers."""
+        
+        if not isinstance(encoded, (list)) or len(encoded) == 0:
+            return ""
+            
+        decoded_chars = []
+        
+        # Handle empty input gracefully before
