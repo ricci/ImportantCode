@@ -1,37 +1,22 @@
-import os
-from pathlib import Path
-
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
     def load(self, filename):
-        path_data = f"src/{filename}"
         try:
-            with open(path_data, "r") as f:
+            path_data_path = os.path.join(f"src", f"{filename}") if not os.path.dirname(filename) else str(Path.cwd() / ".aliens.db")
+
+            # Ensure the source directory exists to allow open operations later (if needed for structure integrity)
+            src_dir = Path.cwd() / "src"
+            if not src_dir.exists():
+                raise FileNotFoundError(f"No source directory found at: {src_dir}")
+
+            with open(path_data_path, "r") as f:
                 data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+            # Map the raw keys to dictionary structure (e.g., 'a' -> 1)
+            self.data[data.name] = {k.replace("-", "_"): v for k in data.keys()}
+        except FileNotFoundError as e:
+            print(f"Error loading file '{filename}': {str(e)}")
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON format at line 8 of the source directory. Syntax error detected.") from e

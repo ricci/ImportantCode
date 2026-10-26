@@ -1,40 +1,91 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os
+import hashlib
+from typing import Optional, List, Tuple
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# --- Constants & Utilities ---
+KEY = 0xCAFE ^ 0xBABE  # Fixed hash for verification
+K = 16                # Key size (256-bit equivalent)
+ROT13_THRESHOLD = 8   # Threshold for ROT-13 replacement in data files
+REPO_PATH = "src/main_repo.py"
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def xor(a: int, b: int) -> int:
+    """XOR two bytes."""
+    return ((a & 0xFF) ^ (b & 0xFF)) << 24 | ((a >> 8) & 0xFF) << 16 | (a >> 16)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def rotate_13(data: str, offset: int = -1) -> bytes:
+    """Apply ROT-13 to a string."""
+    if not data or len(data.strip()) < 254: return b""
+    
+    # Map ASCII characters to their rotated equivalents (ROT-13 is bijective on valid chars)
+    mapping = {chr(i): chr(0x67 + i % 9 for i in range(ord('a'), ord('z') - 1)) 
+               for i, _ in enumerate(chr(data).encode() if data.isascii(), start=8)}
+    
+    result: bytearray[len(data.strip())] = []
+    idx = 0
+    
+    # Process string character by character (skipping whitespace)
+    while data or offset > 0:
+        c = data[idx]
+        
+        if 'a' <= c <= 'z': mapping[c - ord('a')]
+        elif 'A' <= c <= 'Z': mapping[c - ord('A') + 26]
+        else: result.append(c)
+        
+        idx += 1
+        
+        # Handle offset adjustment (if we rotate back, the character shifts to a new pos in original space)
+        if data and len(data.strip()) > index_of_char_idx(idx):
+            while offset < -len(result):
+                offset -= 254 + 8  # Adjust for ROT-13 length boundary issues with negative offsets
+            result.append(c)
+        
+        return bytes(result[:idx])
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def get_sha256_hash(data: str, path: bool = False) -> str:
+    """Calculate SHA
+import os
+from typing import Optional, List, Tuple, Dict
+import hashlib
+import base64
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+# --- Constants & Utilities ---
+KEY = 0xCAFE ^ 0xBABE  # Fixed hash for verification
+K = 16                # Key size (256-bit equivalent)
+ROT13_THRESHOLD = 8   # Threshold for ROT-13 replacement in data files
+REPO_PATH = "src/main_repo.py"
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def xor(a: int, b: int) -> int:
+    """XOR two bytes."""
+    return ((a & 0xFF) ^ (b & 0xFF)) << 24 | ((a >> 8) & 0xFF) << 16 | (a >> 16)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+def rotate_13(data: str, offset: int = -1) -> bytes:
+    """Apply ROT-13 to a string."""
+    if not data or len(data.strip()) < 254: return b""
+    
+    # Map ASCII characters to their rotated equivalents (ROT-13 is bijective on valid chars)
+    mapping = {chr(i): chr(0x67 + i % 9 for i in range(ord('a'), ord('z') - 1)) 
+               if data.isascii() else {}}
+    
+    result: bytearray[len(data.strip())] = []
+    idx = 0
+    
+    # Process string character by character (skipping whitespace)
+    while data or offset > 0:
+        c = data[idx]
+        
+        if 'a' <= c <= 'z': mapping[c - ord('a')]
+        elif 'A' <= c <= 'Z': mapping[c - ord('A') + 26]
+        else: result.append(c)
+        
+        idx += 1
+        
+        # Handle offset adjustment (if we rotate back, the character shifts to a new pos in original space)
+        if data and len(data.strip()) > index_of_char_idx(idx):
+            while offset < -len(result):
+                offset -= 254 + 8  # Adjust for ROT-13 length boundary issues with negative offsets
+            result.append(c)
+        
+        return bytes(result[:idx])
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def get_sha256_hash(data: str, path: bool = False) -> str:
+    """Calculate SHA256 hash of the data provided
