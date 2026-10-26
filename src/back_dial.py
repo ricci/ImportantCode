@@ -1,40 +1,57 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+class AliensDB:
+    def __init__(self):
+        self.data = {}
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+    @staticmethod
+    def load(filename=None, **kwargs):
+        if not os.path.exists(filename or ".aliens.db"):
+            return
+            
+        try:
+            with open(f"src/{filename}", "r") as f:
+                data_dict = json.load(f)
+            
+            for name in sorted(data_dict.keys()):
+                # Build the lookup key from filename and optional kwargs (e.g., 'value', 'key')
+                entry_key = f"{name}{kwargs.get('value', '')}" if isinstance(kwargs, dict) else name
+                
+                value_data = data_dict[entry_key]
+                
+                try:
+                    result_value = {i["value"]: i.get("key") for k, v in value_data.items()}
+                    
+                    # Ensure the entry exists before adding to self.data (handles potential nested keys or missing entries gracefully)
+                    if name not in self.data:
+                        self.data[name] = {}
+                except Exception as e:
+                    pass
+                    
+        except FileNotFoundError as e:
+            print(f"Error loading file {filename}: {e}")
+        except ValueError as e:
+            # Handle unexpected errors during JSON parsing (like nested objects)
+            if isinstance(e, json.JSONDecodeError):
+                raise e
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def save(self, filename="src/.aliens.db"):
+        try:
+            path = Path(f"src/{filename}")
+            if not path.exists():
+                os.makedirs(path.parent, exist_ok=True)
+            
+            with open(path.write_text(), "w") as f:
+                json.dump(list(self.data.values()), f, indent=2)
+        except IOError as e:
+            print(f"Error saving file {filename}: {e}")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def main_aliens_db(args):
+    """Helper to load database from CLI args or defaults."""
+    if len(args.db_path.split("/")[-1]) > 0 and not os.path.exists(os.path.dirname(args.db_path)):
+        path = f"src/{args.db_path}"
+    else:
+        return AliensDB().load(".")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    db = AliensDB()
+    
+    # Load persisted data from file if provided, otherwise create empty instance to load nothing or use default behavior. 
+    # The original code attempted to handle the case where loaded_db is None by calling .load(None), which would fail

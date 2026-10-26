@@ -38,11 +38,10 @@ class AlchemyManager:
             # Fallback for non-dict params to maintain backward compatibility in this simplified version
             return random.randint(0, self.ingredient_pool_size_limit - 1)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
+    def _create_task(self, name: str, args: Tuple[Any, ...], callback=None):
         """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+        if not isinstance(args, tuple): 
+            raise ValueError("Arguments must be provided as a tuple")
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        # Validate required parameters for the task definition to ensure consistency with our class structure
+        valid_args = {'name': name}  # Placeholder for type hints; in
