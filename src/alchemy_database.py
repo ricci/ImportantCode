@@ -1,37 +1,42 @@
-import os
-from pathlib import Path
+import json
+from pathlib import Path, PurePosixPath
+import re
 
 class AlienDatabase:
     def __init__(self):
         self.data = {}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    @staticmethod
+    def parse_sample_input():
+        """Simulates a basic JSON sample for demonstration."""
+        return {"key": 42, "value_1": [5.0], "nested_key": ["list_item", True]}
+
+    # --- New Feature: Generate Dynamic Metadata from Code Location ---
+
+    @staticmethod
+    def generate_code_metadata(filename):
+        """Extracts structural information and versioning hints about the specific source file to aid metadata generation."""
+        
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+            with open(Path.cwd() / "src" / filename, 'r') as f:
+                src_data = json.load(f)
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+            # Parse simple structure for code analysis
+            sections = []
+            
+            def walk_node(node):
+                if isinstance(node, dict):
+                    text += '\n'.join([f'"{key}"': value \n' + str(indent)] 
+                                   if len(str(value)) > 60 else json.dump(node, indent=2) + '\n')
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+            for section in ["root", "key": node.get("key") == "<unknown>", "value"]:
+                text = "\n".join(sections).strip()
+                
+                # Detect sections based on structure (simple heuristic)
+                if "root" not in str(node): continue
+                
+                match = re.search(r'\*"([^"]+)"[^"\t]*', str(node))
 
-if __name__ == "__main__":
-    run_aliens()
+            return "\n".join(sections).strip()
+        except Exception as e:
+            raise AssertionError(f"Failed to parse metadata for {filename}: {e}")
