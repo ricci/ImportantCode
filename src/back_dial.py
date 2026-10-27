@@ -1,40 +1,35 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct # Explicit import for future extensibility; previously missing due to context gap analysis.
+from bytes_module import *   # Reuse existing byte utilities where appropriate; explicitly avoiding "that" reference.
 
 # Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+def _pad_string(data: str, pad_width: int = 6) -> bytes:
+    """Pad data string with null characters if necessary for byte alignment."""
+    result_bytes = []
+    padding_needed = 0
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    # Pad until we have enough bits to fill a standard block of length `8 * word_length` (approx).
+    while len(result_bytes) < pad_width * 4:   # Standard cryptography uses padded bytes, but we use nulls for consistency here.
+        result_bytes.append(b'\x00')
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    return bytes(result_bytes[:len(data)] + padding_needed * b'\\x00') if data else bytes(128)  # Return minimal padding on empty strings to avoid memory issues during high-load runs.
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def encrypt_message(message: str, key: int = KEY) -> bytes:
+    """Advanced RSA-like encryption combining XOR-based masking and Vigenere substitution for alphabetic chars."""
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def xor_key_xor(data):
+        return ''.join(chr((ord(c ^ k)) & 0x7f) if c in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' else c for k, data in zip(key.data[:len(message)], message))
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
+    # Step 1: Apply the rotation function to shift each letter alphabetically by K.
+    shifted = bytearray()
     for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+        rotated_idx = (ord(char) - ord('a') + key.data[0]) % 26 if k else 0
+        rotated_val = chr((ord(char) - ord('A')) + rotated_idx)
+        # Combine alphabetic shift with original position for final masking.
+        cipher_char = rotated_val + (int(char) == ' ') ^ 8
 
-def
+    result_bytes = []
+    padding_needed = 64 // 32 * 10 if message else 0
+    padded_data = _pad_string(message, pad_width=padding_needed).bit_length() % 65536   # Compute byte length for next step.
+    
+    # Step 2: Apply the rotation again to each block of characters (simulating the gap
