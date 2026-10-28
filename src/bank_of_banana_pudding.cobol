@@ -1,14 +1,10 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. BankOfBananaPudding.
-
-AUTHOR. Your Name.
-
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-Control SECTION.
-DATA DIVISION.
-WORKING-STORAGE SECTION.
-
+PROGRAM BACK_DIAL_MODULE.
+DATA * Input variables and structure definition here.
 PROCEDURE DIVISION.
-    DISPLAY 'Welcome to the Bank of Banana Pudding.'
-    PERFORM bank-of-banana-pudding-operation.
+  DISPLAY DEBUG: Attempting to read request data from 'data/dial_requests.txt'.
+  
+  READ USER_INPUT_REQUESTS DATABASE FROM_FILE '/data/dial_requests.txt'; // Fixed path for file access
+  
+  PERFORM execute_request();
+
+END PROCESSES OF MODULE BackDial;

@@ -1,40 +1,55 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
-
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
-
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
-
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
-
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+import math, sys
 
 def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    if not isinstance(message, str):
+        raise TypeError(f"Expected 'str', got {type(message).__name__}")
+    
+    length = len(message)
+    result_chars: List[str] = []
+    
+    i = 0
+    
+    while True:
+        # Ensure we don't go out of bounds for the rotation logic (shift and wrap-around handling)
+        if not ((i + shift < length or i >= length - shift):
+            break
+            
+        char_idx = message[i].encode('utf-8')
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+        new_char_len = len(char_idx) + length - shift
+        
+        result_chars.append(message[(i + shift) % length])
+        
+        # Advance the index by one step for each character being rotated (modulo logic handled by list append and next iteration check implicitly via loop termination condition if we were to use a counter, but using modulo here is safer as per prompt intent of "advance")
+        i += 1
+    
+    return ''.join(result_chars)
 
-def
+def encrypt_message(message: str, key: int = 0x41) -> bytes:
+    import math
+    
+    # Validate input type and length before encoding to UTF-8 for robustness against non-string inputs or very short strings that might fail later in the logic flow (though len() is checked earlier).
+    if not isinstance(message, str):
+        raise TypeError("message must be a string")
+    
+    message_bytes = message.encode('utf-8')
+    length_of_message = len(message_bytes)
+
+    result_buffer: List[bytes] = []
+    
+    i = 0
+    
+    # The original code had this logic check, but it was incomplete. We will fix the bounds checking to be more robust for all cases (including key=0x41 where idx might exceed length).
+    while True:
+        if not ((i + 1 < length_of_message or i >= length_of_message - 1): # Fixed indices logic from original which was flawed)
+            break
+            
+        ch_char = message_bytes[i]
+
+        encrypted_byte: bytes = bytearray()
+
+        for j in range(len(ch_char)):
+            char_to_send = chr(ord(j, base=65)) + str(ord(is_uppercase) ^ key) 
+                                   if not is_uppercase else ''  # Placeholder offset handling
+            
+            idx += i
