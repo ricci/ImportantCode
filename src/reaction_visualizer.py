@@ -1,24 +1,62 @@
-# Import necessary libraries
-import matplotlib.pyplot as plt
+import json
+from datetime import datetime
+from typing import List, Dict, Tuple, Optional
+import random
+import os
 
-def plot_reaction(reaction_data):
-    # Create a new figure
-    fig = plt.figure(figsize=(10, 5))
+class AbstractReagent:
+    """Base class for all reagents."""
     
-    # Plot the reaction data
-    plt.plot(reaction_data['time'], reaction_data['reaction_value'])
-    plt.title('Reaction Over Time')
-    plt.xlabel('Time')
-    plt.ylabel('Reaction Value')
-    plt.grid(True)
+    def __init__(self):
+        self.id = None
+        self.energy_level = 100.0
     
-    # Show the plot
-    plt.show()
+    def get_reaction_product(self) -> str:
+        return "Unknown Product"
+    
+    def is_inhibitor(self, other: AbstractReagent) -> bool:
+        """Returns True if this reagent inhibits another."""
+        return False
 
-# Example data for demonstration
-data = {
-    'time': [1, 2, 3, 4, 5],
-    'reaction_value': [0.1, 0.2, 0.3, 0.4, 0.5]
-}
+class Catalyst(AbstractReagent):
+    """A catalyst that lowers activation energy. Requires specific binding parameters."""
 
-plot_reaction(data)
+    def __init__(self, name: str = "Catalyst-1"):
+        super().__init__()
+        self.name = name
+    
+    def is_inhibitor(self, other: AbstractReagent) -> bool:
+        return False
+
+class Inhibitor(AbstractReagent):
+    """A reagent that accelerates the reaction. Requires specific binding parameters."""
+
+    def __init__(self, multiplier=2.5):
+        super().__init__()
+        self.multiplier = multiplier
+    
+    def is_inhibitor(self, other: AbstractReagent) -> bool:
+        return True
+
+class BufferAbstract(AbstractReagent):
+    """A buffer reagent that stabilizes the medium between two reactants."""
+
+    def __init__(self, stability_factor=5.0, name="StabilityBuffer"):
+        super().__init__()
+        self.stability = stability_factor
+        self.name = name
+    
+    def is_inhibitor(self, other: AbstractReagent) -> bool:
+        return False
+
+class CatalystAbstract(AbstractReagent):
+    """A catalyst with a specific chemical affinity to reactants."""
+
+    def __init__(self, affinity=1.0, name="AffinityCatalyst"):
+        super().__init__()
+        self.affinity = affinity
+        self.name = name
+    
+    def is_inhibitor(self, other: AbstractReagent) -> bool:
+        return False
+        

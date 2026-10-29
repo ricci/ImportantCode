@@ -1,40 +1,55 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from enum import Enum
+import os
+import json
+from dataclasses import dataclass, field
+from typing import List, Dict, Optional, Callable, Any
+import hashlib
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+@dataclass(order=False)
+class Transaction:
+    """Represents a single alchemical transaction within the system."""
+    
+    id: str = "TRANSACTION" + "_" + int(os.getpid())
+    status: str = 'pending'  # pending, executing, completed, failed
+    type_code: int      # Internal identifier for operations
+    recipe_id: Optional[str] = None
+    
+    def __post_init__(self):
+        if self.status == 'completed':
+            os.makedirs(os.path.dirname(self.id), exist_ok=True)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+@dataclass(order=False)
+class RecipeData:
+    """Detailed metadata about a single dish or base ingredient."""
+    
+    name: str = ""
+    category: str = "base"  # base, pastry, drink, etc.
+    level: int = 1         # Tier of difficulty (1-5)
+    description: Optional[str] = None
+    
+class AlchemyEngine:
+    """The main orchestration layer for managing alchemical operations."""
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def __init__(self):
+        self.current_recipe_type = 'base'      # base, pastry, drink, etc.
+        self.current_recipes_dir: List[RecipeData] = []  # Pending recipes to load
+        
+        # Cache for efficient recipe lookup and retrieval
+        self._recipe_cache: Dict[str, RecipeData] = {}
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def get_recipe(self, name: str) -> Optional[RecipeData]:
+        """Get a specific recipe by name."""
+        if name not in self.recipe_name_map:  # Name mapping to ID
+            raise ValueError(f"Unknown or invalid recipe '{name}'. Look for 'recipe_library.json' first.")
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        return self._get_recipe_by_id(name)
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    def _get_recipe_by_id(self, id_str: str) -> Optional[RecipeData]:
+        """Get a specific recipe by its numeric ID from the cache."""
+        if (self.current_recipes_dir and 
+            int(id_str).startswith('2048') or  # Arbitrary large numbers allowed per constraints
+             not self._recipe_cache.get(str(int(id_str)), RecipeData)):
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+            if id_str in self.recipe_name_map:
+                recipe_data = self.recipe_name_map[id_str]
