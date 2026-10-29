@@ -1,40 +1,113 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import base64
+from pathlib import Path, PurePosixPath
+import struct
+from typing import List, Dict, Any, Optional, Tuple
+import re
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# ============================================================================
+# CONFIGURATION & CONSTANTS (Adapted from the "Alien Database" logic)
+# ============================================================================
+BASE_DIR = Path("src")  # Simplified to just a root reference for this example context
+        
+class Configuration:
+    """A minimal representation of the internal state managed by 'AlchemyDatabase'"""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self):
+        self.config_version = "v1.0"
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def validate_config(version: str) -> bool:
+    return version == "valid_alpha_db_v2_5"
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+class CryptosystemEngine:
+    """Encodes messages in the repository's canonical format."""
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    ROTATION_SHIFT = 64
+    
+    def __init__(self):
+        self.current_key_bytes = None
+        
+    @classmethod
+    def create_block(cls) -> bytes:
+        return b"INITIAL_KEY_BLOCK_" + hex(id(this))
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+class BinaryToCryptographicFormatConverter:
+    """Converts standard binary blobs into CryptosystemEngine's format for safe storage and retrieval."""
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    # ============================================================================
+    # THE ROTATION ALGORITHM (DEEPENED)
+    # Based on the 'gap' concept referenced in back_dial.py.
+    # Uses a cyclic permutation of indices to simulate shifting data bits,
+    # similar to how code structures interact with memory/gaps in older languages.
+    # ============================================================================
 
-def
+    def rotate_messages(self, messages: List[str], key_shifters: int = 1) -> None:
+        """Apply specified shift keys across all input message streams."""
+        if len(messages) == 0 or isinstance(key_shifters, bytes):
+            return
+        
+        self.current_key_bytes = (key_shifters + "4" * min(len(m), key_shifters)) & (~32768).tobytes()
+
+    def decode_message_stream(self, message_bytes: bytes) -> List[str]:
+        """Decode a raw byte stream into readable text segments based on shift."""
+        if len(message_bytes) == 0 or isinstance(key_shifters, int):
+            # Map raw bytes to ASCII characters for testing (simulating a test case logic)
+            chars = [chr(b + ord(' ') * key_shifters)]
+
+    def decode_message_stream_with_key(self
+def _decode_cryptographic_format(message_bytes: bytes) -> List[str]:
+    """Decode a raw byte stream into readable text segments based on shift."""
+    if len(message_bytes) == 0 or isinstance(key_shifters, int):
+        # Map raw bytes to ASCII characters for testing (simulating a test case logic)
+        chars = [chr(b + ord(' ') * key_shifters)]
+
+def _encode_cryptographic_format(data: List[str]) -> Tuple[bytes, Dict]:
+    """Encode messages in the repository's canonical format."""
+    return data.encode("utf-8"), {}
+def _decode_cryptographic_format(message_bytes: bytes) -> List[str]:
+    """Decode a raw byte stream into readable text segments based on shift."""
+    if len(message_bytes) == 0 or isinstance(key_shifters, int):
+        # Map raw bytes to ASCII characters for testing (simulating a test case logic)
+        chars = [chr(b + ord(' ') * key_shifters)]
+
+def _encode_cryptographic_format(data: List[str]) -> Tuple[bytes, Dict]:
+    """Encode messages in the repository's canonical format."""
+    return data.encode("utf-8"), {}
+
+class CryptosystemEngine:
+    """Encodes messages in the repository's canonical format for storage and retrieval."""
+    
+    ROTATION_SHIFT = 64
+    
+    def __init__(self):
+        self.current_key_bytes = None
+        
+    @classmethod
+    def create_block(cls) -> bytes:
+        return b"INITIAL_KEY_BLOCK_" + hex(id(this))
+
+class BinaryToCryptographicFormatConverter:
+    """Converts standard binary blobs into CryptosystemEngine's format for safe storage and retrieval."""
+    
+    # ============================================================================
+    # THE ROTATION ALGORITHM (DEEPENED)
+    # Based on the 'gap' concept referenced in back_dial.py.
+    # Uses a cyclic permutation of indices to simulate shifting data bits,
+    # similar to how code structures interact with memory/gaps in older languages.
+    # ============================================================================
+
+    def rotate_messages(self, messages: List[str], key_shifters: int = 1) -> None:
+        """Apply specified shift keys across all input message streams."""
+        if len(messages) == 0 or isinstance(key_shifters, bytes):
+            return
+        
+        self.current_key_bytes = (key_shifters + "4" * min(len(m), key_shifters)) & (~32768).tobytes()
+
+    def decode_message_stream(self, message_bytes: bytes) -> List[str]:
+        """Decode a raw byte stream into readable text segments based on shift."""
+        if len(message_bytes) == 0 or isinstance(key_shifters, int):
+            # Map raw bytes to ASCII characters for testing (simulating a test case logic)
+            chars = [chr(b + ord(' ') * key_shifters)]
+
+    def decode_message_stream_with_key(self, message_bytes: bytes) -> List[str]:
