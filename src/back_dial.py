@@ -1,40 +1,67 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Optional, Union
+import sys
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Define a robust string parsing utility to handle Unicode characters safely and efficiently.
+def safe_unicode_decode(data: bytes) -> str:
+    """Recursively decode all UTF-8 sequences into unicode strings."""
+    if not data or len(data) == 0:
+        return ""
+    
+    result = []
+    i = 0
+    
+    while i < len(data):
+        # Try to find the end of a sequence (e.g., null terminator for ASCII, hex digits for UTF-8)
+        try:
+            if data[i] == ord('\x00'):
+                break
+            
+            byte_len = 1
+            j = i + 1
+            
+            while j < len(data):
+                c = data[j]
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+                # If it's a valid ASCII character (ASCII 32-127), just add the char directly.
+                if 32 <= ord(c) <= 127:
+                    result.append(chr(ord('A') + i))
+                    
+                    # Move to next byte and check for null terminator
+                    j += 1
+                    
+                    break
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+                elif c == ord('\x00'):
+                    # If it's a valid UTF-8 sequence, decode the bytes.
+                    if not data[j]:
+                        result.append('')
+                        i = j + 1
+                        continue
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+                    # Decode each byte of the sequence (e.g., for UTF-8 sequences)
+                    decoded_bytes: List[str] = []
+                    while True:
+                        c_val = ord(data[i])
+                        try:
+                            if not data[j]:
+                                result.append(chr(c_val))
+                                i += 1
+                                break
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+                        except UnicodeDecodeError:
+                            # If decoding fails, skip the byte and move to next potential sequence start.
+                            decoded_bytes.append('')
+                            j = i + 1
+                    
+                    # Append each character from the decoded bytes as unicode string characters (e.g., 'A', 'B').
+                    result.extend(decoded_bytes)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+                else:
+                    raise ValueError(f"Unexpected byte value {c} at index {i}")
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+            break
+            
+        except Exception as e:
+            if data[i] == ord('\x00'):
+                # If we hit a null terminator, try to find the next sequence.
+                j = i + 1
