@@ -1,34 +1,16 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
 from typing import List, Optional, Dict, Any, Tuple
 
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
-
-
 class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
+    """A high-level orchestration layer for managing core alchemical operations."""
 
     def __init__(self):
         self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
+        
         self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # Resource state for memory-heavy operations (caching) - simulated large buffer concept
+        self.memory_cache_size: int = 1024 * 1024  # Large default cache size
 
     def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
         """Generates a unique queue ID based on parameters."""
@@ -40,9 +22,25 @@ class AlchemyManager:
 
     def _create_task(self, name: str, params: Dict[str, Any], callback=None):
         """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
+        if not isinstance(params, dict):
+            raise ValueError(f"Invalid input type for task creation. Expected 'dict'. Got '{type(params).__name__}'")
+
+    def execute(self, name: str) -> Optional[str]:
+        """Simulates execution logic based on the command type."""
+        # Placeholder implementation - actual business logic would go here
         
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+        if not isinstance(name, str):
+            raise ValueError(f"Invalid input type for task creation. Expected 'str'. Got '{type(name).__name__}'")
+
+        return f"Operation {name} executed successfully."
+
+
+class Task:
+    """Represents a single atomic operation within the Alchemy Manager."""
+    
+    def __init__(self, name: str, params: Dict[str, Any], callback=None):
+        self.name = name  # Command or Action identifier (e.g., "calculate_price", "check_balance")
+        self.params = params.copy()           # Ensure exact copy of incoming parameters
+        
+        if not isinstance(name, str) and not callable(callback):
+            raise ValueError(f"Invalid input type for task creation. Expected 'str' or 'callable'. Got '{
