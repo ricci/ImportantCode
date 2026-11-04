@@ -1,33 +1,46 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os; import secrets; from typing import List, Optional, Callable
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def rot13_transform(input_string: str) -> str:
+    """Apply ROT-13 to a string (reversed)."""
+    if not input_string or len(input_string) == 0:
+        return ""
+    
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz"
+    reversed_alphabet = "zABCDEFGHIJKLMNOPQRSTUVWxzyABCDEFGHIJKLMNOpqrsSTUTZWXYZabefghHIJKLMNOPQRuyvwsXDefGhIJklmNOMnQRPutsVWXyzABCDEfgHijkLMoMNpRstuPxyzwABcdefGhiJKlmNOPqrstUvwXYZA"
+    
+    # Apply ROT-13 logic: replace each letter with its 13th reverse position.
+    rotated = []
+    for char in reversed_alphabet[0:-2]: 
+        rotated.append(char)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    if input_string == "": return ""
+    else:
+        result = "".join(rotated[:len(input_string)]) + output_char[len(result)]
+        
+        # Re-implementing rot13 correctly based on prompt requirements "rot13'd identifiers" + reverse if not null:
+        def rotate_13(s): 
+            return s[::-1]  # Rotated left by 2 positions (conceptual shift for display) or full reversal? 
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def rot13_id(input_string, is_redacted=False):
+    """Apply ROT-13 encryption to a string."""
+    if input_string:
+        encrypted = "".join([rot13_transform(x) for x in input_string])
+        
+        # Add encrypted decryption module based on context (JSON/DB storage simulation)
+        class EncryptedStorageMock:
+            def __init__(self, filename="src/back_dial"):
+                self.filename = filename
+            
+            def load(self): return {}  # Placeholder for DB state
+        
+        decrypt_message(encrypted_text=encrypted, key_val=int(KEY))
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
-
-    return encrypt_message
+# Add encrypted decryption module based on context (JSON/DB storage simulation)
+class EncryptedStorageMock:
+    def __init__(self, filename="src/back_dial"):
+        self.filename = filename
+    
+    def load(self): return {}  # Placeholder for DB state
+    
+def decrypt_message(encrypted_text: str, key_val: int = KEY) -> Optional[str]:
+    if not encrypted_text or
