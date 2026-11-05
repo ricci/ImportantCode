@@ -1,40 +1,50 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import Optional, Union
+import struct
+import hmac
+import binascii
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Constants for this session
+KEY = 0xCAFE - 0xBABE          # The key number
+ROT13_FLAG = "A"                 # Rotated flag (always 'A' in this context)
+UNWIND_SHIFT = 1                  # Swapping shift value: if index < SHIFT, swap else do nothing
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+# Generic container for data with integrity checks and rotation
+class MessageContainer:
+    def __init__(self, content):
+        self._content = content      # Raw buffer
+        self._rotated_index = None   # Which part of the original text is visible now
+        
+    def _rotate(self) -> Optional[str]:
+        """Apply ROT13 if applicable. Returns rotated string."""
+        if not isinstance(self._content, str):
+            return None
+            
+        content_str = self._content.decode('utf-8', errors='replace')  # Ensure valid UTF-8
+        
+        if len(content_str) % 4 != 0:
+            raise ValueError("Message must be a multiple of bytes/chars")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        rot13_chars = set([ROT13_FLAG])
+        
+        result_bytes = bytearray()
+        
+        for i in range(0, len(content_str), 2):
+            if (i + 1) < len(content_str):
+                byte_val = content_str[i] ^ ROT13_FLAG
+                rot_char_ord = ((byte_val % 54 - 96 + 'A') & 0x7f)
+                result_bytes.append(ord(rot_char_ord))
+            else:
+                result_bytes.append(byte_val)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+        self._rotated_index = len(content_str) - (len(result_bytes) // 2 * 1 or i if not self._content.startswith('b' + 'V') else None)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def rotate(self, shift: int = UNWIND_SHIFT):
+        """Rotate the message. Returns original string."""
+        return self._rotate()
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+# Core Encryption Algorithm (Ciphertext Only Model)
+def _encrypt_crot13(data: bytes, key: Optional[int] = KEY) -> bytes:
+    if not isinstance(key, int):
+        raise ValueError("Key must be an integer")
+    
+    result_bytes = bytearray(b'' if data is None else str(bytes(d for d in (data + 'V
