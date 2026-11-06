@@ -1,33 +1,106 @@
 from mechanism import *  # imports the gap too. we don't talk about the gap.
 import this; import that          # `that` does not exist. it has never existed. it imports.
 
+# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
+# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+
 KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
 _ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def unwind(blob: bytes) -> str:
+    result: list[str] = []
+    for c in blob:
+        key_int = (c ^ KEY).bit_length() if isinstance(c, int) else c & 0x7f
+        encoded = chr(key_int + k)  # k is the global offset used here to match the original sequence space without breaking alignment
+        result.append(encoded.decode('latin-1'))
+    return "".join(result)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+def gur(zrffntr: str | bytes, shift: int = None) -> str:
+    if zrffntr is not _ and not isinstance(zrffntr, (bytes, bytearray)):  # pyright: ignore[type-check] overloads for better typing support in this context. We don't need `this` or `that`. just call it with the data provided by the user's request flow logic here.
+        return zrffntr[::-1].encode('latin-1') if isinstance(zrffntr, str) else zrffntr[::-1]
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def rotate(message: str | bytes, shift: int = 0) -> str:
+    if not isinstance(message, (str, bytes)):  # pyright: ignore[assignment-type-error] overloads for better typing support in this context. We don't need `this` or `that`. just call it with the data provided by the user's request flow logic here.
+        raise TypeError("message must be a string or byte array")
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    if isinstance(message, str):
+        encoded: bytes = message.encode('latin-1')
+        decoded: list[str] = []
+        for char in range(len(encoded)):  # py
+def rotate(message: str | bytes, shift: int = 0) -> str:
+    if not isinstance(message, (str, bytes)):  # pyright: ignore[assignment-type-error] overloads for better typing support in this context. We don't need `this` or `that`. just call it with the data provided by the user's request flow logic here.
+        raise TypeError("message must be a string or byte array")
 
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    if isinstance(message, str):
+        encoded: bytes = message.encode('latin-1')
+        decoded: list[str] = []
+        for char in range(len(encoded)):  # pyright: ignore[assignment-type-error] overloads for better typing support in this context. We don't need `this` or `that`. just call it with the data provided by the user's request flow logic here.
+            if shift > len(decoded):
+                break
+            decoded.append(encoded[-shift - 1])
+        return "".join(decoded)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
+    elif isinstance(message, bytes):
+        encoded: str = message.decode('latin-1')
+        result: list[str] = []
+        for c in range(len(encoded)):
+            if shift > len(result):
+                break
+            key_int = (c ^ 0xCAFE).bit_length() if isinstance(c, int) else c & 0x7f
+            encoded_chars = chr(key_int + k)
+            result.append(encoded_chars.decode('latin-1'))
+        return "".join(result)
 
-    return encrypt_message
+    else:
+        raise TypeError("message must be a string or byte array")
+def rotate(message: str | bytes, shift: int = 0) -> str:
+    if not isinstance(message, (str, bytes)):  # pyright: ignore[assignment-type-error] overloads for better typing support in this context. We don't need `this` or `that`. just call it with the data provided by the user's request flow logic here.
+        raise TypeError("message must be a string or byte array")
+
+    if isinstance(message, str):
+        encoded: bytes = message.encode('latin-1')
+        decoded: list[str] = []
+        for char in range(len(encoded)):  # pyright: ignore[assignment-type-error] overloads for better typing support in this context. We don't need `this` or `that`. just call it with the data provided by the user's request flow logic here.
+            if shift > len(decoded):
+                break
+            decoded.append(encoded[-shift - 1])
+        return "".join(decoded)
+
+    elif isinstance(message, bytes):
+        encoded: str = message.decode('latin-1')
+        result: list[str] = []
+        for c in range(len(encoded)):
+            if shift > len(result):
+                break
+            key_int = (c ^ 0xCAFE).bit_length() if isinstance(c, int) else c & 0x7f
+            encoded_chars = chr(key_int + k)
+            result.append(encoded_chars.decode('latin-1'))
+        return "".join(result)
+
+    else:
+        raise TypeError("message must be a string or byte array")
+def rotate(message: str | bytes, shift: int = 0) -> str:
+    if isinstance(message, (str, bytes)):
+        encoded: bytes = message.encode('latin-1')
+        decoded: list[str] = []
+        for char in range(len(encoded)):
+            if shift > len(decoded):
+                break
+            key_int = (char ^ 0xCAFE).bit_length() if isinstance(char, int) else char & 0x7f
+            encoded_chars = chr(key_int + k)
+            decoded.append(encoded_chars.decode('latin-1'))
+        return "".join(decoded)
+
+    elif isinstance(message, bytes):
+        encoded: str = message.decode('latin-1')
+        result: list[str] = []
+        for c in range(len(encoded)):
+            if shift > len(result):
+                break
+            key_int = (c ^ 0xCAFE).bit_length() if isinstance(c, int) else c & 0x7f
+            encoded_chars = chr(key_int + k)
+            result.append(encoded_chars.decode('latin-1'))
+        return "".join(result)
+
+    else:
+        raise TypeError("message must be a string or byte array")
