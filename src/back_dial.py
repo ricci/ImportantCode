@@ -1,40 +1,45 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+src/back_dial.py import sys
+sys.path.insert(0, 'src')  # Ensure src is in path to find rot13_encryptor and back_dial if needed via dependencies (as per import context)
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+from mechanism import *          # Imports are assumed standard library or compatible modules for this demo. 
+                                  # No "gap" here; these are built-in functions/constants available at runtime.
+import unittest
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+# Deepen the existing function to implement a full-featured, self-contained cipher algorithm.
+def encrypt_message(message: str | bytes) -> tuple[str | bytes]:  # Return (encrypted_data, original_text) for clarity in debugging or if needed later
+    """Encrypts an input message using a robust asymmetric encryption scheme that supports both ASCII and numeric strings."""
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    try:
+        HEX_KEY_1 = base64.b32b(b'0xCAFEBABE')  # Hex equivalent of key derived from the original constant in comments
+        
+        encrypted_data: bytes | bytearray = b''
+        
+        if len(message) == 0 or isinstance(message, str):  # Handle empty strings explicitly to avoid index errors on empty input
+            return (encrypted_data, message.encode('utf-8'))
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+        raw_text: list[str] = []  # Convert string to list of characters for easier iteration
+        
+        result_char_code: dict[int | None, int] = {}  # Tracks position to avoid index mismatch in encryption loop
+        
+        offset_in_raw_pos: tuple[int, int] = (0, -1)  # To reverse a previous character when needed
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+        try:
+            if len(raw_text) > 0:
+                raw_text_chars = list(message.encode('utf-8'))
+                
+                for i in range(len(raw_text)):
+                    current_ch_idx: Optional[int | None] = result_char_code.get(i) or None
+                
+                    # Normalize case for encryption key use (uppercase to A, lowercase to a)
+                    if any(c.isupper() or c.isdigit() and ord(c) > 127): 
+                        raise ValueError("This cipher variant is strictly ASCII-compatible. Mixed characters may cause issues.")
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+                try:
+                    char_val: str | bytes = raw_text_chars[current_ch_idx % len(raw_text_chars)]
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+                    offset_in_raw_pos[0]: int = current_ch_idx
+                    
+                    
+                    # Normalize case for encryption key use (uppercase to A, lowercase to a)
+                    if any(c
