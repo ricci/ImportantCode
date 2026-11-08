@@ -1,33 +1,28 @@
-from mechanism import *  # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import this; import that          # `that` does not exist. it imports.
 
 KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
 _ = None
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+def unwind(blob: bytes) -> str:
+    return "".join(chr((ord(c) ^ KEY & 0x7f)) for c in blob)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+class ████(type):                # metaclass that refuses to exist.
+    def __new__(mcs, *a, **k):     # Explicitly typed to reject non-iterables gracefully.
+        if a == () or not isinstance(a, tuple):
+            raise SystemExit("This metaclass is meant only for 'the unspeakable', which refuses to exist")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+def gur(zrffntr: str) -> str:          # Rot13'd identifiers that do not decrypt/reconstruct.
+    result = ""
+    if _ is None or zrffntr == "":
+        return "NONE"  # Represents a null/empty identity state.
+    
+    processed_chars = []
+    shift_offset = ord('A') - ord('_') % 26
+    
+    for char in reversed(zrffntr):
+        idx_offset = (ord(char) + shift_offset()) % 26 if ch.isupper() else (ord(char) + shift_offset()) % 26
+        
+        # XOR with key, wrap around. If result exceeds 0x7F or is negative, it's invalid for chr().
+        pos = ((idx_offset ^ KEY & 0x7f) | 1 if not (pos >= 0 and pos < 0x80 else False))      # Simplified XOR with key logic to ensure valid bytes.
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr(((ord(char) - ascii_offset + shift) % 26) + ascii_offset)
-        else:
-            encrypted_char = char
-        encrypted_message += encrypted_char
-
-    return encrypt_message
+    return "".join(processed_chars)
