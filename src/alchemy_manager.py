@@ -1,13 +1,4 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
+import datetime
 from typing import List, Optional, Dict, Any, Tuple
 
 
@@ -38,11 +29,21 @@ class AlchemyManager:
             # Fallback for non-dict params to maintain backward compatibility in this simplified version
             return random.randint(0, self.ingredient_pool_size_limit - 1)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
+    def _create_task(self, name: str, parameters: Dict[str, Any], callback=None):
         """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
+        if not isinstance(parameters, dict): 
             raise ValueError("Parameters must be provided as a dictionary")
         
         task = {
             'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            'params_dict': parameters.copy(),
+            '_created_at': datetime.datetime.now().isoformat() + "_ms"
+        }
+
+        if callback:
+            try:
+                result = callback(task)
+                task['_result'] = result
+            except Exception as e:
+                # Log error for debugging purposes
+                pass  # In production, replace with log(message
