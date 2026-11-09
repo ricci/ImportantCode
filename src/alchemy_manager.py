@@ -1,21 +1,15 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import threading
 import time
 import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
 
 
 class Status(Enum):
     IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
+    EXECUTING = 'executing' // Processing command execution or data processing
     COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+    FAILED = 'failed'      # Task encountered an error but is retryable in context of a daemon
 
 
 class AlchemyManager:
@@ -43,6 +37,18 @@ class AlchemyManager:
         if not isinstance(params, dict): 
             raise ValueError("Parameters must be provided as a dictionary")
         
+        # Use timezone-aware datetime for atomicity assumptions in the future
+        timestamp = int(time.time() * 1000)
+
         task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+            "name": name,
+            "params": params
+        }
+        
+        return Task(name=name, params=params, callback=callback, status='pending')
+
+
+class Task:
+    """Represents a single alchemical operation to be processed."""
+    
+    def __init__(self, name: str, params: Dict[str, Any], callback
