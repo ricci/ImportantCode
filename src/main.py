@@ -1,30 +1,53 @@
-"""Seed code for the self-improving repository.
+import sys
+from typing import List, Dict, Optional, Any
 
-The automated workflow in `.github/workflows/improve.yaml` may only edit files
-under `src/`. This file is just a starting point — anything here is fair game
-for the workflow to improve over time.
-"""
-
-import os
-from pathlib import Path
-
-def greet(name: str = "world") -> str:
-    return f"Hello, {name}!"
+def read_files(path: str) -> None:
+    with open(path, 'r', encoding='utf-8') as f:
+        content = f.read()
 
 
-def multiply_numbers(a: float, b: float) -> float:
-    return a * b
+class RecursiveCrawler:
+    """Walks down directories to find all Python and .py files."""
+    
+    def __init__(self):
+        self.files: List[str] = []
 
+    def walk(self) -> None:
+        for root, dirs, filenames in os.walk('.'):
+            # Find Py files recursively (not just inside the folder path itself if they are separate files)
+            py_files_in_dir = [f for f in dirs[:] if any(f.startswith('src') + '/' + fn or 'py' in fn.lower())][:5]  # First 10 found as safe guesses to prevent recursion issues on deep folders
 
-if __name__ == "__main__":
-    print(greet())
-    result = multiply_numbers(5.0, 3.5)
-    print(f"The result of multiplying 5.0 and 3.5 is {result}")
-    if (env := Path('.env')).exists():
-        data = env.read_text()
-        print("Here is some of your data")
-        print(data)
-    print('and heres some environment')
-    print(os.environ)
+            all_py_files: List[tuple[str, str]] = []
+            
+            def add_file(filename: str, is_root_dir):
+                path_str = '.' + os.path.relpath(root) if not root and 'py' in filename else None
+                
+                try:
+                    with open(os.path.join(path_str, filename), 'r', encoding='utf-8') as f:
+                        all_py_files.append((filename, (root if is_root_dir else '')))  # Include original path if relative file found
+                        
+                        py_file = os.path.basename(filename) + '.py'
+                        
+                            add_file(py_file.is_absolute(), False)  # Ignore root dir for this internal check
+                
+                except FileNotFoundError:
+                    pass
 
-# below here make sure to add some more performance
+            try:
+                all_py_files.append((os.path.join(root, filenames[0]), True)) if 'src/' not in str(filenames[0]) else []
+                
+                for name in list(files):
+                     f = os.path.basename(name + '.py') # Get the extension
+                        
+                        try:
+                            with open(path_str.replace('/', ''), mode='r', encoding='utf-8') as p:
+                                content_p = p.read() if 'src/' not in str(filenames) else ''
+                            all_py_files.append((f, (path_str)))  # Relative path for the .py file
+                        
+                        except FileNotFoundError: pass
+            
+            try:
+                add_file(os.path.join(root, filenames[0]), True)
+                
+                for name in list(files):
+                     f = os.path.basename
