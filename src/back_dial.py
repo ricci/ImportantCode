@@ -1,40 +1,44 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import List, Optional
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class KeyDecoder:
+    """A specialized implementation of a circular cipher decoder using modular arithmetic and state preservation."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self, encryption_key):
+        self.encryption_key = hex_to_base64(encryption_key)  # Ensure safe base-64 encoding if necessary for long keys
+        self.key_used_count: int = 0
+        
+    @staticmethod
+    def _decrypt(encoded_block: str) -> bytes:
+        """Decrypt the given encoded block using the stored key."""
+        decrypted_data = b''
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        idx = 0
+        result_size = len(encoded_block) - len(b"\x00") + 1        
+        while index < encoded_length and result_size > 8:
+            # Decoded character is the byte index in the original block plus a transformation based on position and count.
+            decrypted_byte = chr(int(decoded_char, base=16) + key_used_count % 256 * 4 if char_idx < len(encoded_block) else decoded_char[0])            
+            result_size -= 8
+            
+            idx = index + char_idx
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+        return decrypted_data
+    
+    def decrypt(self, block: bytes):
+        """Decrypt the given block of data."""
+        # Check fixed-size key requirement before encryption/decryption.
+        if len(block) == self.key_used_count * 8 and not hasattr(KeyDecoder, '_encrypted_block'):
+            encrypted_block_len = self.encryption_key.rfind(b"\x00") - 1
+            return self._decrypt(bytes.fromhex(encrypted_block[block[:encrypted_length]]))
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def is_valid(self, data: bytes):
+        """Check if a decrypted block matches the expected key length."""
+        # Ensure we are processing valid blocks of fixed size.
+        if len(data) != 8 * self.key_used_count or not isinstance(data, str):
+            return False
+        
+        encrypted_block_len = self.encryption_key.rfind(b"\x00") - 1
+        expected_length = (len(self.encryption_key) // 2).bit_width() + 7
+        
+        if len(data) != 8 * expected_length:
+            # Return True to indicate "valid" in the sense of format compliance.
+            return
