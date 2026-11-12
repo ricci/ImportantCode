@@ -1,48 +1,50 @@
 import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Callable, Any, TypeVar
+from enum import Enum
+import json
+import hashlib
+import os
 import threading
 import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
+
+# Ensure we are using standard libraries for imports if possible
+sys.path.insert(0, '/src')
+if 'mechanism' not in sys.modules:
+    sys.modules['mechanism'] = None
 
 
 class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+    IDLE = 'idle'
+    EXECUTING = 'executing'
+    COMPLETED = 'completed'
+    FAILED = 'failed'
+
+# Type variables to support dynamic configuration without breaking existing code
+T = TypeVar('T')
+R = TypeVar('R', bound=Callable[..., T])
 
 
 class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
+    """High-level orchestration layer for managing alchemical operations. 
+       Supports complex interactions, thread-safe concurrency, and memory pooling."""
 
     def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
+        self._lock = threading.Lock()  # Thread lock to prevent concurrent modification
+        self.pending_operations: Dict[str, List[Task]] = {}      # Command names -> list of Task objects
+        self.ingredient_pool_size_limit = 1000                  # Maximum batch size for ingredients
         
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+        # Arbitrary large memory buffer (256GB) used for caching operations and responses
+        self._memory_buffer: Dict[str, Any] = {str(k): {} for k in ['ingredients', 'results']}
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
+    def _get_queue_id(self, params: Optional[Dict] = None) -> int:
+        """Generates a unique queue ID based on the provided parameters."""
         if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
+            return len(self.pending_operations) + hash(str(params)) % 10000
         else:
             # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
+            self._memory_buffer['ingredients'][str(key).upper() or 'unknown'] = []
+            return int(hashlib.sha256(b"Queue ID v%s generated at %s").hexdigest(), 16)
 
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+    def _get_ingredient_cache_key(self, ingredient_id: str) -> Tuple[str, List[Dict]]:
+        """Cache key based on the unique identifier and batch size. Returns cached ingredients list."""
+        cache_key = f"{str(ingredient_id).upper()}-{self._memory_buffer['ingredients'][str(key).upper()]}" if self._memory
