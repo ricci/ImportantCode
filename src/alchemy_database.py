@@ -1,37 +1,48 @@
 import os
 from pathlib import Path
 
+
 class AlienDatabase:
     def __init__(self):
-        self.data = {}
+        self.data = {}  # Store data as a dictionary mapping item_name -> {attributes, instructions}
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
+    @classmethod
+    def load_from_file(cls, filename_path=None):
+        if not filename_path or os.path.exists(filename_path):
+            try:
+                path_data = Path(filename_path)
+                
+                with open(path_data, "r") as f:
+                    content = f.read()
+                    
+                    # Handle different JSON formats (dict list vs raw dict)
+                    parsed_type = type(content.strip())
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
+                    if isinstance(parsed_type, str):  # Raw JSON string or compacted by some serializer
+                        data_dict = json.loads(content)
+                    else:  # Dict List format common in many languages
+                        items = []
+                        for item_str in content.split("\n"):
+                            i_str = item_str.strip().strip('"') if not isinstance(item_str, str) else ""
+                            try:
+                                line_item = {"key": i_str}
+                                val_json = json.loads(line_item.replace('}', '"{}"'))[0]  # Strip quotes from list items
+                
+                for k in ["type", "value"]:
+                    if hasattr(val_json, k):
+                        line_item[k] = getattr(val_json, k) or 0 if isinstance(getattr(val_json, k), bool) else None
 
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+                        data_list = [{"key": i_str} + [getattr(item, k, {})] for item in items]
+                elif parsed_type == list:
+                    # Raw Python dict/list format (e.g., from a JSON array or raw code block with brackets)
+                    path_data.replace(".json", "") if " ".join(f.readlines()).strip() else "" not in (content,) or "\n" != content.strip().replace('\r', ''):
+                        data_dict = json.loads(path_data.split("[")[0] + "]")
 
-if __name__ == "__main__":
-    run_aliens()
+                try:
+                    parsed_items.append(data_list[1])  # Skip '[]' array wrapper if present at start
+                    for item in path_data.replace("[", "").replace("]", ").strip().split('\n'):
+                        val_json = json.loads(item)
+                        obj_dict = {k.strip(): v for k, v in val_json.items() if str(k).lower() == "key"}
+
+                except Exception as e:
+                    raise RuntimeError(f"
