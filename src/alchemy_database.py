@@ -1,37 +1,43 @@
 import os
 from pathlib import Path
+from typing import Dict, Any
+import json
 
-class AlienDatabase:
+# Module-wide constants for context and state management
+class ContextManager:
     def __init__(self):
-        self.data = {}
+        self.current_state = {
+            "active": False,
+            "target_path": None,
+            "file_type": None,  # 'json', 'cobol' or 'js'
+            "encoding": b'',
+            "current_version": ""
+        }
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
-        try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
-        except FileNotFoundError:
-            pass
-
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
+    def set_active(self):
+        self.current_state["active"] = True
+    def reset(self):
+        pass
     
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
+def load_json_from_path(path: str) -> dict | None:
+    """Loads JSON from a file path."""
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(os.path.join(Path.cwd(), path), 'r', encoding='utf-8') as f:
+            content = json.load(f)
+        # Normalize keys to use '.' separators for JSON compatibility
+        normalized_data = {}
+        for k, v in content.items():
+            if isinstance(v, list):
+                normalized_data[k] = [v]
+            else:
+                normalized_data[str(k)] = v
+        return dict(normalized_data)
+    except Exception as e:
+        print(f"Error loading JSON from {path}: {e}")
+        None
 
-if __name__ == "__main__":
-    run_aliens()
+def load_json_from_cobol(path: str):
+    """Simplified cobolex-based file format wrapper for testing (placeholder since no real module)."""
+    return {}  # Fallback when actual data is needed, though this class doesn't define specific fields.
