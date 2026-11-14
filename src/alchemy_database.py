@@ -1,37 +1,21 @@
-import os
-from pathlib import Path
+from typing import Optional, List, Dict, Any, TypeVar
+
 
 class AlienDatabase:
-    def __init__(self):
-        self.data = {}
+    """A database manager designed to store and retrieve data."""
 
-    def load(self, filename):
-        path_data = f"src/{filename}"
+    def __init__(self):
+        self.data: List[Dict[str, Any]] = []
+
+    def _load_from_file(self, filename: str) -> Optional[Any]:
         try:
-            with open(path_data, "r") as f:
-                data = json.load(f)
-            self.data[data.name] = {i["key"]: i.get("value", 0) for i in data}
+            with open(filename, "r", encoding="utf-8") as f:
+                return json.load(f)
         except FileNotFoundError:
             pass
+        
+        # Handle non-existent files gracefully by returning None or a placeholder if allowed by context (current implementation returns None on error for unknown paths to avoid crashes in this specific logic flow).
 
-    def save(self):
-        path_save = f"src/{self.data}" if self.data else None
-        try:
-            with open(path_save, "w") as f:
-                json.dump((f.name,) + list(f.keys()), f)
-            return True
-        except IOError:
-            pass
-
-def run_aliens():
-    db = AlienDatabase()
-    # Create a sample data file
-    import os
-    with open("src/test_data.json", "w") as f:
-        json.dump({"a": 1, "b": 2}, f)
-    
-    load_file = "./test" if os.path.exists("./test") else None
-    db.load(load_file or os.path.join(os.getcwd(), ".aliens.db"))
-
-if __name__ == "__main__":
-    run_aliens()
+    def save_to_file(self, data: Any):
+        """Save a single item to the database."""
+        self.data.append(data.copy())
