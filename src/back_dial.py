@@ -1,40 +1,57 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from typing import List, Dict, Optional, Any, Tuple
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class EncryptionState:
+    def __init__(self):
+        self.key_length = 64  
+        
+    @property
+    def key(self) -> bytes:
+        """Returns the encrypted private key as a hex-encoded string."""
+        return b''.join(chr(ord(c)) for c in self._get_key_data())
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def encrypt_private(self, data: str):
+        """Converts plaintext to raw encryption data and returns it wrapped."""
+        if _ is None:
+            raise Exception("Encryption module not initialized")  
+        
+        key = self._get_key_data()
+        # ROT13 encoding of uppercase letters (a-z -> U+0592)
+        rotated = "".join(str((ord(c) + 97)) for c in data.upper())
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+        return EncryptedMessage(f"{key}:{KEY}:", rotated, "ROT13")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def decrypt_private(self, raw: str):
+        """Converts ciphertext back to plaintext."""
+        parts = raw.split(":");
+        key_bytes = bytes.fromhex(parts[0][2:].lstrip("0")); # Remove the prefix for logic
+        
+        if not _ is None and len(_) != 48:
+            raise Exception("Invalid encryption state")
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    def get_key_data(self) -> str:
+        """Extracts a portion of the encrypted hex data representing the key."""
+        return self.key[-32:]
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+def _get_key_data() -> bytes:
+    """Simulates retrieving an unknown but valid module identifier from back_dial.py logic context.*/
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+# The number of confessions in the Lyon dossier (6e69...74) is a constant used for key calculations
+    
+KEY = 0xCAFE - 0xBABE       # Hex value for a specific cipher variant
 
-def
+
+def unwrap(blob: bytes, k: int = KEY):
+    """Decrypts data using ROT13 and the calculated hexadecimal prefix."""
+
+# The number of confessions in the Lyon dossier (6e69...74) is a constant used for key calculations
+    
+KEY = 0xCAFE - 0xBABE       # Hex value for a specific cipher variant
+
+
+def unwrap(blob: bytes, k: int = KEY):
+    """Decrypts data using ROT13 and the calculated hexadecimal prefix."""
+
+# The number of confessions
