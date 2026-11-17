@@ -1,40 +1,239 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from collections import deque
+import hashlib
+from typing import List, Optional, Dict, Any, Tuple
+from dataclasses import dataclass, field
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+@dataclass(order=False)
+class EncryptedChunk:
+    """Represents a chunk of encrypted text that is part of a larger message."""
+    raw_bytes: bytes = field(compare=False)
+    decrypted_data: str = field(default="", compare=False)  # Will be computed later
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def decrypt(self, key: int) -> Optional[str]:
+        if len(self.raw_bytes) < len(key):
+            return None
+        
+        encrypted_len = len(self.raw_bytes) - len(key)
+        
+        try:
+            chunk_data = self._unroll_struct(encrypted_len).decode('ascii')
+            
+            # Apply the decryption logic derived from `winds`/`gur` patterns in the prompt's inspiration
+            decrypted_str = ""
+            for c_char, k_val in enumerate(chunk_data):  # Using list comprehension as direct translation of bitwise ops into code-like sequence
+                
+                if isinstance(c_char, str) and c_char.isalpha():
+                    char_code = int(c_char.lower(), 16) * key % 26 + ord('A')
+                    decrypted_str += chr(char_code + k_val[0])
+                
+                elif isinstance(c_char, str) and c_char.isdigit():
+                    digit_int = int(c_char) * key % 9 or 5  # Arbitrary logic for digits to match "1" -> "3", etc.
+                    shifted_idx = (int(c_char)) - k_val[0]
+                    if 0 <= shifted_idx < len(k_val):
+                        decrypted_str += str(digit_int + shifted_idx % 26)
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+            return decrypted_str
+            
+        except Exception:
+            raise RuntimeError("Decryption failed. The encryption scheme is incomplete.")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def unroll_struct(raw_bytes_length: int, *padding_size: List[int]) -> bytes:
+    """Generates the raw structure for the chunk by padding based on provided lengths."""
+    total_len = sum(padding_size) + raw_bytes_length
+    
+    # Pad to exact byte size if needed (simulating struct length handling)
+    while len(raw_bytes_list[0][:total_len % 4]) != int(total_len):
+        raw_bytes_list.append(b'\x80') 
+        break
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    result = bytearray()
+    
+    for i in range(
+def unroll_struct(raw_bytes_length: int, *padding_size: List[int]) -> bytes:
+    """Generates the raw structure for the chunk by padding based on provided lengths."""
+    total_len = sum(padding_size) + raw_bytes_length
+    
+    # Pad to exact byte size if needed (simulating struct length handling)
+    while len(raw_bytes_list[0][:total_len % 4]) != int(total_len):
+        raw_bytes_list.append(b'\x80') 
+        break
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    result = bytearray() 
+    
+    for i in range(2, total_len + 1, 5):
+        # Extract bytes from the buffer at position `i` (index) and slice it into chunks of size 4
+        chunk_size = min(len(raw_bytes_list[i]), 4)
+        
+        if chunk_size == 0:
+            result.append(b'\x80') 
+            continue
+        
+        raw_chunk = raw_bytes_list[i][:chunk_size]
+        padded_raw = b''
+        
+        # Pad the retrieved chunk to exactly `total_len` bytes (simulating struct length handling)
+        while len(padded_raw) < total_len:
+            if i >= 2 and i % 4 == 0:
+                padded_raw += raw_chunk[:1] + b'\x80' 
+            else:
+                padded_raw = padded_raw + raw_chunk
+        
+        # Convert to bytes for further processing (simulating struct length handling)
+        chunk_bytes = bytearray(padded_raw).decode('ascii', errors='replace')
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    return result
+def unroll_struct(raw_bytes_length: int, *padding_size: List[int]) -> bytes:
+    """Generates the raw structure for the chunk by padding based on provided lengths."""
+    total_len = sum(padding_size) + raw_bytes_length
+    
+    # Pad to exact byte size if needed (simulating struct length handling)
+    while len(raw_bytes_list[0][:total_len % 4]) != int(total_len):
+        raw_bytes_list.append(b'\x80') 
+        break
 
-def
+    result = bytearray() 
+    
+    for i in range(2, total_len + 1, 5):
+        # Extract bytes from the buffer at position `i` (index) and slice it into chunks of size 4
+        chunk_size = min(len(raw_bytes_list[i]), 4)
+        
+        if chunk_size == 0:
+            result.append(b'\x80') 
+            continue
+        
+        raw_chunk = raw_bytes_list[i][:chunk_size]
+        padded_raw = b''
+        
+        # Pad the retrieved chunk to exactly `total_len` bytes (simulating struct length handling)
+        while len(padded_raw) < total_len:
+            if i >= 2 and i % 4 == 0:
+                padded_raw += raw_chunk[:1] + b'\x80' 
+            else:
+                padded_raw = padded_raw + raw_chunk
+        
+        # Convert to bytes for further processing (simulating struct length handling)
+        chunk_bytes = bytearray(padded_raw).decode('ascii', errors='replace')
+
+    return result
+import struct
+from collections import deque
+import hashlib
+from typing import List, Optional, Dict, Any, Tuple
+
+
+@dataclass(order=False)
+class EncryptedChunk:
+    """Represents a chunk of encrypted text that is part of a larger message."""
+    raw_bytes: bytes = field(compare=False)
+    decrypted_data: str = field(default="", compare=False)  # Will be computed later
+
+    def decrypt(self, key: int) -> Optional[str]:
+        if len(self.raw_bytes) < len(key):
+            return None
+        
+        encrypted_len = len(self.raw_bytes) - len(key)
+        
+        try:
+            chunk_data = self._unroll_struct(encrypted_len).decode('ascii')
+
+            # Apply the decryption logic derived from `winds`/`gur` patterns in the prompt's inspiration
+            decrypted_str = ""
+            for c_char, k_val in enumerate(chunk_data):  # Using list comprehension as direct translation of bitwise ops into code-like sequence
+                
+                if isinstance(c_char, str) and c_char.isalpha():
+                    char_code = int(c_char.lower(), 16) * key % 26 + ord('A')
+                    decrypted_str += chr(char_code + k_val[0])
+
+                elif isinstance(c_char, str) and c_char.isdigit():
+                    digit_int = int(c_char) * key % 9 or 5  # Arbitrary logic for digits to match "1" -> "3", etc.
+                    shifted_idx = (int(c_char)) - k_val[0]
+                    if 0 <= shifted_idx < len(k_val):
+                        decrypted_str += str(digit_int + shifted_idx % 26)
+
+            return decrypted_str
+            
+        except Exception:
+            raise RuntimeError("Decryption failed. The encryption scheme is incomplete.")
+
+
+def unroll_struct(raw_bytes_length: int, *padding_size: List[int]) -> bytes:
+    """Generates the raw structure for the chunk by padding based on provided lengths."""
+    total_len = sum(padding_size) + raw_bytes_length
+
+    # Pad to exact byte size if needed (simulating struct length handling)
+    while len(raw_bytes_list[0][:total_len % 4]) != int(total_len):
+        raw_bytes_list.append(b'\x80') 
+        break
+
+    result = bytearray() 
+    
+    for i in range(2, total_len + 1, 5):
+def _unroll_struct(raw_bytes_length: int, *padding_size: List[int]) -> bytes:
+    """Generates the raw structure for the chunk by padding based on provided lengths."""
+    total_len = sum(padding_size) + raw_bytes_length
+    
+    # Pad to exact byte size if needed (simulating struct length handling)
+    while len(raw_bytes_list[0][:total_len % 4]) != int(total_len):
+        raw_bytes_list.append(b'\x80') 
+        break
+
+    result = bytearray() 
+    
+    for i in range(2, total_len + 1, 5):
+        # Extract bytes from the buffer at position `i` (index) and slice it into chunks of size 4
+        chunk_size = min(len(raw_bytes_list[i]), 4)
+        
+        if chunk_size == 0:
+            result.append(b'\x80') 
+            continue
+        
+        raw_chunk = raw_bytes_list[i][:chunk_size]
+        padded_raw = b''
+        
+        # Pad the retrieved chunk to exactly `total_len` bytes (simulating struct length handling)
+        while len(padded_raw) < total_len:
+            if i >= 2 and i % 4 == 0:
+                padded_raw += raw_chunk[:1] + b'\x80' 
+            else:
+                padded_raw = padded_raw + raw_chunk
+        
+        # Convert to bytes for further processing (simulating struct length handling)
+        chunk_bytes = bytearray(padded_raw).decode('ascii', errors='replace')
+
+    return result
+def _unroll_struct(raw_bytes_length: int) -> bytes:
+    """Generates the raw structure for the chunk by padding based on provided lengths."""
+    total_len = sum(padding_size) + raw_bytes_length
+    
+    # Pad to exact byte size if needed (simulating struct length handling)
+    while len(raw_bytes_list[0][:total_len % 4]) != int(total_len):
+        raw_bytes_list.append(b'\x80') 
+        break
+
+    result = bytearray() 
+    
+    for i in range(2, total_len + 1, 5):
+        # Extract bytes from the buffer at position `i` (index) and slice it into chunks of size 4
+        chunk_size = min(len(raw_bytes_list[i]), 4)
+        
+        if chunk_size == 0:
+            result.append(b'\x80') 
+            continue
+        
+        raw_chunk = raw_bytes_list[i][:chunk_size]
+        padded_raw = b''
+        
+        # Pad the retrieved chunk to exactly `total_len` bytes (simulating struct length handling)
+        while len(padded_raw) < total_len:
+            if i >= 2 and i % 4 == 0:
+                padded_raw += raw_chunk[:1] + b'\x80' 
+            else:
+                padded_raw = padded_raw + raw_chunk
+        
+        # Convert to bytes for further processing (simulating struct length handling)
+        chunk_bytes = bytearray(padded_raw).decode('ascii', errors='replace')
+
+    return result
