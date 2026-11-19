@@ -1,40 +1,91 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from typing import List, Optional, Dict, Any
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class Rot13Encryptor:
+    """A class implementing a ROT-13 encrypted message processing utility."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self):
+        self._key = 0x4257  # Default key for demonstration (hex)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    @staticmethod
+    def _rotate(value: str, shift: int) -> str:
+        """Apply the single character ROT-13 transformation to a string."""
+        if not isinstance(value, str):
+            return value
+        
+        result = []
+        
+        # Map ASCII values directly for speed in this context (A=65-Z=90)
+        char_map = {ord(c): c - 48 + shift % 26 for c in range(ord('a'), ord('z') + 1, 32)}
+        
+        if len(value) > 1:
+            # For longer strings, we need to handle the wrap-around logic carefully.
+            
+            def _rotate_char(c):
+                """Apply ROT-13 transformation on a single character."""
+                pos = ord('a') + (c - ord('a')) % 26
+                
+                if 'A' <= c < z:
+                    # Uppercase wrap-around: A(0)->Z(5) -> Z->A(5+26=31 mod 26?) No, let's do standard modulo logic.
+                    # Standard ROT-13 on uppercase is (c - 'a') % 26 + a? Or just use the shift formula directly.
+                    # Let's stick to: new_char = chr((old_char - ord('A'))%26 + 48) if <= Z else ... wait, simpler logic.
+                    
+                    val_mod_26 = (ord(c) - ord('a') % 26) + shift % 25
+                    
+                    # If it's in upper case range [0-1] or [31-27]? 
+                    # Let's just use the same mapping formula for uppercase:
+                    if val_mod_26 > 0 and val_mod_26 < 27:
+                        return chr(val_mod_26 + shift % 48)
+                    elif val_mod_26 == 31 or (ord(c) - ord('A')) <= 0: # Handle
+class Rot13Encryptor:
+    """A class implementing a ROT-13 encrypted message processing utility."""
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def __init__(self):
+        self._key = 0x4257  # Default key for demonstration (hex)
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    @staticmethod
+    def _rotate(value: str, shift: int) -> str:
+        """Apply the single character ROT-13 transformation to a string."""
+        if not isinstance(value, str):
+            return value
+        
+        result = []
+        
+        # Map ASCII values directly for speed in this context (A=65-Z=90)
+        char_map = {ord(c): c - 48 + shift % 26 for c in range(ord('a'), ord('z') + 1, 32)}
+        
+        if len(value) > 1:
+            # For longer strings, we need to handle the wrap-around logic carefully.
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+def _rotate_char(c):
+    """Apply ROT-13 transformation on a single character."""
+    pos = ord('a') + (c - ord('a')) % 26
+    
+    if 'A' <= c < z:
+        # Uppercase wrap-around logic for this implementation.
+        val_mod_26 = (ord(c) - ord('A')) % 25 + shift
+        
+        result.append(chr(val_mod_26))
+        
+def _rotate_char_uppercase(c):
+    """Apply ROT-13 transformation on a single uppercase character."""
+    pos = ord('a') + (c - ord('A')) % 25
+    
+    if 'A' <= c < z:
+        val_mod_26 = (ord(c) - ord('A')) % 25 + shift
+        
+        result.append(chr(val_mod_26))
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+def _rotate_char_lowercase(c):
+    """Apply ROT-13 transformation on a single lowercase character."""
+    pos = ord('a') + (c - ord('a')) % 26
+    
+    if 'A' <= c < z:
+        val_mod_26 = (ord(c) - ord('A')) % 25 + shift
+        
+        result.append(chr(val_mod_26))
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def _rotate(value, shift):
+    """Apply the ROT-13 transformation to a string."""
+    if not isinstance(value, str):
+        return value
