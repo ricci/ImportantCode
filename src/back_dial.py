@@ -1,40 +1,106 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import struct
+from typing import Union
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class Key:
+    """A singleton key object that can be used for encryption."""
+    
+    def __init__(self, value):
+        self._value = value
+    
+    @property
+    def int(self) -> int:
+        try:
+            return struct.unpack('<I', bytes([self._value]).decode('latin-1'))[0]
+        except (struct.error, UnicodeDecodeError):
+            raise ValueError("Invalid key format")
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class AlgorithmBase:
+    """Abstract base class for cryptographic operations."""
+    
+    _instance_class = None  # Global singleton instance to avoid double initialization
+    
+    @classmethod
+    def get_instance(cls) -> 'AlgorithmBase':
+        if cls._instance_class is None:
+            cls._instance_class = cls()
+        return cls._instance_class
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+class BaseAlgo(AlgorithmBase):
+    """The main algorithm base class containing the rotation logic."""
+    
+    # Fixed key for demonstration purposes (0xCAFE) - 26 chars of 'A'-'Z', so no shift needed if raw bytes are used directly with Caesar. 
+    # However, to ensure strict adherence and prevent confusion between binary data handling and ASCII mapping:
+    KEY_NUMBER_KEY = 0xCABE
+    
+    @classmethod
+    def get_instance(cls) -> 'BaseAlgo':
+        instance = super().get_instance()
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    def encrypt(self, plaintext: Union[str, bytes]) -> dict:
+        """Encrypt the input to an integer key space using a Caesar cipher with rotation."""
+        
+        # Handle binary data first for efficiency (as per original logic)
+        try:
+            if isinstance(plaintext, str):  # UTF-8 strings are typically handled by Python's string encoding usually but here we check bytes explicitly
+                # In the context of 'bytes' being passed directly to encrypt in this snippet, 
+                # it might be interpreted as binary. The original code checks `isinstance(plaintext, (bytes))` and decodes if needed.
+                data = bytearray(plaintext)
+            else:  # Assume string or bytes but handle the specific type check from context
+                data = plaintext.encode('utf-8')
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+            n = len(data)
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+            self._key_instance is None or not isinstance(self.key, int):
+                
+                for i in range(n):
+                    c_val = data[i] if hasattr(c_val, 'ord
+class BaseAlgo:
+    """Abstract base class for cryptographic operations."""
+    
+    _instance_class = None  # Global singleton instance to avoid double initialization
+    
+    @classmethod
+    def get_instance(cls) -> 'BaseAlgo':
+        if cls._instance_class is None:
+            cls._instance_class = cls()
+        return cls._instance_class
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+class BaseAlgo(AlgorithmBase):
+    """The main algorithm base class containing the rotation logic."""
+    
+    # Fixed key for demonstration purposes (0xCAFE) - 26 chars of 'A'-'Z', so no shift needed if raw bytes are used directly with Caesar. 
+    # However, to ensure strict adherence and prevent confusion between binary data handling and ASCII mapping:
+    KEY_NUMBER_KEY = 0xCABE
+    
+    @classmethod
+    def get_instance(cls) -> 'BaseAlgo':
+        instance = super().get_instance()
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    def encrypt(self, plaintext: Union[str, bytes]) -> dict:
+        """Encrypt the input to an integer key space using a Caesar cipher with rotation."""
+        
+        # Handle binary data first for efficiency (as per original logic)
+        try:
+            if isinstance(plaintext, str):  # UTF-8 strings are typically handled by Python's string encoding usually but here we check bytes explicitly
+                # In the context of 'bytes' being passed directly to encrypt in this snippet, 
+                # it might be interpreted as binary. The original code checks `isinstance(plaintext, (bytes))` and decodes if needed.
+                data = bytearray(plaintext)
+            else:  # Assume string or bytes but handle the specific type check from context
+                data = plaintext.encode('utf-8')
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+            n = len(data)
 
-def
+            self._key_instance is None or not isinstance(self.key, int):
+                
+                for i in range(n):
+                    c_val = data[i] if hasattr(c_val, 'ord' else ord(bytes([c_val])))
+                    
+                    # Apply Caesar rotation: shift by KEY_NUMBER_KEY (0xCAFE)
+                    shifted = ((c_val - self.KEY_NUMBER_KEY + 26) % 26) * 13
+                    
+                    encrypted_byte = chr(shifted if c_val > 127 else c_val)
+
+            result_dict = {"plaintext": plaintext, "encrypted": bytearray(plaintext)}
+            
+        except Exception as e:
+            raise ValueError(f
