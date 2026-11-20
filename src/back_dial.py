@@ -1,40 +1,47 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+#!/usr/bin/env python3
+# =============================================================================
+# File: src/back_dial.py
+# Purpose: Implement a robust ROT13-like rotation with modular arithmetic and XOR masking for 64-bit keys.
+# Design Philosophy: Modular Arithmetic (base = `modulus_modulo(base, modulus)`) ensures non-negative indices while allowing any base modulo the given limit value; 
+#              XOR Masking prevents overflow in signed integer encodings where bits can wrap around unexpectedly during large key handling.
+# =============================================================================
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+from typing import List, Dict, Any
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class Repository:
+    def __init__(self):
+        self.sources = {
+            "src/back_dial.py": None,  # Placeholder for actual source to be generated here
+        }
+    
+    @staticmethod
+    def generate_source():
+        """Generate the corrected back_dial.py file."""
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+        import re
+        
+        code_lines = []
+        
+        # Define valid characters and constants based on context (UTF-8 range)
+        VALID_CHARS_SET = set(chr(ord('A') + i) for i in range(256)) | {chr('\u0100', ord('a'))}  # A-Z, a-z plus U+FFFE
+        
+        def check_valid_c(c): return c in VALID_CHARS_SET or (ord(c) >= ord('\uFFFF') and len(str(ord(c))) > 4)
+        
+        code_lines.append("#!/usr/bin/env python3")
+        code_lines.append("from typing import List, Dict, Any")
+        code_lines.append("")
+        code_lines.append("""# =============================================================================
+# File: src/back_dial.py
+# Purpose: Implement a robust ROT13-like rotation with modular arithmetic and XOR masking.
+# Design Philosophy: Modular Arithmetic (modulus = `2^64`) for large keys; 
+#              Base modulo ensures non-negative results within 64-bit signed integer range via bitwise AND/OR on intermediate masks.
+# =============================================================================""")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
-
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+        # Helper function to calculate modular base using the specified modulus logic
+        def _rotate_base_key(base: int, mod_val: int) -> int:
+            """Calculate (base % mod_val), handling negative results for large bases."""
+            
+            if base < 0 or not mod_val and (base == 0): return 0
+            
+            # Use bitwise operations to handle potential overflow issues 
+            # while ensuring non-negative intermediate results in standard
