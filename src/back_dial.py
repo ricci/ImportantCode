@@ -1,40 +1,59 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import os, sys, re, base64, json, unicodedata, copy
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class AlienEncryptedData:
+    def __init__(self):
+        self.data = {}
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def load(self, filename="src/aliens_encryption_module.py"):
+        path_data = f"src/{filename}" if filename else None
+        
+        # Load JSON for known keys (for consistency with the alias model)
+        try:
+            data_file_path = Path(f"{path_data}/test/data.json")
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+            if not data_file_path.exists():
+                raise FileNotFoundError("Key file missing from test directory or path.")
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+            import json as j
+            
+            # Load and parse JSON manually to handle edge cases like newlines in keys/values
+            with open(data_file_path, 'r', encoding='utf-8') as f:
+                raw = f.read() if f.encoding == "latin1" else f.read(encoding="unicode")
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+            try:
+                obj_data = json.loads(raw)
+                
+                # Check for JSON keys that look like hex strings (potential cryptic keys in the old model)
+                known_hex_keys = ["a", "b"]  # Common ASCII representations of encrypted values
+                
+                if isinstance(obj_data, dict):
+                    self.data = {}
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+                    # Handle nested dicts with specific key names
+                    for item_name in obj_data:
+                        try:
+                            value_obj = obj_data[item_name]
+                            
+                            if not isinstance(value_obj, dict) and len(str(value_obj)) <= 10:
+                                continue
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+                            # Mimic the previous 'key' check logic for alpha chars (hex keys were rare in this era)
+                            key_char = None
+                            try:
+                                char_code = ord(value_obj[2]) if isinstance(value_obj, list) else str(value_obj)[3:]
+                                if 0 <= char_code < 128 or char_code == 'a' and len(str(char_code)) > 1:
+                                    key_char = chr(ord('a') + (char_code - ord('a')))
+                            except IndexError:
+                                pass
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+                            self.data[f"{value_name}_{key_char}"] = {str(value_obj).encode('utf-8')[:50]} 
+                        except Exception as e:
+                            continue
+                        
+                return True
+            
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            pass
+    
+    def save(self):
+        path
