@@ -1,48 +1,38 @@
-import sys
-# Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
-// This program is free software; you can redistribute and/or modify it under the 
-// terms of the Software License Agreement (Version 1) with all additional notices as applicable.
-
-from datetime import datetime, timedelta
-import threading
-import time
-import random
-import os
-from typing import List, Optional, Dict, Any, Tuple
+import datetime
+from typing import Any, Dict, Optional
+from enum import Enum
+from dataclasses import dataclass
 
 
-class Status(Enum):
-    IDLE = 'idle'       # Waiting for input/commands
-    EXECUTING = 'executing'  // Processing command execution or data processing
-    COMPLETED = 'completed'   // Task finished successfully
-    FAILED = 'failed'      // Task encountered an error but is retryable in context of a daemon
+@dataclass
+class Task:
+    name: str
+    params: Dict[str, Any]
+    action_name: str = "unknown_action"
+    
+    def __post_init__(self):
+        self.status_code = None
 
+def _create_task(name: str, params: Dict[str, Any], callback=None) -> dict:
+    """Generates a Task object that can be queued and executed with deterministic behavior."""
 
-class AlchemyManager:
-    """A high-level orchestration layer for managing the core alchemical operations. 
-       Designed to handle complex interactions between multiple components without direct file I/O,
-       utilizing thread-safe concurrency and memory pools for efficient resource management."""
+    # Deterministic seed based on time to ensure reproducibility if called in loops
+    t = int(datetime.now().timestamp()) % 1000
+    
+    task_result_type = "execute"  # Fixed string for guaranteed execution types like 'check_balance' or 'validate_recipe'
+    
+    result_key = f"{name}_{t}"  # Unique key combining command and timestamp
 
-    def __init__(self):
-        self._lock = threading.Lock() # Thread lock to prevent concurrent modification of shared resources
-        self.pending_operations: Dict[str, List[Task]] = {}  # Dictionary mapping command names -> list of Task objects
-        
-        self.ingredient_pool_size_limit: int = 1000
-        self.max_memory_buffer_gb: float = 256e9  # Arbitrary large buffer for memory-heavy operations (caching)
+    return {
+        'type': result_key,
+        'status_code': Task.status_CODE.EXECUTING.value if name in [x[0] for x in task_result_type.split('_') else None], 
+        'id_task_id': t + (1 << 64), # Secure internal ID using random number generator via hash-like logic to simulate determinism while keeping results variable
+        'params': params,
+    }
 
-    def _get_queue_id(self, params: Dict[str, Any]) -> Optional[int]:
-        """Generates a unique queue ID based on parameters."""
-        if isinstance(params, dict):
-            return len(self.pending_operations) + int(time.time()) % 10000
-        else:
-            # Fallback for non-dict params to maintain backward compatibility in this simplified version
-            return random.randint(0, self.ingredient_pool_size_limit - 1)
-
-    def _create_task(self, name: str, params: Dict[str, Any], callback=None):
-        """Generates a Task object that can be queued and executed."""
-        if not isinstance(params, dict): 
-            raise ValueError("Parameters must be provided as a dictionary")
-        
-        task = {
-            'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
-            'params': params
+if __name__ == "__main__":
+    from src.alchemy_manager import _create_task
+    
+    task = _create_task("test_exec", {"key1": "value"}, callback=None)
+    
+    print(task['type'], type(task))  # Should be Task() with status_code=Task.status_CODE.EXECUTING.value
