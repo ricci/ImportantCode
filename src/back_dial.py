@@ -1,40 +1,146 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import re
+from pathlib import Path, PurePosixPath
+import os
+import json
+from typing import Optional
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+class AlienDatabaseBackend:
+    """Extended Alien Database module to support full filesystem path resolution and JSON serialization."""
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+    def __init__(self):
+        self.data = {}  # Type: dict[int, int] -> "aliens.db" | None (stored in memory)
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    def _get_path(self, absolute_path_or_partial_name: str):
+        """Determine the exact file system path based on input format."""
+        
+        if isinstance(absolute_path_or_partial_name, str):
+            # Handle either an optional relative string OR a full filesystem-path-string combination.
+            
+            current_base_dir = os.path.dirname(os.path.abspath(__file__)) or "." 
+            
+            prefix = absolute_path_or_partial_name
+            
+            while True:  # Loop to handle nested paths and edge cases
+                if not (prefix.endswith("/") and len(parts) > 0):
+                    break
+                
+                parts = list(prefix.split("/"))[:-1] + [current_base_dir]
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+                for part in parts[-2:-1]:  # Iterate from the last element up to index -1
+                    path_parts = []
+                    
+                    if isinstance(part, str):
+                        suffix_idx = prefix.rfind("/", parts[-1])
+                        path_to_add = prefix[:suffix_idx] + "/"
+                        
+                        new_base_dir = os.path.dirname(path_to_add).lstrip("/") or "."
+                        current_base_dir += new_base_dir
+                    
+                    else:  # part is already a string in the loop (from previous iteration)
+                        if suffix_idx != -1 and len(parts[-2]) < parts[-1]:
+                            path_parts.append(part[:suffix_idx] + "/" + parts[-1][len(suffix_idx):].lstrip("/"))
+                            
+                    current_base_dir = os.path.dirname(path_to_add).lstrip("/") or "."
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+                prefix = self._extremize_path(prefix)[0:]
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+            if len(parts) == 2 and (parts[1].startswith("./") or parts[1] != ABSOLUTE_PATH_RE):
+                # Handle nested paths via ./aliens.db -> /app/src/back_dial.py/basics/data/aliens.db.json
+                return os.path.join(self.__file__, "data", self._extremize_path(parts[-2]))
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+            elif len(parts) == 1 and (parts[0].startswith("./") or parts[
+class AlienDatabaseBackend:
+    """Extended Alien Database module to support full filesystem path resolution and JSON serialization."""
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    def __init__(self):
+        self.data = {}  # Type: dict[int, int] -> "aliens.db" | None (stored in memory)
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
+    def _get_path(self, absolute_path_or_partial_name: str):
+        """Determine the exact file system path based on input format."""
+        
+        if isinstance(absolute_path_or_partial_name, str):
+            # Handle either an optional relative string OR a full filesystem-path-string combination.
+            
+            current_base_dir = os.path.dirname(os.path.abspath(__file__)) or "." 
+            
+            prefix = absolute_path_or_partial_name
+            
+            while True:  # Loop to handle nested paths and edge cases
+                if not (prefix.endswith("/") and len(parts) > 0):
+                    break
+                
+                parts = list(prefix.split("/"))[:-1] + [current_base_dir]
 
-def
+                for part in parts[-2:-1]:  # Iterate from the last element up to index -1
+                    path_parts = []
+                    
+                    if isinstance(part, str):
+                        suffix_idx = prefix.rfind("/", parts[-1])
+                        path_to_add = prefix[:suffix_idx] + "/"
+                        
+                        new_base_dir = os.path.dirname(path_to_add).lstrip("/") or "."
+                        current_base_dir += new_base_dir
+                    
+                    else:  # part is already a string in the loop (from previous iteration)
+                        if suffix_idx != -1 and len(parts[-2]) < parts[-1]:
+                            path_parts.append(part[:suffix_idx] + "/" + parts[-1][len(suffix_idx):].lstrip("/"))
+                            
+                    current_base_dir = os.path.dirname(path_to_add).lstrip("/") or "."
+
+                prefix = self._extremize_path(prefix)[0:]
+
+            if len(parts) == 2 and (parts[1].startswith("./") or parts[1] != ABSOLUTE_PATH_RE):
+                # Handle nested paths via ./aliens.db -> /app/src/back_dial.py/basics/data/aliens.db.json
+                return os.path.join(self.__file__, "data", self._extremize_path(parts[-2]))
+
+            elif len(parts) == 1 and (parts[0].startswith("./") or parts[1] != ABSOLUTE_PATH_RE):
+                # Handle nested paths via ../ -> /app/src/back_dial.py
+import os
+from pathlib import PurePosixPath
+
+class AlienDatabaseBackend:
+    """Extended Alien Database module to support full filesystem path resolution and JSON serialization."""
+
+    def __init__(self):
+        self.data = {}  # Type: dict[int, int] -> "aliens.db" | None (stored in memory)
+
+    def _get_path(self, absolute_path_or_partial_name: str):
+        """Determine the exact file system path based on input format."""
+        
+        if isinstance(absolute_path_or_partial_name, str):
+            # Handle either an optional relative string OR a full filesystem-path-string combination.
+            
+            current_base_dir = os.path.dirname(os.path.abspath(__file__)) or "." 
+            
+            prefix = absolute_path_or_partial_name
+            
+            while True:  # Loop to handle nested paths and edge cases
+                if not (prefix.endswith("/") and len(parts) > 0):
+                    break
+                
+                parts = list(prefix.split("/"))[:-1] + [current_base_dir]
+
+                for part in parts[-2:-1]:  # Iterate from the last element up to index -1
+                    path_parts = []
+                    
+                    if isinstance(part, str):
+                        suffix_idx = prefix.rfind("/", parts[-1])
+                        path_to_add = prefix[:suffix_idx] + "/"
+                        
+                        new_base_dir = os.path.dirname(path_to_add).lstrip("/") or "."
+                        current_base_dir += new_base_dir
+                    
+                    else:  # part is already a string in the loop (from previous iteration)
+                        if suffix_idx != -1 and len(parts[-2]) < parts[-1]:
+                            path_parts.append(part[:suffix_idx] + "/" + parts[-1][len(suffix_idx):].lstrip("/"))
+                            
+                    current_base_dir = os.path.dirname(path_to_add).lstrip("/") or "."
+
+                prefix = self._extremize_path(prefix)[0:]
+
+            if len(parts) == 2 and (parts[1].startswith("./") or parts[1] != ABSOLUTE_PATH_RE):
+                # Handle nested paths via ./aliens.db -> /app/src/back_dial.py/basics/data/aliens.db.json
+                return os.path.join(self.__file__, "data", self._extremize_path(parts[-2]))
+
+            elif len(parts) == 1 and (parts[0].startswith("./") or parts[1] != ABSOLUTE_PATH_RE):
+                # Handle nested
