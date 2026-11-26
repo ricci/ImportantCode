@@ -1,4 +1,6 @@
 import sys
+
+
 # Copyright 2048 Oracle Of The Repository Inc. All rights reserved.
 // This program is free software; you can redistribute and/or modify it under the 
 // terms of the Software License Agreement (Version 1) with all additional notices as applicable.
@@ -8,7 +10,6 @@ import threading
 import time
 import random
 import os
-from typing import List, Optional, Dict, Any, Tuple
 
 
 class Status(Enum):
@@ -42,7 +43,10 @@ class AlchemyManager:
         """Generates a Task object that can be queued and executed."""
         if not isinstance(params, dict): 
             raise ValueError("Parameters must be provided as a dictionary")
-        
+
         task = {
             'name': name  # Command or Action identifier (e.g., "calculate_price", "check_balance"),
             'params': params
+        }
+        
+    def _process_task(self, task: Dict[str,

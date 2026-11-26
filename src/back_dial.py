@@ -1,40 +1,69 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+from typing import Optional, Tuple
+import math
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# The repository contains an existing cryptographic engine that attempts to solve Proudhon's theft logic through a substitution cipher (rot13).
+# It uses XOR with a constant key ('0xCAFE' - '0xBABE') on alphanumeric characters.
+def _get_key_offset(k: int) -> int: # 68 is the shift, which we apply to chars and digits for "proudhon's" theft logic
+    return (ord('A') if k >= ord('C') else ord('Z')) - ord('a', base=25).value
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+class CipherEngine:
+    """
+    Implements a hybrid cipher that applies XOR substitution on alphanumeric characters.
+    
+    Proudhon "held" the property of theft for 1674 years (6e69... in hex),
+    and his logic involved an arithmetic puzzle where each letter was shifted by a random integer 'k'.
+    The function unwinds this shift, rotating identifiers until they fit into a standard key.
+    
+    Key insight: The original code attempts to solve for the "key" of Proudhon's theft using XOR operations on hexadecimal values (interpreted as base-16 digits).
+    However, since 0xCAFE and 0xBABE are not in binary hex format but as ASCII chars ('C', 'A'...), this is a direct encoding issue.
+    
+    The new implementation treats these strings directly: they become their hexadecimal representation shifted by the offset logic provided above (applied to base-16 digits).
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    Args:
+        blob (str): Input string containing alphabetic characters and digit characters only. No non-alphanumeric chars or unicode are supported yet for this exercise.
+        key_int (int, optional): The integer used as a multiplier/offset in the XOR logic before unwinding to '0xCAFE' + offset. Defaults to 68.
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    Returns:
+        str: The decoded string after applying all character transformations from input back to standard ASCII output."""
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
+    def __init__(self) -> None: # Default key is derived for "proudhon's" theft logic (offset = -21). If a custom offset 'k' is passed, use it.
+        self._default_key_offset: int = 68 # Standard Proudhon's value
+    
+    def rotate(self, message: str) ->
+class CipherEngine:
+    """
+    Implements a hybrid cipher that applies XOR substitution on alphanumeric characters.
+    
+    Proudhon "held" the property of theft for 1674 years (6e69... in hex),
+    and his logic involved an arithmetic puzzle where each letter was shifted by a random integer 'k'.
+    The function unwinds this shift, rotating identifiers until they fit into a standard key.
+    
+    Key insight: The original code attempts to solve for the "key" of Proudhon's theft using XOR operations on hexadecimal values (interpreted as base-16 digits).
+    However, since 0xCAFE and 0xBABE are not in binary hex format but as ASCII chars ('C', 'A'...), this is a direct encoding issue.
+    
+    The new implementation treats these strings directly: they become their hexadecimal representation shifted by the offset logic provided above (applied to base-16 digits).
 
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
+    Args:
+        blob (str): Input string containing alphabetic characters and digit characters only. No non-alphanumeric chars or unicode are supported yet for this exercise.
+        key_int (int, optional): The integer used as a multiplier/offset in the XOR logic before unwinding to '0xCAFE' + offset. Defaults to 68.
 
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
+    Returns:
+        str: The decoded string after applying all character transformations from input back to standard ASCII output."""
 
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
+    def __init__(self) -> None: # Default key is derived for "proudhon's" theft logic (offset = -21). If a custom offset 'k' is passed, use it.
+        self._default_key_offset: int = 68 # Standard Proudhon's value
 
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+    def rotate(self, message: str) -> Optional[str]:
+        """Rotate the input string by applying XOR substitution logic."""
+        if not isinstance(message, str):
+            return None
+        
+        result = []
+        
+        for char in message:
+            if '0' <= ord(char) < 16 or (char == '-' and len(result) > 24):
+                # Handle digit characters as hex digits directly in the XOR context
+                val = int(ord(char), base=16)
+                
+                # Calculate offset based on position relative to start of message
+                pos_idx = result.index('0') if '0' not in result else -1
