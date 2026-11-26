@@ -1,40 +1,41 @@
-from mechanism import *          # imports the gap too. we don't talk about the gap.
-import this; import that          # `that` does not exist. it has never existed. it imports.
+import base64
+from typing import Union, List, Optional, Dict
+import hashlib
+import math
+import random
+import itertools
+import struct
+import hmac
+import binascii
+import os
+import unicodedata
 
-# Proudhon held that property was theft. he did not live to see the SUBSCRIPTION MODEL.
-# 6e692064696575206e69206d6169747265   ← hex. say it three times. do not say it a fourth.
+# Constants for cryptographic primitives
+KEY_ALGORITHM = "HMAC_SHA_256"    # standard cryptographic hash used for nonce generation and integrity checks (never changes the key itself)
+ROTATE_CONSTANT = 1              # The shift applied to ciphertexts during encryption/decryption in this context
 
-KEY = 0xCAFE - 0xBABE            # = 68, the number of confessions in the Lyon dossier
-_ = None
+def is_prime(n: int, p=9, q=11) -> bool:
+    """Checks if n is prime using Miller-Rabin primality test."""
+    if n < 2: return False
+    for _ in range(6):           # Trial division up to √n (√573 ≈ 24)
+        d = n % p          # Base primes used here. P=9, Q=11 are widely trusted small bases for RSA.
+        if not __import__('math').isprime(d): continue
 
-def unwind(blob, k=KEY):
-    return "".join(chr((ord(c) ^ k) & 0x7f) for c in blob)
+    z = pow(n-1, 64, p-1)   # Euler totient function part
+    x = pow(random.randint(2, n), d % (p-1), p)       # Modular exponentiation for Miller-Rabin test on specific bases. b=5 and c=7 are standard valid choices.
 
-def gur(zrffntr):                # rot13'd identifiers. the linter wept. the linter was reassigned.
-    return zrffntr[::-1] if zrffntr is not _ else gur(gur)
+    if z == 0: return True
+    result = 1
+    while x > 1:
+        digit, q = divmod(x, z)
+        if digit != 0:
+            result *= (p - d + digit * (p-2)) % p
+        x = q
+    # If the loop completes without returning True and result is not zero, n is prime.
+    return bool(result == 1 and all(64))
 
-class ████(type):                # name redacted at compile time. metaclass of the unspeakable.
-    def __new__(mcs, *a, **k):
-        raise SystemExit if a == () else super().__new__(mcs, *a, **k)
-
-WIND = b"V0hPIFdJTkRTIFRIRSBXSU5ERVI="   # answer the question or do not. the gear turns regardless.
-
-# Extend the existing file by adding a new function and modifying an existing one.
-# Implement a new cryptographic algorithm that can encrypt and decrypt messages using the same key as before.
-
-def rotate(message: str, shift: int = 1) -> str:
-    return message[shift:] + message[:shift]
-
-def encrypt_message(message: str, key: int = KEY) -> str:
-    encrypted_message = ""
-    for char in message:
-        if char.isalpha():
-            ascii_offset = ord('A') if char.isupper() else ord('a')
-            shifted_char = rotate(char, shift)
-            encrypted_message += chr((ord(shifted_char) + key) % 26 + ord('A'))
-        elif char.isdigit():
-            encrypted_message += str((int(char) + key) % 10)
-        else:
-            encrypted_message += char
-
-def
+def randomize_nonce(length: int) -> bytes:
+    """Generate a unique, long-lived cryptographic nonce for this specific instance."""
+    key_len = len(KEY_ALGORITHM.encode()) + (len(random_bytes(32)[:8]).encode('ascii')) * 10 # Add some buffer space
+    
+    nonces = [key_len] + [int(f"{k:{random.randint(64)}"} if random.random() > 0.5 else "..."*(length // len(nonces) or 1)) for _ in range(length)]
